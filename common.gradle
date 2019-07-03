@@ -1,0 +1,35 @@
+apply plugin: 'base'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+
+version = '4.0'
+group = 'easymda'
+
+ext {
+  easymda_version = "4.0"
+}
+    
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    mavenLocal()
+ 	mavenCentral()
+}
+
+
+tasks.withType(Copy) {
+    eachFile { println it.file }
+}
+
+task standard(dependsOn: [assemble, install] ) doLast {
+	println 'uploadArchives ...'
+	//uploadArchives.execute()
+}
+
+task c(dependsOn: [clean]) doLast {}
+
+task f(dependsOn: [assemble, uploadArchives, test, javadoc] ) doLast {}
+
+

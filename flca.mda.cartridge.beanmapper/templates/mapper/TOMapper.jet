@@ -1,0 +1,180 @@
+<%@ jet package="cartridge" 
+imports="java.util.* flca.mda.api.util.* mda.template.* mda.template.type.* flca.mda.codegen.data.* "
+package="mapper"
+class="TOMapper" %>
+<%@ include file="../include/java-class-init.jetinc" %>
+<%@ include file="../include/java-class-start.jetinc" %>
+<% Class toClass = cc; %>
+<% String toClassname = toClass.getSimpleName(); %>
+<% Class entityClass = (Class) args[1]; %>
+<% String entityClassname = entityClass.getSimpleName(); %>
+<% List<Fw> toFws = tu.getFields(toClass, EXC, FwSelectType.ID); %>
+<% List<Fw> entityFws = tu.getFields(entityClass, EXC, FwSelectType.ID); %>
+
+<% impu.addImport(toClass);%>
+<% impu.addImport(entityClass);%>
+<% tu.addToMappedClasses(toClass); tu.addToMappedClasses(entityClass); %>
+
+public class <%=classname%> {
+	/**
+	* map entity class to To
+	* @param entity, <%=entityClassname%>
+	* @result <%=toClassname%> 
+	*/
+	public static <%=toClassname%> mapFromEntity(<%=entityClassname%> entity) {
+		<%=toClassname%> result = new <%=toClassname%>();
+<% for (Fw fw : toFws) { %>
+<% String fldname = fw.name(); String capname = nu.capName(fldname); %>
+		mapFrom<%=capname%>(entity, result);
+<% } //for loop %>		
+		return result;
+	}
+ 
+<% for (Fw fw : toFws) { %>
+<%   String fldname = fw.name(); String capname = nu.capName(fldname); String typ = fw.genericTypeName(); String concreteType = fw.concreteType(); %>
+	private static void mapFrom<%=capname%>(final <%=entityClassname%> entity, final <%=toClassname%> result) {
+<%   if (tu.hasOtherProperty(fw, entityFws)) { // ifA %>
+<%      Fw otherFw = tu.getOtherFw(fw, entityFws); %>
+<%      String otherTyp = otherFw.genericTypeName(); %>
+<%      if (tu.isSameType(fw, otherFw)) { // ifB %>
+		result.set<%=capname%>(entity.get<%=capname%>());
+<%      } else { // ifB %>
+<%         if (fw.isCollection()) { // ifC %>
+<%            if (tu.belongsTo(toClass, fw)) { // ifD %>
+<%      Class nestedMapperClass = fw.genericType(); String nestedMapper = fw.genericTypeName() + "Mapper"; %>
+<%      tu.recursiveGenerate(fw.genericType(), otherFw.genericType(), false); %>
+<%      impu.addImport(nestedMapperClass.getName() + "Mapper"); %>
+<%               if (!tu.isAlreadyMapped(otherFw.genericType())) { // if isAlr %>
+ 		if (entity.get<%=capname%>() != null) { 
+			result.set<%=capname%>(new <%=concreteType%>()); 
+			for (<%=otherTyp%> item : entity.get<%=capname%>()) {
+<%                   String setter = tu.getMethodName(otherFw.genericType(), void.class, new Class[] {entityClass}); %>
+<%                   if (setter != null) { %>
+				<%=fw.genericTypeName()%> elem = <%=nestedMapper%>.mapFromEntity(item);
+				elem.<%=setter%>(result);
+				result.get<%=capname%>().add(elem);
+<%                   } else { %>
+				result.get<%=capname%>().add(<%=nestedMapper%>.mapFromEntity(item));
+<%                   } %>
+			}
+		}
+<%               } else { // else isAlr %>
+		// ivm recursiviteit niet verder gemapped
+<%               } %>
+<%            } else { %>
+		if (entity.get<%=capname%>() != null) {
+			result.set<%=capname%>(new <%=concreteType%>()); 
+			for (<%=typ%> item : entity.get<%=capname%>()) {
+				result.get<%=capname%>().add(item);
+			}
+		}
+<%            } // ifD %>
+<%         } else { // ifC %>
+<%            if (tu.belongsTo(toClass, fw)) { // ifE %>
+<%      tu.recursiveGenerate(fw.type(), otherFw.type(), false); %>
+<%      Class nestedMapperClass = fw.type(); String nestedMapper = fw.typeName() + "Mapper"; %>
+<%      impu.addImport(nestedMapperClass.getName() + "Mapper"); %>
+<%               if (!tu.isAlreadyMapped(otherFw.genericType())) { // if isAlr %>
+		result.set<%=capname%>(<%=nestedMapper%>.mapFromEntity(entity.get<%=capname%>()));
+<%                   String setter = tu.getMethodName(otherFw.genericType(), void.class, new Class[] {entityClass}); %>
+<%                   if (setter != null) { %>
+		result.get<%=capname%>().<%=setter%>(result);
+<%                   } %>
+<%               } else { %>
+		// ivm recursiviteit niet verder gemapped
+		// result.set<%=capname%>(<%=nestedMapper%>.mapFromEntity(entity.get<%=capname%>()));
+<%               } %>
+<%            } else { %>
+		//TODO property entity.get<%=capname%>() heeft een ander datatype (<%=otherFw.typeName()%> ipv <%=fw.typeName()%>)
+<%            } // ifE %>
+<%         } // ifC %>
+<%      } //ifB %>
+<%    } else { // ifA %>
+		//TODO onbekende property entity.get<%=capname%>()
+<%    } // ifA %>
+	}
+ 
+<% } //for loop %>
+ 
+	/**
+	* map from To to entity
+	* @param sourceTO, <%=toClassname%>
+	* @result <%=entityClassname%> 
+	*/
+	public static <%=entityClassname%> mapToEntity(<%=toClassname%> sourceTO) {
+		<%=entityClassname%> result = new <%=entityClassname%>();
+<% for (Fw fw : tu.getFields(entityClass, EXC, FwSelectType.ID)) { %>
+<% String fldname = fw.name(); String capname = nu.capName(fldname);  %>
+		mapTo<%=capname%>(sourceTO, result);
+<% } //for loop %>		
+		return result;
+	}
+ 
+<% for (Fw fw : entityFws) { %>
+<%   String fldname = fw.name(); String capname = nu.capName(fldname); String typ = fw.genericTypeName(); String concreteType = fw.concreteType(); %>
+	private static void mapTo<%=capname%>(final <%=toClassname%> entity, final <%=entityClassname%> result) {
+<%   if (tu.hasOtherProperty(fw, toFws)) { // ifA %>
+<%      Fw otherFw = tu.getOtherFw(fw, toFws); %>
+<%      String otherTyp = otherFw.genericTypeName(); %>
+<%      if (tu.isSameType(fw, otherFw)) { // ifB %>
+		result.set<%=capname%>(entity.get<%=capname%>());
+<%      } else { // ifB %>
+<%         if (fw.isCollection()) { // ifC %>
+<%            if (tu.belongsTo(toClass, fw)) { // ifD %>
+<%      Class nestedMapperClass = fw.genericType(); String nestedMapper = fw.genericTypeName() + "TOMapper"; %>
+<%      impu.addImport(nestedMapperClass.getName() + "TOMapper"); %>
+<%               if (!tu.isAlreadyMapped(otherFw.genericType())) { // if isAlr %>
+ 		if (entity.get<%=capname%>() != null) { 
+			result.set<%=capname%>(new <%=concreteType%>()); 
+			for (<%=otherTyp%> item : entity.get<%=capname%>()) {
+<%                   String setter = tu.getMethodName(otherFw.genericType(), void.class, new Class[] {toClass}); %>
+<%                   if (setter != null) { %>
+				<%=fw.genericTypeName()%> elem = <%=nestedMapper%>.mapToEntity(item);
+				elem.<%=setter%>(result);
+				result.get<%=capname%>().add(elem);
+<%                   } else { %>
+				result.get<%=capname%>().add(<%=nestedMapper%>.mapToEntity(item));
+<%                   } %>
+			}
+		}
+<%               } else { // else isAlr %>
+		// ivm recursiviteit niet verder gemapped
+<%               } %>		
+<%            } else { %>
+		if (entity.get<%=capname%>() != null) {
+			result.set<%=capname%>(new <%=concreteType%>()); 
+			for (<%=typ%> item : entity.get<%=capname%>()) {
+				result.get<%=capname%>().add(item);
+			}
+		}
+<%            } // ifD %>
+<%         } else { %>
+<%            if (tu.belongsTo(toClass, fw)) { // ifE %>
+<%      Class nestedMapperClass = fw.type(); String nestedMapper = fw.typeName() + "TOMapper"; %>
+<%      impu.addImport(nestedMapperClass.getName() + "TOMapper"); %>
+<%               if (!tu.isAlreadyMapped(otherFw.genericType())) { // if isAlr %>
+
+<%                   String setter = tu.getMethodName(otherFw.genericType(), void.class, new Class[] {toClass}); %>
+<%                   if (setter != null) { %>
+		result.set<%=capname%>(<%=nestedMapper%>.mapToEntity(entity.get<%=capname%>()));
+		result.get<%=capname%>().<%=setter%>(result);
+<%                   } else { %>
+		result.set<%=capname%>(<%=nestedMapper%>.mapToEntity(entity.get<%=capname%>()));
+<%                   } %>
+<%               } else { // else isAlr %>
+		// ivm recursiviteit niet verder gemapped
+		// result.set<%=capname%>(<%=nestedMapper%>.mapToEntity(entity.get<%=capname%>()));
+<%               } %>			
+<%            } else { %>
+<%            } // ifE %>
+<%         } // ifC %>
+<%      } //ifB %>
+<%    } else { // ifA %>
+		//TODO onbekende property entity.get<%=capname%>()
+<%    } // ifA %>
+	}
+ 
+<% } //for loop %>
+ }
+
+<% importStringBuffer.insert(importInsertionPoint,  impu.computeSortedImports());%>

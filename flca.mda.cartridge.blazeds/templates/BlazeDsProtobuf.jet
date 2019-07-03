@@ -1,0 +1,12 @@
+<%@ jet package="cartridge" 
+imports="java.util.* flca.mda.api.util.* mda.template.* mda.template.type.* flca.mda.codegen.data.* "
+package="blazeds"
+class="BlazeDsProtobuf" %>
+<%@ include file="include/java-class-init.jetinc" %>
+<% Object carttype = arg.getElement(); 
+   if (carttype instanceof IBlazeDsService) {
+     IBlazeDsService collector = (IBlazeDsService) carttype;  
+     Class blazeService = collector.getBlazeDsService();
+   }
+%>
+ 

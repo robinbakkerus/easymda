@@ -1,0 +1,136 @@
+// gradle -b ../flca.easymda.plugin/build-convert-to-maven-dependency.gradle convert -Parg1="flca.mda.common.api" -Pplugindir="/my-dev/ide/eclipse/mars-java/plugins/"
+
+FileTree tree = fileTree(dir: plugindir)
+tree.include 'org.eclipse.**.jar'
+
+defaultTasks 'convert' 
+
+task convert << {
+	java.util.Map map = fillVersionMap(tree)
+	
+	moveFile('pom.xml', 'pom.xml.1')
+	File outfile = new File('pom.xml')
+	initFile(outfile, arg1)
+	
+	new File('build.gradle').eachLine { line ->
+		if (isADependency(line)) {
+  			outfile << makeLines(line, map)
+  		}
+	}
+	
+	finishFile(outfile)
+}
+
+private def isADependency(String line) {
+	int n = (line =~/:/).count
+	return n==2
+}
+
+def makeLines(String gradleDep, def map) {
+	String s = gradleDep.trim()
+	s = s.replace('\'','')
+	s = s.replace('\"','')
+	s = s.replace(',','')
+	s = s.replace('compile ','')
+	s = s.replace('${easymda_version}','4.0')
+	def tokens = s.tokenize(':')
+	String t = '  <dependency>\n\t<groupId>%1$s</groupId>\n\t<artifactId>%2$s</artifactId>\n\t<version>%3$s</version>\n  </dependency>\n'
+	return sprintf(t, [ tokens[0], tokens[1], tokens[2] ])
+}
+
+def initFile(def of, String project) {
+	of << '<?xml version="1.0" encoding="UTF-8"?> \n'
+	of << '<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \n'
+	of << '    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"> \n'
+	of << '\n'
+	of << '<modelVersion>4.0.0</modelVersion> \n'
+	of << '<groupId>easymda</groupId> \n'
+	of << '<artifactId>' + project + '</artifactId> \n'
+	of << '<version>4.0</version> \n'
+	of << '<packaging>jar</packaging> \n'
+	of << '\n'
+	of << '<dependencies> \n'
+	
+}
+
+def finishFile(def of) {
+	of << '</dependencies>\n'
+	of << '<build>\n'
+	of << '  <plugins>\n'
+	of << '   <plugin>\n'
+	of << '    <groupId>org.apache.maven.plugins</groupId>\n'
+	of << '    <artifactId>maven-compiler-plugin</artifactId>\n'
+	of << '    <version>3.5.1</version>\n'
+	of << '    <configuration>\n'
+	of << '      <source>1.7</source>\n'
+	of << '      <target>1.7</target>\n'
+	of << '    </configuration>\n'
+	of << '   </plugin>\n'
+	of << '  </plugins>\n'
+	of << '</build>\n'
+	of << '</project> \n'
+}
+
+
+def fillVersionMap(def tree) {
+	Map<String, String> r = new HashMap()
+
+	tree.each {File file ->
+		if (isValid(file)) {
+			String fname = file.getName()
+			String name = fname.substring(fname.indexOf('_'))
+			int n = version.indexOf('.v')
+			if (n > 0 ) {
+				String version = version.substring(0, n)
+				r.put(name,version)
+			}
+		}
+	}
+
+	return r
+}
+
+
+private def isValid(def file) {                                                                     
+	String fname = file.getName()
+	return fname.startsWith("org.eclipse") && isUsed(fname)
+}
+
+private def isUsed(String fname) {
+	def lookfor = [
+		'org.eclipse.osgi',
+		'org.eclipse.core.commands',
+		'org.eclipse.core.contenttype',
+		'org.eclipse.core.jobs',
+		'org.eclipse.core.resources',
+		'org.eclipse.core.runtime',
+		'org.eclipse.emf.codegen',
+		'org.eclipse.equinox.common',
+		'org.eclipse.jdt.core',
+		'org.eclipse.jface',
+		'org.eclipse.swt.gtk.linux.x86',
+		'org.eclipse.ui.console',
+		'org.eclipse.ui.ide',
+		'org.eclipse.ui.workbench',
+	]
+	
+	for (s in lookfor) {
+		if (fname.startsWith(s)) return true
+	}
+	return false
+}
+
+import static java.nio.file.StandardCopyOption.*;
+import java.nio.file.Files
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+def moveFile(def src, def target) {
+	File srcfile = new File(src)
+	if (srcfile.exists() ) {
+		Files.copy(Paths.get(src), Paths.get(target), REPLACE_EXISTING)
+		srcfile.delete()
+	}
+}
+
+

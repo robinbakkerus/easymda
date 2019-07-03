@@ -1,0 +1,105 @@
+// gradle -b ../flca.easymda.plugin/build-convert-to-maven-dependency.gradle convert -Pplugindir="/my-dev/ide/eclipse/mars-java/plugins/"
+def linkVersion = '4.0' 
+
+FileTree tree = fileTree(dir: plugindir)
+tree.include 'org.eclipse.**.jar'
+
+defaultTasks 'convert' 
+
+task convert << {
+	java.util.Map map = fillVersionMap(tree)
+	
+	File outfile = new File('_build.gradle')
+	
+	new File('build.gradle').eachLine { line ->
+		if (isADependency(line)) {
+  			outfile << editLine(line, map, linkVersion) + '\n'
+		} else {
+			outfile << line + '\n'
+  		}
+	}
+	
+	moveFile('build.gradle', 'build.gradle.1')
+	moveFile('_build.gradle', 'build.gradle')
+}
+
+def editLine(String line, def map, def linkVersion) {
+	String s = line.trim()
+	s = s.replace('\'','')
+	s = s.replace('\"','')
+	s = s.replace(',','')
+	s = s.replace('compile ','')
+	s = s.replace('${easymda_version}','3.0')
+	def tokens = s.tokenize(':')
+	String oldversion = tokens[2] 
+	String newversion = linkVersion // (map[tokens[1]]==null) ? oldversion : map[tokens[1]]
+	return line.replace(oldversion, newversion)
+}
+
+private def isADependency(String line) {
+	int n = (line =~/:/).count
+	return n==2 && line.indexOf('eclipse-plugin') > 0
+}
+
+def fillVersionMap(def tree) {
+	Map<String, String> r = new HashMap()
+
+	tree.each {File file ->
+		if (isValid(file)) {
+			String fname = file.getName()
+			int i = fname.indexOf('_')
+			int j = fname.indexOf('.v')
+			if (i > 0 && j > 0) {
+				String name = fname.substring(0, i)
+				String version = fname.substring(i+1, j) 
+				r.put(name,version)
+			}
+		}
+	}
+
+	return r
+}
+
+
+private def isValid(def file) {                                                                     
+	String fname = file.getName()
+	return fname.startsWith("org.eclipse") && isUsed(fname)
+}
+
+private def isUsed(String fname) {
+	def lookfor = [
+		'org.eclipse.osgi',
+		'org.eclipse.core.commands',
+		'org.eclipse.core.contenttype',
+		'org.eclipse.core.jobs',
+		'org.eclipse.core.resources',
+		'org.eclipse.core.runtime',
+		'org.eclipse.emf.codegen',
+		'org.eclipse.equinox.common',
+		'org.eclipse.jdt.core',
+		'org.eclipse.jface',
+		'org.eclipse.swt.gtk.linux.x86',
+		'org.eclipse.ui.console',
+		'org.eclipse.ui.ide',
+		'org.eclipse.ui.workbench',
+	]
+	
+	for (s in lookfor) {
+		if (fname.startsWith(s)) return true
+	}
+	return false
+}
+
+import static java.nio.file.StandardCopyOption.*;
+import java.nio.file.Files
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+def moveFile(def src, def target) {
+	File srcfile = new File(src)
+	if (srcfile.exists() ) {
+		Files.copy(Paths.get(src), Paths.get(target), REPLACE_EXISTING)
+		srcfile.delete()
+	}
+}
+

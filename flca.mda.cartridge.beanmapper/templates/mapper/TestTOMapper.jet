@@ -1,0 +1,54 @@
+<%@ jet package="cartridge" 
+imports="java.util.* flca.mda.api.util.* mda.template.* mda.template.type.* flca.mda.codegen.data.* "
+package="mapper"
+class="TestTOMapper" %>
+<%@ include file="../include/java-class-init.jetinc" %>
+<%@ include file="../include/java-class-start.jetinc" %>
+<% Class toClass = cc; %>
+<% String toClassname = toClass.getSimpleName(); %>
+<% Class entityClass = (Class) args[1]; %>
+<% String entityClassname = entityClass.getSimpleName(); %>
+<% List<Fw> toFws = tu.getFields(toClass, EXC, FwSelectType.ID); %>
+<% List<Fw> entityFws = tu.getFields(entityClass, EXC, FwSelectType.ID); %>
+<% String toUncapname = nu.uncapName(toClassname); %>
+<% String entityUncapname = nu.uncapName(entityClassname); %>
+<% String mapper = toClassname + "Mapper"; //tplu.getClassName(TidBeanMapper.BEANMAPPER_TO.name()); %>
+<% impu.addImport(toClass);%>
+<% impu.addImport(entityClass);%>
+<% impu.addImport("org.junit.Test"); %>
+<% impu.addImport("java.util.HashSet"); %>
+<% impu.addImport("java.util.Set"); %>
+<% impu.addImport("nl.apg.util.mapper.AbstractTestBeanMapper"); %>
+
+public class <%=classname%> extends AbstractTestBeanMapper {
+	
+	@Override
+	protected Set<String> ignoreMapToEntityProperties() {
+		Set<String> result = new HashSet<>();
+		return result;
+	}
+
+	@Override
+	protected Set<String> ignoreMapFromEntityProperties() {
+		Set<String> result = new HashSet<>();
+		return result;
+	}
+
+	@Test
+	public void testMapToEntity() {
+		<%=entityClassname%> <%=entityUncapname%>1 =(<%=entityClassname%>) populate(<%=entityClassname%>.class);
+		<%=toClassname%> <%=toUncapname%> = <%=mapper%>.mapFromEntity(<%=entityUncapname%>1);
+		<%=entityClassname%> <%=entityUncapname%>2 = <%=mapper%>.mapToEntity(<%=toUncapname%>);
+		testEquals(<%=entityUncapname%>1, <%=entityUncapname%>2, ignoreMapToEntityProperties());
+	}
+
+	@Test
+	public void testMapFromEntity() {
+		<%=toClassname%> <%=toUncapname%>1 =(<%=toClassname%>) populate(<%=toClassname%>.class);
+		<%=entityClassname%> <%=entityUncapname%>1 = <%=mapper%>.mapToEntity(<%=toUncapname%>1);
+		<%=toClassname%> <%=toUncapname%>2 = <%=mapper%>.mapFromEntity(<%=entityUncapname%>1);
+		testEquals(<%=toUncapname%>1, <%=toUncapname%>2, ignoreMapFromEntityProperties());
+	}
+	
+}
+<% importStringBuffer.insert(importInsertionPoint,  impu.computeSortedImports());%>

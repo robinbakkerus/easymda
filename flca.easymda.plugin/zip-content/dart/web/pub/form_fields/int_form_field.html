@@ -1,0 +1,13 @@
+<link rel="import" href="../../packages/polymer/polymer.html">
+<link rel="import" href="form_fields.html">
+
+<polymer-element name="int-form-field" >
+  <template>
+    <link rel="stylesheet" href="style.css">
+    <div class="{{styleClass}}">
+      <label id="idLabel">{{ label }}</label>
+      <input id="idField" value="{{value | intToString}}" on-keypress="{{keyPress}}" on-keyup="{{keyUp}}" placeholder="vul in"  >
+        <span><img id="idWarn" src="../warning.jpeg" class="hidden" title="{{validationTooltip_}}" ></span>
+    </div>
+  </template>
+</polymer-element>

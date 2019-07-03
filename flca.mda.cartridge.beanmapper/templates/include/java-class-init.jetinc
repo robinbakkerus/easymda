@@ -1,0 +1,12 @@
+<%@ include file="jetarg.jetinc" %>
+<% BeanMapperTypeUtils tu = new BeanMapperTypeUtils();%>
+<% NameUtils nu = new NameUtils();%>
+<% TemplateUtils tplu = new TemplateUtils();%>
+<% InterfaceUtils iu = new InterfaceUtils(); %>
+<% AppUtils au = new AppUtils(); %>
+<% Object element = arg.getElement(); %>
+<% Class cc = element.getClass(); %>
+<% String classname = nu.getCurrentClassname();%>
+<% String pck = nu.getCurrentPackage();%>
+<% GetFieldsModus EXC = GetFieldsModus.EXCLUDE; %>
+<% GetFieldsModus INC = GetFieldsModus.INCLUDE; %>

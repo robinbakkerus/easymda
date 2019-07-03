@@ -1,0 +1,14 @@
+name: Demo
+description: A sample Polymer application
+dependencies:
+  browser: any
+  intl: any
+  pubsub: any
+  polymer: '>=0.15.0 <0.16.1'
+transformers:
+- polymer:
+    inline_stylesheets: 
+      web/pub/form_fields/style.css: false
+    entry_points: 
+      - web/main.html
+      

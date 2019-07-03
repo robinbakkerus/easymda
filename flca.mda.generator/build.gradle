@@ -1,0 +1,92 @@
+apply from: "../common.gradle"
+
+defaultTasks 's'
+
+archivesBaseName = "flca.mda.generator"
+ext.targetdir = "/tmp/easymda_targets/eclipse/dropins/" +  archivesBaseName + "_" + version 
+buildDir = "target"
+
+sourceSets {
+   main {
+      java {
+         srcDirs = ["src/main/java", "src/test/java"]
+      }
+   }
+}
+
+dependencies {
+    compile "junit:junit:4.11",
+    		files("./lib/commons-beanutils-core-1.8.3.jar",
+			"./lib/javaparser-1.0.8.jar",
+			"./lib/commons-logging-1.1.1.jar",
+			"./lib/flca.mda.common.api-4.0.jar",
+			"./lib/javaparser-1.0.8.jar",
+			"./lib/logback-classic-1.0.7.jar",
+			"./lib/logback-core-1.0.7.jar",
+			"./lib/slf4j-api-1.7.1.jar",
+			"./lib/org.eclipse.equinox.common_3.6.100.v20120522-1841.jar",
+			"./lib/org.eclipse.swt.win32.win32.x86_64_3.100.1.v4236b.jar",
+			"./lib/org.eclipse.osgi_3.8.2.v20130124-134944.jar",
+			"./lib/org.eclipse.jface_3.8.102.v20130123-162658.jar",
+			"./lib/org.eclipse.emf.codegen_2.8.0.v20130125-0826.jar",
+			"./lib/org.eclipse.jdt.core_3.8.3.v20130121-145325.jar",
+			"./lib/org.eclipse.core.resources_3.8.1.v20121114-124432.jar",
+			"./lib/org.eclipse.core.jobs_3.5.300.v20120912-155018.jar",
+			"./lib/org.eclipse.ui.console_3.5.100.v20120521-2012.jar",
+			"./lib/org.eclipse.core.runtime_3.8.0.v20120912-155025.jar",
+			"./lib/org.eclipse.ui.ide_3.8.2.v20121106-165923.jar",
+			"./lib/org.eclipse.ui.workbench_3.104.0.v20130204-164612.jar",
+			"./lib/org.eclipse.core.contenttype_3.4.200.v20120523-2004.jar",
+			"./lib/org.eclipse.core.commands_3.6.2.v20130123-162658.jar"
+			)
+}
+
+// gradle dependencies are ordered on name!
+task aaa() doLast {
+}
+
+aaa.dependsOn {
+	standard
+}
+
+task copyBin(type: Copy) {
+    from( "target/classes/main")
+    into( targetdir + "/")
+    include("com/**")
+}
+
+task copyXml(type: Copy) {
+    from( "src/main/resources")
+    into( targetdir + "/")
+    include("*.xml")
+}
+
+task copyLib(type: Copy) {
+    from( "lib")
+    into( targetdir + "/lib")
+}
+
+task copyMetaInf(type: Copy) {
+    from( "build/MANIFEST.MF")
+    into( targetdir + "/META-INF")
+}
+
+task copyConfig(type: Copy) {
+    from( "config")
+    into( targetdir + "/config")
+}
+
+task copyCartridges(type: Copy) {
+    from( "cartridges")
+    into( targetdir + "/cartridges")
+    include("example.link")
+}
+
+task copyPluginXml(type: Copy) {
+    from( ".")
+    into( targetdir + "/")
+    include("plugin.xml")
+}
+
+task s(dependsOn: [aaa, copyBin, copyXml, copyLib, copyMetaInf, copyConfig, copyCartridges, copyPluginXml] ) doLast {
+}

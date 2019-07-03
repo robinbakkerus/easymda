@@ -1,0 +1,60 @@
+
+name := "Demo"
+
+version := "0.1"
+
+scalaVersion := "2.11.2"
+
+scalacOptions := Seq("-encoding", "utf8",
+                   "-target:jvm-1.7",
+                   "-feature",
+                   "-language:implicitConversions",
+                   "-language:postfixOps",
+                   "-unchecked",
+                   "-deprecation",
+                   "-Xlog-reflective-calls"
+                  )
+
+mainClass := Some("flca.demo.Demo")
+
+unmanagedSourceDirectories in Compile <++= baseDirectory { base =>
+  Seq(
+    base / "src-gen",
+    base / "src-gen-test"
+  )
+}
+
+resolvers ++= Seq("Sonatype Releases"   at "http://oss.sonatype.org/content/repositories/releases",
+                "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+                "Spray Repository"    at "http://repo.spray.io/",
+                "Base64 Repo"         at "http://dl.bintray.com/content/softprops/maven"           )
+
+libraryDependencies ++= {
+  val akkaVersion  = "2.3.4"
+  val sprayVersion = "1.3.2"
+  Seq(
+    "com.typesafe.akka"       %%  "akka-actor"           % akkaVersion,
+    "com.typesafe.akka"       %%  "akka-slf4j"           % akkaVersion,
+    "com.typesafe.akka"       %%  "akka-testkit"           % akkaVersion % "test",
+    "io.spray"              %   "spray-caching_2.11"          % sprayVersion,
+    "io.spray"              %   "spray-can_2.11"            % sprayVersion,
+    "io.spray"              %   "spray-client_2.11"           % sprayVersion,
+    "io.spray"              %   "spray-routing_2.11"          % sprayVersion,
+    "io.spray"                         %% "spray-json"                % "1.2.6",
+     "com.typesafe.slick"     %% "slick"                       % "2.1.0",
+        "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.3",
+    "com.fasterxml.jackson.module" % "jackson-module-scala_2.11" % "2.4.3",
+        "org.json4s"    %% "json4s-native"   % "3.2.11" ,
+            "com.github.nscala-time"  %  "nscala-time_2.11"            % "1.2.0",
+    "org.scalatest"         %% "scalatest"               % "2.1.7",
+        "junit"               % "junit"                       % "4.10",    
+    "ch.qos.logback"          %   "logback-classic"        % "1.0.12",
+    "org.slf4j"           % "slf4j-nop"                   % "1.6.4",
+    "org.apache.commons" % "commons-lang3" % "3.1",
+    "com.h2database"         % "h2"                         % "1.4.182",
+    "com.jolbox"           % "bonecp"                   % "0.7.1.RELEASE",
+    "me.lessis" % "base64_2.11" % "0.1.1",
+    "org.specs2"  %% "specs2"  % "2.3.12"
+  )
+ }
+

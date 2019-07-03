@@ -1,0 +1,6 @@
+Use sbt commands to generate an Eclipse project, like this: sbt eclipse
+
+There are junit tests that generate curl commands that be used to test the http server. For example TestTstDao
+
+You may want to edit 'application.conf' to change database settings.
+  

@@ -1,0 +1,1 @@
+include '../flca.frw.common', '../flca.frw.backend', '../flca.mda.base.api', '../flca.mda.common.api', '../flca.frw.backend.jpa', '../flca.frw.backend.perst', '../flca.frw.backend.berkely', '../flca.frw.backend.cache', '../flca.frw.backend.appengine'

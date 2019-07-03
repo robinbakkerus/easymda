@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- NOTE substitute C:/dev/maven/m3-repo with your folder !! -->
+
+<eclipse-userlibraries version="2">
+    <library name="commons" systemlibrary="false">
+        <archive path="C:/dev/maven/m3-repo/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/commons-beanutils/commons-beanutils-core/1.8.3/commons-beanutils-core-1.8.3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/commons-configuration/commons-configuration/1.8/commons-configuration-1.8.jar"/>
+        <archive path="C:/dev/maven/m3-repo/commons-lang/commons-lang/2.6/commons-lang-2.6.jar"/>
+        <archive path="C:/dev/maven/m3-repo/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
+    </library>
+    <library name="FlcaFrw" systemlibrary="false">
+        <archive path="C:/dev/maven/m3-repo/flca/FlcaFrwCommon/1.7/FlcaFrwCommon-1.7.jar"/>
+        <archive path="C:/dev/maven/m3-repo/flca/FlcaFrwBackend/1.7/FlcaFrwBackend-1.7.jar"/>
+    </library>
+    <library name="Guice" systemlibrary="false">
+        <archive path="C:/dev/maven/m3-repo/com/google/inject/guice/3.0/guice-3.0.jar"/>
+        <archive path="C:/dev/maven/m3-repo/javax/inject/javax.inject/1/javax.inject-1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/google/inject/extensions/guice-servlet/3.0/guice-servlet-3.0.jar"/>
+    </library>
+    <library name="Hibernate-4" systemlibrary="false">
+        <archive path="C:/dev/maven/m3-repo/org/hibernate/hibernate-core/4.0.1.Final/hibernate-core-4.0.1.Final.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/hibernate/hibernate-entitymanager/4.0.1.Final/hibernate-entitymanager-4.0.1.Final.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/hibernate/hibernate-validator/4.2.0.Final/hibernate-validator-4.2.0.Final.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/hibernate/hibernate-commons-annotations/4.0.1.Final/hibernate-commons-annotations-4.0.1.Final.jar"/>
+        <archive path="C:/dev/maven/m3-repo/antlr/antlr/2.7.7/antlr-2.7.7.jar"/>
+        <archive path="C:/dev/maven/m3-repo/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/javassist/javassist/3.15.0-GA/javassist-3.15.0-GA.jar"/>
+        <archive path="C:/dev/maven/m3-repo/log4j/log4j/1.2.16/log4j-1.2.16.jar"/>
+        <archive path="C:/dev/maven/m3-repo/hsqldb/hsqldb/1.7.1/hsqldb-1.7.1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/jboss/jboss-transaction/4.2.2.GA/jboss-transaction-4.2.2.GA.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/jboss/logging/jboss-logging/3.1.0.CR2/jboss-logging-3.1.0.CR2.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/jboss/jandex/1.0.3.Final/jandex-1.0.3.Final.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/fasterxml/classmate/0.5.4/classmate-0.5.4.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/jboss/spec/javax/transaction/jboss-transaction-api_1.1_spec/1.0.0.Final/jboss-transaction-api_1.1_spec-1.0.0.Final.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/hibernate/javax/persistence/hibernate-jpa-2.0-api/1.0.1.Final/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
+        <archive path="C:/dev/maven/m3-repo/javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/jolbox/bonecp/0.7.1.RELEASE/bonecp-0.7.1.RELEASE.jar"/>
+    </library>
+    <library name="Jersey" systemlibrary="false">
+        <archive path="C:/dev/maven/m3-repo/javax/activation/activation/1.1/activation-1.1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/asm/asm/3.1/asm-3.1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/codehaus/jackson/jackson-core-asl/1.9.3/jackson-core-asl-1.9.3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/codehaus/jackson/jackson-jaxrs/1.9.2/jackson-jaxrs-1.9.2.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/codehaus/jackson/jackson-mapper-asl/1.9.3/jackson-mapper-asl-1.9.3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/codehaus/jackson/jackson-xc/1.9.2/jackson-xc-1.9.2.jar"/>
+        <archive path="C:/dev/maven/m3-repo/javax/xml/bind/jaxb-api/2.2.2/jaxb-api-2.2.2.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/sun/xml/bind/jaxb-impl/2.2.3-1/jaxb-impl-2.2.3-1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/sun/jersey/jersey-core/1.11/jersey-core-1.11.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/sun/jersey/jersey-grizzly2/1.11/jersey-grizzly2-1.11.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/sun/jersey/contribs/jersey-multipart/1.11/jersey-multipart-1.11.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/sun/jersey/jersey-json/1.11/jersey-json-1.11.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/sun/jersey/jersey-server/1.11/jersey-server-1.11.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/sun/jersey/jersey-servlet/1.11/jersey-servlet-1.11.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/codehaus/jettison/jettison/1.1/jettison-1.1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/jvnet/mimepull/1.6/mimepull-1.6.jar"/>
+        <archive path="C:/dev/maven/m3-repo/stax/stax-api/1.0.1/stax-api-1.0.1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/sun/jersey/contribs/jersey-guice/1.9.1/jersey-guice-1.9.1.jar"/>
+    </library>
+    <library name="jetty" systemlibrary="false">
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/orbit/javax.servlet/3.0.0.v201112011016/javax.servlet-3.0.0.v201112011016.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-client/9.0.0.M3/jetty-client-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-continuation/9.0.0.M3/jetty-continuation-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-deploy/9.0.0.M3/jetty-deploy-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-http/9.0.0.M3/jetty-http-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-io/9.0.0.M3/jetty-io-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-jmx/9.0.0.M3/jetty-jmx-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-security/9.0.0.M3/jetty-security-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-server/9.0.0.M3/jetty-server-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-servlet/9.0.0.M3/jetty-servlet-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-servlets/9.0.0.M3/jetty-servlets-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-util/9.0.0.M3/jetty-util-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-util-ajax/9.0.0.M3/jetty-util-ajax-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-webapp/9.0.0.M3/jetty-webapp-9.0.0.M3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/eclipse/jetty/jetty-xml/9.0.0.M3/jetty-xml-9.0.0.M3.jar"/>
+    </library>
+    <library name="Jpa-Batoo" systemlibrary="false">
+        <archive path="C:/dev/maven/m3-repo/javax/transaction/jta/1.1/jta-1.1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/ow2/asm/asm/4.0/asm-4.0.jar"/>
+        <archive path="C:/dev/maven/m3-repo/javax/xml/bind/jaxb-api/2.2.2/jaxb-api-2.2.2.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/google/guava/guava/11.0.2/guava-11.0.2.jar"/>
+        <archive path="C:/dev/maven/m3-repo/commons-dbutils/commons-dbutils/1.4/commons-dbutils-1.4.jar"/>
+        <archive path="C:/dev/maven/m3-repo/commons-io/commons-io/2.1/commons-io-2.1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/commons-pool/commons-pool/1.6/commons-pool-1.6.jar"/>
+        <archive path="C:/dev/maven/m3-repo/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar"/>
+        <archive path="C:/dev/maven/m3-repo/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/antlr/antlr-runtime/3.4/antlr-runtime-3.4.jar"/>
+        <archive path="C:/dev/maven/m3-repo/commons-lang/commons-lang/2.6/commons-lang-2.6.jar"/>
+        <archive path="C:/dev/maven/m3-repo/com/jolbox/bonecp/0.7.1.RELEASE/bonecp-0.7.1.RELEASE.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/batoo/common/batoo-common/1.0.2-SNAPSHOT/batoo-common-1.0.2-SNAPSHOT.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/batoo/jpa/batoo-jpa/2.0.0.RC2-SNAPSHOT/batoo-jpa-2.0.0.RC2-SNAPSHOT.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/antlr/ST4/4.0.4/ST4-4.0.4.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/batoo/jpa/batoo-jpa-spi/2.0.0.RC2-SNAPSHOT/batoo-jpa-spi-2.0.0.RC2-SNAPSHOT.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/batoo/jpa/persistence-api/2.0/persistence-api-2.0.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/batoo/jpa/batoo-annotations/2.0.0.RC2-SNAPSHOT/batoo-annotations-2.0.0.RC2-SNAPSHOT.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/batoo/jpa/jpql/2.0.0.RC2-SNAPSHOT/jpql-2.0.0.RC2-SNAPSHOT.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/batoo/jpa/parser/2.0.0.RC2-SNAPSHOT/parser-2.0.0.RC2-SNAPSHOT.jar"/>
+    </library>
+    <library name="Logging" systemlibrary="false">
+        <archive path="C:/dev/maven/m3-repo/log4j/log4j/1.2.16/log4j-1.2.16.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/perf4j/perf4j/0.9.16/perf4j-0.9.16.jar"/>
+        <archive path="C:/dev/maven/m3-repo/org/slf4j/slf4j-api/1.7.1/slf4j-api-1.7.1.jar"/>
+        <archive path="C:/dev/maven/m3-repo/ch/qos/logback/logback-core/1.0.7/logback-core-1.0.7.jar"/>
+        <archive path="C:/dev/maven/m3-repo/ch/qos/logback/logback-classic/1.0.7/logback-classic-1.0.7.jar"/>
+    </library>
+</eclipse-userlibraries>
+

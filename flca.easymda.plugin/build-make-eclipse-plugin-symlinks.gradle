@@ -1,0 +1,100 @@
+// gradle -b ../flca.easymda.plugin/build-make-eclipse-plugin-symlinks.gradle -Pplugindir="/my-dev/ide/eclipse/mars-java/plugins/"
+def targetdir = '/tmp/'
+def linkVersion = '4.0' 
+
+FileTree tree = fileTree(dir: plugindir)
+tree.include 'org.eclipse.**.jar'
+
+def windows =  (System.properties['os.name'].toLowerCase().contains('windows'))
+
+defaultTasks 'makeSymlinksScript'
+
+task makeSymlinksScript << {
+	String fileExt = (windows) ? 'bat' : 'sh'
+	File outfile = new File(targetdir +  'make-symlinks.' + fileExt)
+
+	tree.each {File file ->
+	println file
+		if (isValid(file)) {
+			outfile << makeLines(file, plugindir, targetdir, windows, linkVersion)
+		}
+	}
+}
+
+private def isValid(def file) {                                                                     
+	String fname = file.getName()
+	return fname.startsWith("org.eclipse") && isUsed(fname) && fname.indexOf("source") < 0
+}
+
+private String makeLines(def file, String plugindir, String targetdir, def windows, def linkVersion) {
+	String fname = file.getName()
+	String plugdir = plugindir
+	if (windows) {
+		plugdir = plugdir.replaceAll('\\/','\\\\')
+	}
+	
+	String group = fname.substring(0, fname.indexOf('_'))
+	String vrs = getVersion(fname)
+	String dir = (windows) ? "eclipse-plugin\\" + group + "\\" + linkVersion : "eclipse-plugin/" + group + "/" + linkVersion
+	if (windows) {
+		String s1 = "mkdir " + dir + "\n"
+		String s2 = "MKLINK " + dir + "\\"  + group + "-" + linkVersion + ".jar" + " " + plugdir + "\\" + fname + "\n" 
+		return s1 + s2
+	} else {
+		String s1 = "mkdir " + dir + " -p \n"
+		String s2 = "cp " + plugdir + "/" + fname + " " + dir + "/"  + group + "-" + linkVersion + ".jar" + "\n" 
+		return s1 + s2
+	}
+}
+
+private String getVersion(def fname) {
+	int n1 = fname.indexOf('_')
+	String rest = fname.substring(n1+1)
+	
+	String token1 = firstToken(rest)
+	rest = dropfirstToken(rest)
+	String token2 = firstToken(rest)
+	rest = dropfirstToken(rest)
+	String token3 = firstToken(rest)
+	rest = dropfirstToken(rest)
+	
+	return token1 + "." + token2 + "." + token3
+}
+
+private String firstToken(def rest) {
+	int n = rest.indexOf('.')
+	String result = rest.substring(0, n)
+	return result
+}
+
+private String dropfirstToken(def rest) {
+	int n = rest.indexOf('.')
+	return rest.substring(n+1)
+}
+
+private def isUsed(String fname) {
+	def lookfor = [
+		'org.eclipse.osgi',
+		'org.eclipse.core.commands',
+		'org.eclipse.core.contenttype',
+		'org.eclipse.core.jobs',
+		'org.eclipse.core.resources',
+		'org.eclipse.core.runtime',
+		'org.eclipse.emf.codegen',
+		'org.eclipse.equinox.common',
+		'org.eclipse.jdt.core',
+		'org.eclipse.jface',
+		'org.eclipse.swt.gtk.linux.x86',
+		'org.eclipse.ui.console',
+		'org.eclipse.ui.ide',
+		'org.eclipse.ui.workbench',
+	]
+	
+	for (s in lookfor) {
+		if (fname.startsWith(s)) return true
+	}
+	println 'fname = ' + fname
+	return false
+
+}
+

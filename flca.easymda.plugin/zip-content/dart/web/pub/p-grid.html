@@ -1,0 +1,109 @@
+<link rel="import" href="../../packages/polymer/polymer.html">
+<polymer-element name="p-grid">
+
+  <template>
+
+    <style>
+	    .pg-table {
+		    text-align: center;
+		    display: table;
+	    }
+
+	    .pg-header {
+		    display: table-row;
+	    }
+
+      .pg-header .pg-cell {
+	      display: table-cell;
+	      vertical-align: middle;
+	      border: 1px solid white;
+	      background: #34AADC;
+	      color: #FFF;
+	      padding: 10px;
+      }
+
+	    .pg-row {
+		    display: table-row;
+		    background: #F7F7F7;
+	    }
+
+	    .pg-row:hover {
+		    background: #D7D7D7;
+	    }
+
+	    .pg-row .pg-cell {
+		    display: table-cell;
+		    vertical-align: middle;
+		    border: 1px solid white;
+		    padding: 10px;
+	    }
+
+	    img.thumb {
+		    width: 30px;
+		    height: auto;
+	    }
+
+	    span.i-true {
+		    color: green;
+	    }
+
+	    span.i-false {
+		    color: red;
+	    }
+
+    </style>
+
+	
+	  <div class="pg-table">
+
+		  <div class="pg-header">
+
+			  <template repeat="{{ column in columns }}">
+				  <div class="pg-cell">
+					  <span on-click="{{sortTable}}">{{column['title']}}</span>
+				  </div>
+			  </template>
+
+		  </div>
+
+		  <template repeat="{{ row in rows }}">
+			  <div class="pg-row">
+
+				  <template repeat="{{ column in columns | enumerate }}">
+					  <div class="pg-cell" id="{{row['id']}}" on-click="{{clickEdit}}" >
+              
+						  <template if="{{ column.value['type'] == 'string' || column.value['type'] == 'number' }}">
+							  <span>{{ row[column.value['key']] }}</span>
+						  </template>
+              
+              <template if="{{ column.value['type'] == 'date' }}">
+                <span>{{ dateToString(row[column.value['key']]) }}</span>
+              </template>
+
+						  <template if="{{ column.value['type'] == 'image' }}">
+							  <img class="thumb" _src="{{ row[column.value['key']] }}"/>
+						  </template>
+
+						  <template if="{{ column.value['type'] == 'boolean' }}">
+							  <template if="{{ row[column.value['key']] == true }}">
+								  <span class="i-true">&#10004;</span>
+							  </template>
+							  <template if="{{ row[column.value['key']] == false }}">
+								  <span class="i-false">&#10008;</span>
+							  </template>
+						  </template>
+
+					  </div>
+				  </template>
+
+			  </div>
+		  </template>
+
+	  </div>
+
+  </template>
+
+  <script type="application/dart" src="p-grid.dart"></script>
+
+</polymer-element>
+

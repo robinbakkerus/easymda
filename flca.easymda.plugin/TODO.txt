@@ -1,0 +1,145 @@
+TODO 
+----
+(3) rename existing backup files
+(2) SavePreferences altijd na [Finish] tenzijn skipSave 
+(2) Documentation
+    ImportHook, 
+    dabase-settings.ini
+(3) Betere controle op templates project (checkbox grid for templates?)
+(2) interfaceutils.getDocumentation()
+(2) @Security
+(3) Algemeen create project structure plugin
+(3) Betere Javadoc (examples)
+(3) Standard format postprocessing
+(4) Sort order template projects
+(3) In XxxTestStartup extra testParameters() met voorbeedl code 
+
+++++++++++++++++++++++++++++++++++++++++
+
+(2) Merge via mergeclass met IMerge interface
+(1) XxxMock enhance with 'local' variables next to random varbs
+(1) Dojo validation + updateGrid
+(1) DojoService, saveXxxx : publish(CONSTANT, data)
+(1) crud findAll -> Set<xxx> ipv Collection
+(1) Dojo Dto, Id is missing 
+(1) Entity hashCode() include getId()
+(1) Old subsvalues are not maintained in easymda.ini when generating for dojo
+(1) Runtime issues: ThreadContextMgr.save() found an existing context ??? (TheadContext door Guice in session context !?) : ok
+doc voor jetty.base : ok
+DemoServletConfig server("rest/*") : ok
+jet : ok
+reflection inheritance annots : ok
+good structure easy to generate (loosly coupled) : ok
+registration / insert into file : ok
+ini-files : ok
+substitutes : ok
+imports / standard + special / use(..)  : ok
+freeblock (simplemerge) : ok
+annotation : ok
+jet-argument : ok
+jet-plugin : ok
+logfile : ok
+deploy : ok
+document de jet if-then-else : ok
+getClassname(class, template)  + current classname : ok
+bescrhrijf util by group (getAllFields, getSimpleField etc, / capName, unCapname etc : ok
+debugging : ok
+api hooks : ok
+
+++++++++++++++++++++++++++++++++++++++++
+
+------ DONE -------
+OK (1) Generate Exceptions 
+OK (1) Generate Inheritance + diiferent types of inheritace tables 
+OK (1) Constant voor Templates
+OK (1) AppUtil 
+Ok (1) CodegenSetup vs ApplicationSetup, target directories
+OK (1) JPA ID + Version
+OK (2) @Crud 
+OK (2) XxxHelper -> XxxUtil
+OK (1) alleen 'echte' template files laden
+OK (2) @AnnotationLiteral
+OK (1) save/retrieve Preferences
+OK (2) Eigen INI file met mogelijkheid om xxx = { meerdere regels } te lezen
+OK (3) Make lookup of IRegisterTemplates more robust
+OK (3) Improve postprocessing (use Class's as argument)
+OK (1) Generate app-base files
+OK (2) Logging to console + file at generated project
+OK (2) Split all utils classes in seperate project
+OK (3) Look for extra classpath in selected java project
+OK (1) Make sure Enum's are 'generated'
+OK (2) webapp.api
+OK (2) already copied list
+OK (1) LogHelper -> console
+OK (1) TemplatesStore naar JetArg
+OK (2) OsUtils mbv StringUtils
+OK (2) IniFileHelper
+OK (2) Insert text at specific location (ex ModuleBind ) using filename#<name-of-insertion-point>
+OK (1) Dto.jet
+OK (1) registerAnnotationsHelper() in TypeUtils etc
+OK (1) checkbox in wizard, any number of substitutes
+OK (1) Save to temp directories
+OK (1) plugin-dir/templates
+OK (1) Merge preferences aanroepen
+OK (1) Case + camel-case op subst values
+OK (1) Inifiles uit template project meenemen
+OK (2) Support Collection (or Set or List) without annotation
+(1) getValue uit 
+	1 NameUtils.getIniValue(section, key) (voordeel 1 ini file)
+	2 NameUtils.substitute("${Xxx}") met zelfde case rules, in beforeOnce() default values zetten (voordeel gebruiker kan wijzigen)
+	3 Eigen api
+	4 auto-substitutes mbv inifile indien naar een ":" bevat zie: "<section>:<key>" 
+OK : (2) Refactor References + ReferencesData deze kunnen weg, alleen nog SubsValues in PrefsStore
+    Generator add's special subsvalue (temp-dir, skip-all-existing)
+    Ipv codegen-os.properties easyapp.ini met section [cartridges] webapp=true en wziard=false + section [subsvalues]
+OK (2) Generator also add special subsvalue, appsetup base-package 
+    Deze waarde kan ook door junit test worden gebruikt om output naar junit.base.pck te sturen
+OK (1) /api-lib voor 3-party libs
+OK (1) StringUtil -> StrUtil
+OK (2) rename IFlcaPostProcess
+OK (1) NameUtils getCapName vs uncapName gelijk trekken.
+    getUncapName(Field + Object) toeveoegen
+    (1) methodes van common.api -> webapp.api (iu.crudxxx etc)
+OK (2) tu.getAnnotation() vervangen door tu.getFormattedAnnotations() ?
+OK (1) iu.getAnnotation() of iu.tu.getFormattedAnnotations()
+OK (2) move tu.dontShow() to webapp 
+OK (2) JetUtils met shortcuts naar NameUtils etc?
+OK (2) tu.getImportedType deprecated, en vervangen door nu.use(Field) ??
+OK (1) Bind ExtTstServiceIntf to ExtTstServiceIntf en daarin get TstService 
+OK     iu.isVoid(m)
+OK (1) ExtSrvImpl -> RpcService 
+OK (2) test different packages in model
+    use.flca.context = false
+    (1) in DemoModel add EASYMDA_LIB/webapp.cartridge.jar
+    copy crud.ini + flex.ini -> dropings/config
+(1) RegisterTemplates, betere filenames (src-gen-test, dao dir etc)
+(1) TestDaoBase, startDatabase() is te laat
+(1) Sort selected model project zodat eerst de Modules worden gegenereerd
+(2) @Seach functionality
+(2) Join Table 
+(1) RestService 
+    
+(1) Check import, regular expr gebruiken heel woord !
+(1) Bij superclass, the hashcode() naar super.hashcode() laten kijken !
+(1) Ook in actionscripts alle import uit source code laden
+(1) Controleer generator met FlcaCtx aan
+(1) SimpleMerge verbeteren + junit tests
+(1) ILogger etc opruimen
+(1) BoneCP ipv eigen conn pool
+(1) Batoo JPA (ipc hibernate) 
+(1) tussen JpaDaoImpl en PerstDaoImpl switch afh van @DatabaseUnit 
+(2) Xxx_Model weg
+(1) @DatabaseUnit(type=, name=)
+(1) persistence.xml genereren
+(1) codgen.values => easymda.values
+(1) Combo in Gui, en gebruiken voor database engine
+(1) IAppContext en AppContext
+(1) JpaDaoFactory nakijken
+(1) gradle meerdere dependson
+(1) TypeHelper.getOutputPackgae vs TypeUtils.substitutePackage
+(2) SourceCodeUtils en ModelSourceCodeHelper combineren
+(2) @RestPath in RestService
+(1) subst packages uit Postprocesses en naar CopyFile mmethode
+(1) Java7
+(1) binder bind rest service
+(1) User-sourcecode dirs niet meer via gui, maar onder target project excl src-gen etc

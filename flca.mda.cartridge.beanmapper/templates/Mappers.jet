@@ -1,0 +1,14 @@
+<%@ jet package="cartridge" 
+imports="java.util.* flca.mda.api.util.* mda.template.* mda.template.type.* flca.mda.codegen.data.* "
+package="mapper"
+class="Mappers" %>
+<%@ include file="include/java-class-init.jetinc" %>
+<% Object carttype = arg.getElement(); 
+   if (carttype instanceof ITOMapper) {
+     ITOMapper tomapper = (ITOMapper) carttype;  
+     Class toClass = tomapper.getTO(); 
+     Class entityClass = tomapper.getEntity(); 
+     tu.recursiveGenerate(toClass, entityClass, true);
+   }
+%>
+ 

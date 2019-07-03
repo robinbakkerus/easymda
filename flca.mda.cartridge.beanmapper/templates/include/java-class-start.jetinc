@@ -1,0 +1,11 @@
+/* generated with BeanMapper */
+
+package <%=pck%>;
+ 
+<% 	ImportUtils impu = new ImportUtils(); 
+   	StringBuffer importStringBuffer = stringBuffer;
+   	int importInsertionPoint = stringBuffer.length();
+   	impu.addCompilationUnitImports(stringBuffer.toString()); 
+ %>
+  
+

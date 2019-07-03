@@ -1,0 +1,37 @@
+ .hidden {
+   visibility : hidden;
+ }
+ 
+ .readonly {
+   background-color: #F5FAFA;
+ }
+ 
+
+ .defaultStyle div {
+  font-size: 10pt;
+  text-align: left; 
+  margin-top: 0px;
+}
+
+.defaultStyle label {
+  display: inline-block;
+  width : 100px;
+}
+
+.defaultStyle input {
+  width : 250px;
+}
+
+.idRadioDiv div {
+  width : 10px;
+  text-align: left; 
+}
+
+.idRadioDiv input {
+  width : 20px;
+}
+
+.idRadioDiv label {
+  display: inline-block;
+}
+

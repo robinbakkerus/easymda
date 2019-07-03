@@ -1,0 +1,45 @@
+This is a generated Dart application.
+
+To test this Dart app, in Dart "File -> Open existing folder " and select the folder where this README is located.
+After the sources have been analyzed, "Run in dartium" the main.html file.
+
+At the bottom on left tree, you may find buttons named after the Entity type classes that have been annotated with: 
+@RestService (generateService=true) and 
+@Gui  
+
+For example [Tsta]
+
+Hitting this [Tsta] button will display the web/entity/view/tsta_browse.html file.
+Selecting a grid record will display the web/entity/view/tsta_form.html file.
+ 
+Both the tsta_browse and tsta_form files, are populated via the web/entity/srv/tsta_dao_service.dart class.
+This class extends web/demo_service_base.dart
+This base class executes the actual json/rest call. 
+Depending on the value: DemoConstants.RUN_MODE, the json data can be obtained three different sources:
+
+RUN_MODE = DemoConstants.RUN_MODE_PROD 
+For this mode, it is assumed that the Dart app is deployed under the Scala backend. 
+The actual json/rest url is something like:
+http://localhost:<HOST_PORT>/findTsta
+Note: currently DemoConstants.HOST_PORT=8000 you may have to modify this value.
+
+RUN_MODE = DemoConstants.RUN_MODE_TEST
+For this mode, it is assumed that the Dart app is not yet deployed. 
+The json/rest url from above, will not work due to invalid CORS HEADERS.
+To overcome this problem, you can setup a proxy server. 
+For example: Start the (Python) Corsa server like this: corsa --allow-proxy ALL --allow-origin ALL
+In this mode the json/rest url is something like:
+http://localhost:<PROXY_PORT>/proxy/http://localhost:<HOST_PORT>/findTsta
+
+RUN_MODE = DemoConstants.RUN_MODE_LOCAL
+For this mode, it is assumed that the Dart app is not yet deployed. 
+Rather than executing a json/rest call, the data is retrieved via already prepared json files.
+These json files should be located under web/resources/json/xxx.json
+The xxx corresponds with the json/rest call from above. For example: web/resources/json/findTsta.json
+You can generate in the generated Scala backend with one the XxxMock.scala junit test classes.
+
+Currently the DemoConstant.RUN_MODE = RUN_MODE_LOCAL
+
+--
+
+Under web/pub are a number of experimental utility files, that may become a PUB package in the future.

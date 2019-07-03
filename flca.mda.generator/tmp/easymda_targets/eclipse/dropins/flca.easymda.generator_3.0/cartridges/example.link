@@ -1,0 +1,7 @@
+#
+# Instead of adding jar file(s) to the /easymda-2.0/cartridges folder
+# you can replace the jar file with .link file, in which the "path" property point to classpath of java project with jet-templates (the cartride)
+# like in the example below.
+# This is particular handy when developing jet templates
+#
+#path=/path/flca.mda.templates.reactive/bin

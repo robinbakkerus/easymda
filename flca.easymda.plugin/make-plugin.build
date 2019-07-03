@@ -1,0 +1,16 @@
+def m3repo = 'c:/my-dev/maven/m3_repo/'
+def todir = 'c:/temp/easymda-target'
+
+task hello << {
+    println 'Hello world!'
+}
+
+task copyTask(type: Copy, dependsOn: hello) {
+    from m3repo + 'easymda/easymda.common.api/2.0/easymda.common.api-2.0.jar'
+    into todir
+    eachFile { println ('copying ' + it.name) }
+}
+
+task intro(dependsOn: copyTask) << {
+    println "I'm Gradle"
+}

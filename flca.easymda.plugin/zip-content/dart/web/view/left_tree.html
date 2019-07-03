@@ -1,0 +1,14 @@
+<link rel="import" href="../packages/polymer/polymer.html">
+<polymer-element name="left-tree" >
+  <template>
+    <h3>Service methods</h3>
+      <template repeat="{{item in serviceMethods}}">
+          <button on-click="{{handleClick}}">{{ item }}</button><br>
+      </template>
+    <h3>Dao methods</h3>
+      <template repeat="{{item in daoMethods}}">
+          <button on-click="{{handleClick}}">{{ item }}</button><br>
+      </template>
+  </template>
+   <script type="application/dart" src="left_tree.dart"></script>
+</polymer-element>

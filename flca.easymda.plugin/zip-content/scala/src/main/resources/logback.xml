@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+	<!-- scan for changes to this configuration file, once a minute -->
+
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<target>System.out</target>
+		<encoder>
+			<pattern>%date{MM/dd HH:mm:ss} %-5level[%.15thread] %logger{1} -
+				%msg%n</pattern>
+		</encoder>
+	</appender>
+
+   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>/home/robin/tmp/reactive2.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d [%thread] %-5level  %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>	
+
+ 	<appender name="sql" class="ch.qos.logback.core.FileAppender">
+        <file>/home/robin/tmp/sql2.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d [%thread] %-5level  %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>	
+
+	<logger name="scala.slick" level="INFO" />
+
+	<!-- log4jdbc sql & jdbc logging -->
+	<logger name="jdbc.sqlonly" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="sql" />
+	</logger>
+
+	<logger name="jdbc.sqltiming" additivity="false">
+		<level value="ON" />
+	</logger>
+
+	<logger name="jdbc.audit" additivity="false">
+		<level value="OFF" />
+	</logger>
+
+	<logger name="jdbc.resultset" additivity="false">
+		<level value="OFF" />
+	</logger>
+
+	<logger name="jdbc.connection" additivity="false">
+		<level value="OFF" />
+	</logger>
+
+	<logger name="log4jdbc.debug" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="sql" />
+	</logger>
+
+
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</root>
+
+</configuration>
