@@ -17,72 +17,53 @@ import flca.mda.codegen.data.ITemplate;
  * @author robin
  * 
  */
-public class AdditionalGeneratesHelper {
+public class GenerateQueue {
 
-	private static List<Data> list; // we can use not a Map because we may have several templates for the same class
+	private static List<Data> queue; // we can use not a Map because we may have several templates for the same class
 
-	public static void add(Class<?> aClass, ITemplate aTemplate, Object ... aArguments) {
-		if (list == null) {
-			list = new ArrayList<Data>();
+	/**
+	 * Append the given class that we want generate with the given template and optonal argumments
+	 * @param aClass
+	 * @param aTemplate
+	 * @param aArguments
+	 */
+	public static void append(Class<?> aClass, ITemplate aTemplate, Object ... aArguments) {
+		if (queue == null) {
+			queue = new ArrayList<Data>();
 		}
 
-		AdditionalGeneratesHelper.Data adddata = new AdditionalGeneratesHelper.Data(aClass, aTemplate, aArguments);
-		if (!list.contains(adddata)) {
-			list.add(adddata);
-		}
-	}
-
-	public static int size() {
-		return (list != null) ? list.size() : 0;
-	}
-
-	public static Class<?> getClass(int aIndex) {
-		if (list != null) {
-			return list.get(aIndex).clazz;
-		} else {
-			return null;
-		}
-	}
-
-	public static ITemplate getTemplate(int aIndex) {
-		if (list != null) {
-			return list.get(aIndex).template;
-		} else {
-			return null;
-		}
-	}
-
-	public static Object[] getArguments(int aIndex) {
-		if (list != null) {
-			return list.get(aIndex).arguments;
-		} else {
-			return null;
+		GenerateQueue.Data adddata = new GenerateQueue.Data(aClass, aTemplate, aArguments);
+		if (!queue.contains(adddata)) {
+			queue.add(adddata);
 		}
 	}
 	
+	public static List<Data> getQueue() {
+		return queue;
+	}
+
 	public static void reset() {
-		list = new ArrayList<AdditionalGeneratesHelper.Data>();
+		queue = new ArrayList<GenerateQueue.Data>();
 	}
 
 	// ----------- inner class to hold class + corr template ---
-	static class Data {
-		Class<?> clazz;
+	public static class Data {
+		Class<?> inputClass;
 		ITemplate template;
 		Object arguments[];
 
 		public Data(Class<?> clazz, ITemplate aTemplate, Object ... aArguments) {
 			super();
-			this.clazz = clazz;
+			this.inputClass = clazz;
 			this.template = aTemplate;
-			this.arguments = aArguments;
-			
+			this.arguments = aArguments;			
 		}
 
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
+			result = prime * result + ((inputClass == null) ? 0 : inputClass.hashCode());
 			result = prime * result + ((template == null) ? 0 : template.hashCode());
 			return result;
 		}
@@ -90,12 +71,23 @@ public class AdditionalGeneratesHelper {
 		@Override
 		public boolean equals(Object obj) {
 			Data other = (Data) obj;
-			if (!clazz.equals(other.clazz))
+			if (!inputClass.equals(other.inputClass))
 				return false;
 			if (!template.equals(other.template))
 				return false;
 			return true;
 		}
 
+		public Class<?> getInputClass() {
+			return inputClass;
+		}
+
+		public ITemplate getTemplate() {
+			return template;
+		}
+
+		public Object[] getArguments() {
+			return arguments;
+		}
 	}
 }

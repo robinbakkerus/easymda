@@ -8,27 +8,20 @@
 
 apply from: "../common.gradle"
 
+defaultTasks 'standard'
+
 archivesBaseName = "blazeds.example"
 
-sourceSets {
-   main {
-      java {
-         srcDirs = ["src/main/java", "src/test/java"]
-      }
-   }  
-}
 buildDir = "target"
 
 dependencies {
 	compile "commons-lang:commons-lang:2.6",
 		"org.slf4j:slf4j-api:1.6.4",
-		"easymda:easymda.cartridge.blazeds:4.0"
+		"easymda:easymda.cartridge.blazeds:5.0"
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
 }
 
-task s(dependsOn: [standard] ) doLast {
-}
 
 

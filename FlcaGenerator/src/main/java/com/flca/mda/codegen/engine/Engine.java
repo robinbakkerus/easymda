@@ -23,7 +23,7 @@ import com.flca.mda.codegen.helpers.SaveGeneratedCodeHelper;
 
 import flca.mda.codegen.data.ITemplate;
 import flca.mda.codegen.data.TemplatesStore;
-import flca.mda.codegen.helpers.AdditionalGeneratesHelper;
+import flca.mda.codegen.helpers.GenerateQueue;
 import mda.type.IRegisterTemplates;
 
 /**
@@ -39,7 +39,7 @@ public class Engine {
 	private CartridgeHelper crh;
 	private ProjectInstanceHelper ph;
 
-	private static final boolean FORCE_GENERATE = true;
+	// private static final boolean FORCE_GENERATE = true;
 	private static final boolean DONT_FORCE_GENERATE = false;
 
 	public Engine() {
@@ -63,7 +63,7 @@ public class Engine {
 					InterruptedException {
 				IJavaProject currproj = ProjectInstanceHelper.getInstance().getCurrentProject();
 				TemplateProcessor processor = new TemplateProcessor(currproj, monitor);
-				AdditionalGeneratesHelper.reset();
+				GenerateQueue.reset();
 
 				List<Class<?>> sortedModelClasses = sortSelectedClasses(ph.getSelectedClassnames(),
 						crh.getSelectedTemplates());
@@ -113,9 +113,9 @@ public class Engine {
 	 * @param processor
 	 */
 	private void generateAdditionClasses(TemplateProcessor processor) {
-		for (int i = 0; i < AdditionalGeneratesHelper.size(); i++) {
-			processor.generate(AdditionalGeneratesHelper.getClass(i), AdditionalGeneratesHelper.getTemplate(i),
-					AdditionalGeneratesHelper.getArguments(i), FORCE_GENERATE);
+		for (GenerateQueue.Data data : GenerateQueue.getQueue()) {
+			
+			processor.generate(data.getInputClass(), data.getTemplate(), data.getArguments(), true);
 		}
 	}
 

@@ -3,11 +3,11 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'eclipse'
 
-version = '4.0'
+version = '5.0'
 group = 'easymda'
 
 ext {
-  easymda_version = "4.0"
+  easymda_version = "5.0"
 }
     
 sourceCompatibility = '1.8'

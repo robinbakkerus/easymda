@@ -4,5 +4,5 @@
 # like in the example below.
 # This is particular handy when you developing jet templates
 #
-path=C:/projects/java/EasyMda/flca.mda.cartridge.blazeds/bin/main
+path=C:/projects/easymda/CartridgeBlazeds/target/classes/java/main
 

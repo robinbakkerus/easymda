@@ -7,8 +7,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
 
-import mda.annotation.DontGenerateCode;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
@@ -28,9 +26,10 @@ import flca.mda.codegen.data.Template;
 import flca.mda.codegen.helpers.AnnotationsHelper;
 import flca.mda.codegen.helpers.FilenameHelper;
 import flca.mda.codegen.helpers.SourceCodeUtils;
+import mda.annotation.DontGenerateCode;
 
 public class TemplateProcessor {
-	
+
 	private static SourceCodeUtils su = new SourceCodeUtils();
 	private static FilenameHelper fnh = new FilenameHelper();
 
@@ -43,42 +42,42 @@ public class TemplateProcessor {
 	public TemplateProcessor(IJavaProject aProject, IProgressMonitor aMonitor) {
 		this.monitor = aMonitor;
 		this.project = aProject;
-		this.saver = new SaveGeneratedCodeHelper(aProject, monitor);
-		loader = ClassloaderHelper.getInstance().getClassLoader();
+		this.saver = new SaveGeneratedCodeHelper(aProject, this.monitor);
+		this.loader = ClassloaderHelper.getInstance().getClassLoader();
 	}
 
 	/**
 	 * This may generate the source for the given class and template. It may also
 	 * return null, if the template does not apply for the this class. The latter
-	 * may very well be the case because this method is called via two loop's
-	 * over all selected class-es znd all selected templates.
+	 * may very well be the case because this method is called via two loop's over
+	 * all selected class-es znd all selected templates.
 	 * 
 	 * @param aModelClass
 	 * @param aTemplate
 	 * @return
 	 */
-	public String generate(Class<?> aModelClass, ITemplate aTemplate, Object[] aArguments, boolean aForceGenerate) 
-	{
+	public String generate(Class<?> aModelClass, ITemplate aTemplate, Object[] aArguments, boolean aForceGenerate) {
 		LogHelper.debug("> start generate: " + aTemplate.getName() + " " + aModelClass.getName());
 		try {
-			getHooks(aTemplate).doBeforeGenerate(aModelClass, aTemplate);
-			GenerateResult result = generate(aTemplate, project, aModelClass, aArguments, aForceGenerate);
+			this.getHooks(aTemplate).doBeforeGenerate(aModelClass, aTemplate);
+			GenerateResult result = this.generate(aTemplate, this.project, aModelClass, aArguments, aForceGenerate);
 			if (result != null) {
-				String gencode = getHooks(aTemplate).doAfterGenerate(result.generatedSource, aModelClass, aTemplate);
-				saver.save(aModelClass, gencode, result.template);
+				String gencode = this.getHooks(aTemplate).doAfterGenerate(result.generatedSource, aModelClass,
+						aTemplate);
+				this.saver.save(aModelClass, gencode, result.template);
 				LogHelper.updateLinesGenerated(gencode);
 				return gencode;
 			} else {
 				return null;
 			}
 		} catch (Throwable e) {
-			return handleGenerateError(aModelClass, aTemplate, e);
+			return this.handleGenerateError(aModelClass, aTemplate, e);
 		}
 	}
 
-	private GenerateResult generate(ITemplate aTemplate, IJavaProject aProject, Class<?> aModelClass, Object[] aArguments, boolean aForce)
-			throws InstantiationException, IllegalAccessException {
-		
+	private GenerateResult generate(ITemplate aTemplate, IJavaProject aProject, Class<?> aModelClass,
+			Object[] aArguments, boolean aForce) throws InstantiationException, IllegalAccessException {
+
 		Object elemInstance = null;
 
 		if (aModelClass != null) {
@@ -86,25 +85,28 @@ public class TemplateProcessor {
 				elemInstance = aModelClass.newInstance();
 			}
 
-			if (aForce || generateThisObject(aTemplate, aModelClass)) {
-				return doGenerateElement(aTemplate, aModelClass, elemInstance, aArguments);
-			} else if (copyThisObject(aTemplate, aModelClass) && !alreadyCopied.contains(aModelClass.getName())) {
-				return doCopyElement(aModelClass);
+			if (aForce || this.generateThisObject(aTemplate, aModelClass)) {
+				return this.doGenerateElement(aTemplate, aModelClass, elemInstance, aArguments);
+			} else if (this.copyThisObject(aTemplate, aModelClass)
+					&& !this.alreadyCopied.contains(aModelClass.getName())) {
+				return this.doCopyElement(aModelClass);
 			}
 		}
 		return null;
 	}
 
-	private GenerateResult doGenerateElement(ITemplate aTemplate, Class<?> aModelClass, Object elemInstance, Object ... aExtraArgs) {
+	private GenerateResult doGenerateElement(ITemplate aTemplate, Class<?> aModelClass, Object elemInstance,
+			Object... aExtraArgs) {
 		try {
 			ClassLoader loader = ClassloaderHelper.getInstance().getClassLoader();
 
 			Class<?> generatorClass = loader.loadClass(aTemplate.getGeneratorFqn());
 			Method method = generatorClass.getMethod("generate", new Class[] { Object.class });
 			Object generator = generatorClass.newInstance();
-			
-			Object jetarg = makeJetArg(aTemplate, aModelClass, elemInstance);
-			Object gensrcObj = method.invoke(generator, new Object[] { makeArgs(jetarg, aExtraArgs) });
+
+//			Object jetarg = this.makeJetArg(aTemplate, aModelClass, elemInstance);
+			JetArgument jetarg = new JetArgumentBuilder(this.loader).makeJetArg(aTemplate, aModelClass, elemInstance);
+			Object gensrcObj = method.invoke(generator, new Object[] { this.makeArgs(jetarg, aExtraArgs) });
 			String gensrc = (gensrcObj != null) ? gensrcObj.toString() : "";
 			GenerateResult result = new GenerateResult(gensrc, aTemplate);
 			return result;
@@ -112,36 +114,36 @@ public class TemplateProcessor {
 			LogHelper.error("error while generating code ", e);
 			throw new RuntimeException(e);
 		}
-	} 
+	}
 
-	private Object[] makeArgs(Object aJetArgument, Object ... aExtraArgs) {
+	private Object[] makeArgs(Object aJetArgument, Object... aExtraArgs) {
 		if (aExtraArgs != null && aExtraArgs.length > 0) {
 			Object result[] = new Object[aExtraArgs.length + 1];
 			result[0] = aJetArgument;
-			for (int i=0; i < aExtraArgs.length; i++) {
-				result[i+1] = aExtraArgs[i];
+			for (int i = 0; i < aExtraArgs.length; i++) {
+				result[i + 1] = aExtraArgs[i];
 			}
 			return result;
 		} else {
-			return new Object[] {aJetArgument};
+			return new Object[] { aJetArgument };
 		}
 	}
-	
-	private Object makeJetArg(ITemplate aTemplate, Class<?> aModelClass, Object elemInstance) throws Exception {
-		Object jetarg = null;
-		if (elemInstance != null) {
-			jetarg = makeJetArgument(elemInstance, aTemplate, null, false);
-		} else {
-			jetarg = makeJetArgument(aModelClass, aTemplate, null, true);
-		}
-		return jetarg;
-	}
+
+//	private Object makeJetArg(ITemplate aTemplate, Class<?> aModelClass, Object elemInstance) throws Exception {
+//		Object jetarg = null;
+//		if (elemInstance != null) {
+//			jetarg = this.makeJetArgument(elemInstance, aTemplate, null, false);
+//		} else {
+//			jetarg = this.makeJetArgument(aModelClass, aTemplate, null, true);
+//		}
+//		return jetarg;
+//	}
 
 	private GenerateResult doCopyElement(Class<?> aModelClass) {
 		String src = su.readSource(aModelClass.getName());
 		ITemplate copyTemplate = new CopyTemplate();
-		alreadyCopied.add(aModelClass.getName());
-		return new GenerateResult(parsePackageStatement(src), copyTemplate);
+		this.alreadyCopied.add(aModelClass.getName());
+		return new GenerateResult(this.parsePackageStatement(src), copyTemplate);
 	}
 
 	private String parsePackageStatement(String aSource) {
@@ -157,11 +159,11 @@ public class TemplateProcessor {
 		}
 		return sb.toString();
 	}
-	
+
 	private Object makeJetArgument(Object aModel, ITemplate aTemplate, String sourcecode, boolean aInterface)
 			throws Exception {
-		Class<?> templateClz = loader.loadClass(Template.class.getName());
-		Class<?> itemplateClz = loader.loadClass(ITemplate.class.getName());
+		Class<?> templateClz = this.loader.loadClass(Template.class.getName());
+		Class<?> itemplateClz = this.loader.loadClass(ITemplate.class.getName());
 
 		Class<?> paramTypes[] = new Class<?>[] { Object.class, itemplateClz, String.class };
 		if (aInterface) {
@@ -173,7 +175,7 @@ public class TemplateProcessor {
 
 		Object values[] = new Object[] { aModel, cloneTemplate, sourcecode };
 
-		Class<?> clazz = loader.loadClass(JetArgument.class.getName());
+		Class<?> clazz = this.loader.loadClass(JetArgument.class.getName());
 		Constructor<?> ctor = clazz.getConstructor(paramTypes);
 		Object result = ctor.newInstance(values);
 
@@ -212,14 +214,13 @@ public class TemplateProcessor {
 			}
 		}
 		LogHelper.error("error generating " + aTemplate.getName() + " " + aModelClass.getName() + " : " + fout, e);
-		
+
 		if (System.getProperty(CodegenConstants.JUNIT_TEST) != null) {
 			Assert.fail(fout);
 		}
-		
+
 		return null;
 	}
-
 
 	private ITemplateHooks getHooks(ITemplate aTemplate) {
 		if (aTemplate.getHooks() == null) {
@@ -228,6 +229,7 @@ public class TemplateProcessor {
 			return aTemplate.getHooks();
 		}
 	}
+
 	// -----------------------
 	private static class GenerateResult {
 		String generatedSource;

@@ -47,7 +47,7 @@ public class ProjectInstanceHelper {
 
 	private static ProjectInstanceHelper sInstance;
 
-	protected TypeUtils tu = new TypeUtils();
+	protected TypeUtils tu;
 
 	public ProjectInstanceHelper() {
 	}
@@ -195,6 +195,9 @@ public class ProjectInstanceHelper {
 	}
 
 	private boolean isModelClass(Class<?> aClass) {
+		if (tu == null) {
+			tu = new TypeUtils();
+		}
 		return tu.hasType(aClass, IBaseType.class) || aClass.isEnum();
 	}
 

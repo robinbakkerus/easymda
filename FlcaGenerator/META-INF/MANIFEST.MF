@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: easymda
 Bundle-SymbolicName: flca.easymda.generator;singleton:=true
-Bundle-Version: 4.0.0
+Bundle-Version: 5.0
 Bundle-Activator: com.flca.mda.codegen.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -17,22 +17,53 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.emf.codegen;bundle-version="2.8.0",
  org.eclipse.emf.common.ui;bundle-version="2.9.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: com.flca.mda.codegen,
- com.flca.mda.codegen.engine,
- com.flca.mda.codegen.engine.data,
- com.flca.mda.codegen.helpers,
+Export-Package: com.flca.mda.codegen;
+  uses:="org.osgi.framework,
+   org.eclipse.ui,
+   org.eclipse.ui.console,
+   org.eclipse.jface.resource,
+   org.eclipse.swt.widgets,
+   org.eclipse.ui.plugin",
+ com.flca.mda.codegen.engine;
+  uses:="org.eclipse.ui.actions,
+   org.eclipse.core.runtime,
+   flca.mda.api.util,
+   org.eclipse.jdt.core,
+   flca.mda.codegen.data,
+   org.eclipse.core.commands",
+ com.flca.mda.codegen.engine.data;uses:="flca.mda.codegen.data",
+ com.flca.mda.codegen.helpers;
+  uses:="org.eclipse.jdt.core,
+   org.slf4j,
+   mda.type,
+   org.eclipse.emf.codegen.merge.java,
+   org.eclipse.core.runtime,
+   flca.mda.api.util,
+   flca.mda.codegen.data,
+   org.eclipse.core.resources",
  com.flca.mda.codegen.helpers.beanutils,
- com.flca.mda.codegen.ui,
- com.flca.mda.codegen.ui.model,
+ com.flca.mda.codegen.ui;
+  uses:="org.eclipse.jface.window,
+   org.eclipse.swt.events,
+   flca.mda.codegen.data,
+   org.eclipse.swt.widgets,
+   org.eclipse.jface.wizard",
+ com.flca.mda.codegen.ui.model;uses:="org.eclipse.swt.graphics,flca.mda.codegen.data,org.eclipse.jface.viewers",
  config,
- flca.test.base,
- test,
- test.mock
+ flca.test.base;uses:="org.eclipse.jdt.core,org.slf4j,flca.mda.codegen.data",
+ test;uses:="org.eclipse.jface.window,org.eclipse.swt.widgets",
+ test.mock;
+  uses:="org.eclipse.core.runtime.jobs,
+   org.eclipse.core.runtime,
+   org.eclipse.jdt.core,
+   org.eclipse.core.runtime.content,
+   org.eclipse.jdt.core.eval,
+   org.eclipse.core.resources"
 Bundle-ClassPath: .,
  lib/commons-beanutils-core-1.8.3.jar,
  lib/commons-logging-1.1.1.jar,
  lib/javaparser-1.0.8.jar,
  lib/slf4j-api-1.7.1.jar,
  lib/logback-core-1.0.7.jar,
- lib/flca.mda.common.api-4.0.jar,
- lib/logback-classic-1.0.7.jar
+ lib/logback-classic-1.0.7.jar,
+ lib/flca.mda.common.api-5.0.jar

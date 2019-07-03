@@ -18,6 +18,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import flca.mda.codegen.CodegenConstants;
+import flca.mda.codegen.data.DataStore;
+import flca.mda.codegen.data.SubsValue;
+import flca.mda.codegen.helpers.AnnotationsHelper;
+import flca.mda.codegen.helpers.FilenameHelper;
+import flca.mda.codegen.helpers.SubClassesHelper;
+import flca.mda.common.api.helpers.ImportHelper;
 import mda.annotation.jpa.Inheritance;
 import mda.annotation.jpa.JoinTable;
 import mda.annotation.jpa.ManyToMany;
@@ -27,20 +38,6 @@ import mda.type.IApplicationType;
 import mda.type.IDtoType;
 import mda.type.IEntityType;
 import mda.type.IServiceType;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import flca.mda.codegen.CodegenConstants;
-import flca.mda.codegen.data.DataStore;
-import flca.mda.codegen.data.ITemplate;
-import flca.mda.codegen.data.SubsValue;
-import flca.mda.codegen.helpers.AdditionalGeneratesHelper;
-import flca.mda.codegen.helpers.AnnotationsHelper;
-import flca.mda.codegen.helpers.FilenameHelper;
-import flca.mda.codegen.helpers.SubClassesHelper;
-import flca.mda.common.api.helpers.ImportHelper;
 
 public class TypeUtils implements TypeConstants {
 
@@ -862,20 +859,6 @@ public class TypeUtils implements TypeConstants {
 
 	public String getSerialVersionUID() {
 		return "" + new Date().getTime() + "L";
-	}
-
-	/**
-	 * Use this method if you want to force that the given class is generated
-	 * with the given template, even though this template does not apply to this
-	 * class initially.
-	 * 
-	 * @param aClass
-	 * @param aTemplate
-	 * @param Object
-	 *            ... optional arguments
-	 */
-	public void generate(Class<?> aClass, ITemplate aTemplate, Object... args) {
-		AdditionalGeneratesHelper.add(aClass, aTemplate, args);
 	}
 
 	/**

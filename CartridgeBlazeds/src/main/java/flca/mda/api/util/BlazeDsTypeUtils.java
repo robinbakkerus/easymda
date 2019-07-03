@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import flca.mda.codegen.helpers.GenerateQueue;
 import mda.template.BlazeDsTemplates;
 import mda.template.TidBlazeDs;
 
@@ -88,10 +89,11 @@ public class BlazeDsTypeUtils extends TypeUtils {
 	private static Set<Class<?>> MAPPED_CLASSES = new HashSet<>();
 	
 	public void generateAllFiles(Class<?> blazedsService) {
-		this.generate(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.PROTOBUF));
-		this.generate(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.MAPPER));
-		this.generate(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.MOCKDATA_LOADER));
-		this.generate(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.TEST_MAPPER));
+		logger.info("generating all files for " + blazedsService.getSimpleName());
+		GenerateQueue.append(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.PROTOBUF));
+		GenerateQueue.append(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.MAPPER));
+		GenerateQueue.append(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.MOCKDATA_LOADER));
+		GenerateQueue.append(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.TEST_MAPPER));
 	}
 
 	public void recursiveGenerate(Class<?> aClass1, Class<?> aClass2, boolean initialize) {
@@ -101,7 +103,7 @@ public class BlazeDsTypeUtils extends TypeUtils {
 
 		if (!GENERATED_CLASSES.contains(aClass1)) {
 			GENERATED_CLASSES.add(aClass1);
-			this.generate(aClass1, BlazeDsTemplates.getTemplate(TidBlazeDs.MAPPER));  
+			GenerateQueue.append(aClass1, BlazeDsTemplates.getTemplate(TidBlazeDs.MAPPER));  
 		}
 	}
 	

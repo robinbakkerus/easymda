@@ -32,7 +32,7 @@ import flca.mda.codegen.data.DataStore;
 import flca.mda.codegen.data.ITemplate;
 import flca.mda.codegen.data.SubsValue;
 import flca.mda.codegen.data.TemplatesStore;
-import flca.mda.codegen.helpers.AdditionalGeneratesHelper;
+import flca.mda.codegen.helpers.GenerateQueue;
 import flca.mda.codegen.helpers.IniFileHelper;
 import flca.mda.codegen.helpers.ShellUtils;
 import flca.mda.codegen.helpers.SubClassesHelper;
@@ -128,7 +128,7 @@ public abstract class AbstractTestTemplates {
 
 	protected String generate(Class<?> aClass, ITemplate aTemplate) {
 		try {
-			AdditionalGeneratesHelper.reset();
+			GenerateQueue.reset();
 			String result = tp.generate(aClass, aTemplate, null, false);
 			generateAdditionClasses();
 			if (result != null) {
@@ -146,10 +146,8 @@ public abstract class AbstractTestTemplates {
 	
 	
 	private void generateAdditionClasses()	{
-		for (int i=0; i < AdditionalGeneratesHelper.size(); i++) {
-			tp.generate(AdditionalGeneratesHelper.getClass(i), 
-					AdditionalGeneratesHelper.getTemplate(i), 
-					AdditionalGeneratesHelper.getArguments(i), true);
+		for (GenerateQueue.Data data : GenerateQueue.getQueue()) {
+			tp.generate(data.getInputClass(), data.getTemplate(), data.getArguments(), true);
 		}
 	}
 	

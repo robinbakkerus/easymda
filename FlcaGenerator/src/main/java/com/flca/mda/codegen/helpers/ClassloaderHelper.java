@@ -6,8 +6,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaModelException;
 
@@ -61,6 +59,6 @@ public class ClassloaderHelper {
 	private URL getProjectBindir() throws MalformedURLException, JavaModelException {
 		IJavaProject proj = ProjectInstanceHelper.getInstance().getCurrentProject();
 		String rootdir = proj.getProject().getLocation().toPortableString();
-		return new File(rootdir + "/bin/main").toURI().toURL();
+		return new File(rootdir + "/target/classes/java/main").toURI().toURL();
 	}
 }
