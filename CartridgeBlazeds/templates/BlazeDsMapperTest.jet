@@ -1,5 +1,5 @@
 <%@ jet package="cartridge" 
-imports="java.util.* flca.mda.api.util.* mda.template.* mda.template.type.* flca.mda.codegen.data.* "
+imports="java.util.* flca.mda.api.util.* flca.blazeds.api.* flca.blazeds.template.* "
 package="blazeds"
 class="BlazeDsMapperTest" %>
 <%@ include file="./include/java-class-init.jetinc" %>

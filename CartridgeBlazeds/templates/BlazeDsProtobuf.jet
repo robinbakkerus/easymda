@@ -1,12 +1,23 @@
 <%@ jet package="cartridge" 
-imports="java.util.* flca.mda.api.util.* mda.template.* mda.template.type.* flca.mda.codegen.data.* "
+imports="java.util.*  java.lang.reflect.* flca.mda.api.util.* flca.blazeds.api.* flca.blazeds.template.* "
 package="blazeds"
 class="BlazeDsProtobuf" %>
 <%@ include file="include/java-class-init.jetinc" %>
-<% Object carttype = arg.getElement(); 
-   if (carttype instanceof IBlazeDsService) {
-     IBlazeDsService collector = (IBlazeDsService) carttype;  
-     Class blazeService = collector.getBlazeDsService();
-   }
-%>
- 
+<% cc = (Class) element; %>
+<% ProtobufTypeUtils pbu = new ProtobufTypeUtils(); %>
+syntax = "proto3";
+
+package grpc.testing;
+
+service <%=cc.getSimpleName()%> {
+<% for (Method method : iu.getMethods(cc)) { %>
+<% String srvname = method.getName(); String respname = pbu.protoMessageName(iu.getReturn(method)); %>
+<% Class arg0type = iu.getParameterType(method, 0); String arg0name = pbu.protoMessageName(arg0type.getSimpleName()); %>
+	rpc <%=srvname%>(<%=arg0name%>) returns (<%=respname%>);
+<% } //for-loop %>
+} 
+	
+<% for (Method method : iu.getMethods(cc)) { %>
+<% 	 Class arg0type = iu.getParameterType(method, 0); String arg0name = pbu.protoMessageName(arg0type.getSimpleName()); %>
+	message 
+<% } //for-loop %>

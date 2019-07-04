@@ -11,14 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import mda.annotation.JavaDoc;
-import mda.annotation.RestMethod;
-import mda.annotation.RestService;
-import mda.annotation.crud.CrudOperation;
-import mda.annotation.crud.Search;
-import mda.type.IDtoType;
-import mda.type.IEntityType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +19,13 @@ import flca.mda.codegen.data.DataStore;
 import flca.mda.codegen.helpers.AnnotationsHelper;
 import flca.mda.codegen.helpers.StrUtil;
 import flca.mda.common.api.helpers.ImportHelper;
+import mda.annotation.JavaDoc;
+import mda.annotation.RestMethod;
+import mda.annotation.RestService;
+import mda.annotation.crud.CrudOperation;
+import mda.annotation.crud.Search;
+import mda.type.IDtoType;
+import mda.type.IEntityType;
 
 public class InterfaceUtils {
 	protected static Logger logger = LoggerFactory.getLogger(InterfaceUtils.class);
@@ -35,11 +34,11 @@ public class InterfaceUtils {
 	protected TypeUtils tu = new TypeUtils();
 
 	// map betwee operation-name and corresponding service class
-	protected static Map<String, Class<?>> sOperationMap = null; 
-	
+	protected static Map<String, Class<?>> sOperationMap = null;
+
 	// this is map between service interface and all its crud methods.
 	protected Map<Class<?>, List<CrudMethod>> crudsMap = null;
-	
+
 	/**
 	 * returns all relevant Method's in a not null List. Methods like toString()
 	 * will be skipped
@@ -51,29 +50,29 @@ public class InterfaceUtils {
 		List<Method> result = new ArrayList<Method>();
 
 		for (Method m : aClass.getMethods()) {
-			if (!skipMethod(m)) {
+			if (!this.skipMethod(m)) {
 				result.add(m);
 			}
 		}
 
 		return result;
 	}
-	
+
 	/**
-	 * returns all relevant Method's of the current active class in a not null List. Methods like toString()
-	 * will be skipped
+	 * returns all relevant Method's of the current active class in a not null List.
+	 * Methods like toString() will be skipped
 	 * 
 	 * @param aClass
 	 * @return
 	 */
 	public List<Method> getMethods() {
 		Class<?> currIntf = JetArgument.getCurrent().getElementClass();
-		return getMethods(currIntf);
+		return this.getMethods(currIntf);
 	}
 
 	/**
-	 * skip all methods obtained from object and all dummy placeholder methods
-	 * for crud operations
+	 * skip all methods obtained from object and all dummy placeholder methods for
+	 * crud operations
 	 * 
 	 * @param aMethod
 	 * @return
@@ -94,6 +93,7 @@ public class InterfaceUtils {
 
 	/**
 	 * return the num
+	 * 
 	 * @param aMethod
 	 * @return
 	 */
@@ -115,16 +115,17 @@ public class InterfaceUtils {
 	public String getParameters(Method aMethod) {
 		StringBuffer sb = new StringBuffer();
 
-		String src = getSourceCode();
-		List<ParameterData> paramData = (src == null) ? getParametersViaReflection(aMethod)
-				                                        : getParametersFromSourcecode(aMethod, src);
+		String src = this.getSourceCode();
+		List<ParameterData> paramData = (src == null) ? this.getParametersViaReflection(aMethod)
+				: this.getParametersFromSourcecode(aMethod, src);
 
 		int n = 0;
 		for (ParameterData parameterData : paramData) {
 			sb.append(parameterData.datatype + " " + parameterData.name);
-			if (n++ < paramData.size()-1) sb.append(",  ");
+			if (n++ < paramData.size() - 1)
+				sb.append(",  ");
 		}
-		
+
 		return sb.toString();
 	}
 
@@ -134,8 +135,9 @@ public class InterfaceUtils {
 	}
 
 	/**
-	 * Returns all argument names as a formatted String
-	 * Note this is similar to getParameterNames
+	 * Returns all argument names as a formatted String Note this is similar to
+	 * getParameterNames
+	 * 
 	 * <pre>
 	 * void doIt(String aaa, int bbb) results in "[aaa, bbb]"
 	 * </pre>
@@ -144,7 +146,7 @@ public class InterfaceUtils {
 	 * @return
 	 */
 	public List<String> getArguments(Method aMethod) {
-		return getParameterNames(aMethod);
+		return this.getParameterNames(aMethod);
 	}
 
 	public List<ParameterData> getParametersFromSourcecode(Method aMethod, String aSourceCode) {
@@ -154,8 +156,8 @@ public class InterfaceUtils {
 				String s1 = aSourceCode.substring(n);
 				String s2 = s1.substring(s1.indexOf("("));
 				String s3 = s2.substring(1, s2.indexOf(")"));
-				
-				return parseParametersString(s3);
+
+				return this.parseParametersString(s3);
 			} else {
 				return null; // we should never come here
 			}
@@ -173,7 +175,6 @@ public class InterfaceUtils {
 		return result;
 	}
 
-	
 	public List<ParameterData> parseParametersString(String aArgsString) {
 		List<ParameterData> result = new ArrayList<ParameterData>();
 
@@ -219,6 +220,7 @@ public class InterfaceUtils {
 
 	/**
 	 * return true if this method is void
+	 * 
 	 * @param aMethod
 	 * @return
 	 */
@@ -227,15 +229,17 @@ public class InterfaceUtils {
 	}
 
 	/**
-	 * return the 0-based parameter's nameof the given method. This name will be retrieved from the sourcecode if possible 
+	 * return the 0-based parameter's nameof the given method. This name will be
+	 * retrieved from the sourcecode if possible
+	 * 
 	 * @param aMethod
 	 * @param aIndex
 	 * @return
 	 */
 	public String getParameterName(Method aMethod, int aIndex) {
-		String src = getSourceCode();
-		List<ParameterData> paramData = (src == null) ? getParametersViaReflection(aMethod)
-				                                        : getParametersFromSourcecode(aMethod, src);
+		String src = this.getSourceCode();
+		List<ParameterData> paramData = (src == null) ? this.getParametersViaReflection(aMethod)
+				: this.getParametersFromSourcecode(aMethod, src);
 		if (paramData != null && paramData.size() >= aIndex) {
 			return paramData.get(aIndex).name;
 		} else {
@@ -244,16 +248,16 @@ public class InterfaceUtils {
 	}
 
 	/**
-	 * return all the names of the parameters (without datatype) in a string list 
-	 * ex: [id, name]
-	 * Note this is similar to getArguments
+	 * return all the names of the parameters (without datatype) in a string list
+	 * ex: [id, name] Note this is similar to getArguments
+	 * 
 	 * @param aMethod
 	 * @return
 	 */
 	public List<String> getParameterNames(Method aMethod) {
-		String src = getSourceCode();
-		List<ParameterData> paramData = (src == null) ? getParametersViaReflection(aMethod)
-				                                        : getParametersFromSourcecode(aMethod, src);
+		String src = this.getSourceCode();
+		List<ParameterData> paramData = (src == null) ? this.getParametersViaReflection(aMethod)
+				: this.getParametersFromSourcecode(aMethod, src);
 		List<String> result = new ArrayList<>();
 		for (ParameterData parameterData : paramData) {
 			result.add(parameterData.name);
@@ -261,7 +265,6 @@ public class InterfaceUtils {
 		return result;
 	}
 
-	
 	/**
 	 * returns the class that corresponds with the aIndex's method argument
 	 * 
@@ -331,8 +334,8 @@ public class InterfaceUtils {
 	}
 
 	/**
-	 * return the Exception as a formatted String or "". Example
-	 * "throws DaoExcepion"
+	 * return the Exception as a formatted String or "". Example "throws
+	 * DaoExcepion"
 	 * 
 	 * @param aMethod
 	 * @return
@@ -353,7 +356,7 @@ public class InterfaceUtils {
 	}
 
 	public boolean hasThrowsException(Method aMethod) {
-		return getThrows(aMethod).length() > 1;
+		return this.getThrows(aMethod).length() > 1;
 	}
 
 	public Annotation[] getAnnotations(Method aMethod) {
@@ -361,7 +364,7 @@ public class InterfaceUtils {
 	}
 
 	public Annotation getAnnotation(Method aMethod, Class<?> aAnnotation) {
-		Annotation[] annots = getAnnotations(aMethod);
+		Annotation[] annots = this.getAnnotations(aMethod);
 		if (annots != null) {
 			for (Annotation anno : annots) {
 				if (anno.annotationType().equals(aAnnotation)) {
@@ -373,15 +376,15 @@ public class InterfaceUtils {
 	}
 
 	public boolean moreParameters(Method aMethod, int aIndex) {
-		int cnt = getParameterCount(aMethod);
+		int cnt = this.getParameterCount(aMethod);
 		return (aIndex < cnt - 1);
 	}
 
 	public String getServiceName(String aOperation) {
-		String m = getServiceMethod(aOperation);
+		String m = this.getServiceMethod(aOperation);
 
 		if (m != null) {
-			Class<?> clz = getOperationMap().get(aOperation);
+			Class<?> clz = this.getOperationMap().get(aOperation);
 			if (clz != null) {
 				String pck = StrUtil.getPackage(clz.getName());
 				ImportHelper.addImport(pck + ".*");
@@ -395,14 +398,14 @@ public class InterfaceUtils {
 	public Class<?> getServiceClass(Class<?> aEntity) {
 		// TODO try to make this more generic
 		String findoper = "retrieve" + aEntity.getSimpleName();
-		return getServiceClass(findoper);
+		return this.getServiceClass(findoper);
 	}
 
 	public Class<?> getServiceClass(String aOperation) {
-		String m = getServiceMethod(aOperation);
+		String m = this.getServiceMethod(aOperation);
 
 		if (m != null) {
-			Class<?> clz = getOperationMap().get(aOperation);
+			Class<?> clz = this.getOperationMap().get(aOperation);
 			if (clz != null) {
 				ImportHelper.addImport(clz);
 				return clz;
@@ -413,7 +416,7 @@ public class InterfaceUtils {
 	}
 
 	private String getServiceMethod(String aOperation) {
-		for (String m : getOperationMap().keySet()) {
+		for (String m : this.getOperationMap().keySet()) {
 			if (aOperation.equals(m)) {
 				return m;
 			}
@@ -423,7 +426,7 @@ public class InterfaceUtils {
 	}
 
 	public String getServiceFactName(String aOperation) {
-		String servicename = getServiceName(aOperation);
+		String servicename = this.getServiceName(aOperation);
 		if (servicename != null) {
 			return servicename + "Fact"; // TODO try to make this more generic
 		}
@@ -434,12 +437,12 @@ public class InterfaceUtils {
 	public String getServiceName(Class<?> aEntity) {
 		// TODO try to make this more generic
 		String findoper = "retrieve" + aEntity.getSimpleName();
-		return getServiceName(findoper);
+		return this.getServiceName(findoper);
 	}
 
 	public String getServiceFactName(Class<?> aEntity) {
 		String findoper = "retrieve" + aEntity.getSimpleName();
-		return getServiceFactName(findoper);
+		return this.getServiceFactName(findoper);
 	}
 
 	protected static Collection<String> sSkipMethods;
@@ -454,7 +457,7 @@ public class InterfaceUtils {
 		if (sOperationMap == null) {
 			sOperationMap = new HashMap<String, Class<?>>();
 
-			fillOperationMap();
+			this.fillOperationMap();
 		}
 
 		return sOperationMap;
@@ -464,7 +467,7 @@ public class InterfaceUtils {
 		for (Class<?> clz : DataStore.getInstance().getModelClasses()) {
 			if (clz.isInterface()) {
 				for (Method m : clz.getMethods()) {
-					if (!skipMethod(m.getName())) {
+					if (!this.skipMethod(m.getName())) {
 						sOperationMap.put(m.getName(), clz);
 					}
 				}
@@ -495,37 +498,37 @@ public class InterfaceUtils {
 	public static void refresh() {
 		sOperationMap = null;
 	}
-	
-	//--- crud operattions
-	
+
+	// --- crud operattions
+
 	public List<CrudMethod> getAllCrudMethods() {
 		Class<?> currClz = JetArgument.getCurrent().getElementClass();
-		return getAllCrudMethods(currClz);
+		return this.getAllCrudMethods(currClz);
 	}
 
 	public List<CrudMethod> getAllCrudMethods(Class<?> aClass) {
-		if (getCrudsMap().containsKey(aClass)) {
-			return getCrudsMap().get(aClass);
+		if (this.getCrudsMap().containsKey(aClass)) {
+			return this.getCrudsMap().get(aClass);
 		} else {
 			return new ArrayList<CrudMethod>();
 		}
 	}
 
 	private Map<Class<?>, List<CrudMethod>> getCrudsMap() {
-		if (crudsMap == null) {
-			crudsMap = new HashMap<Class<?>, List<CrudMethod>>();
+		if (this.crudsMap == null) {
+			this.crudsMap = new HashMap<Class<?>, List<CrudMethod>>();
 
-			fillCrudsMap();
+			this.fillCrudsMap();
 		}
 
-		return crudsMap;
+		return this.crudsMap;
 	}
 
 	private void fillCrudsMap() {
 		for (Class<?> entityClz : DataStore.getInstance().getModelClasses()) {
-			if (tu.hasType(entityClz, IEntityType.class) || tu.hasType(entityClz, IDtoType.class)) {
-				if (hasCrudOperation(entityClz)) {
-					addCrudAnnots(entityClz);
+			if (this.tu.hasType(entityClz, IEntityType.class) || this.tu.hasType(entityClz, IDtoType.class)) {
+				if (this.hasCrudOperation(entityClz)) {
+					this.addCrudAnnots(entityClz);
 				}
 //				if (tu.hasSearchOperation(entityClz)) {
 //					addSearchAnnot(entityClz);
@@ -537,7 +540,7 @@ public class InterfaceUtils {
 	public List<Class<?>> getAllCrudEntities() {
 		List<Class<?>> result = new ArrayList<Class<?>>();
 
-		for (CrudMethod cm : getAllCrudMethods()) {
+		for (CrudMethod cm : this.getAllCrudMethods()) {
 			Class<?> ent = cm.getEntity();
 			if (!result.contains(ent)) {
 				result.add(ent);
@@ -547,23 +550,21 @@ public class InterfaceUtils {
 		return result;
 	}
 
-	
-	
 	private void addCrudAnnots(Class<?> entityClz) {
-		RestService crudanno = (RestService) tu.getAnnotation(entityClz, RestService.class);
+		RestService crudanno = (RestService) this.tu.getAnnotation(entityClz, RestService.class);
 
 		if (crudanno != null) {
 			List<CrudMethod> list = null;
-			if (crudsMap.containsKey(entityClz)) {
-				list = crudsMap.get(entityClz);
+			if (this.crudsMap.containsKey(entityClz)) {
+				list = this.crudsMap.get(entityClz);
 			} else {
 				list = new ArrayList<CrudMethod>();
-				crudsMap.put(entityClz, list);
+				this.crudsMap.put(entityClz, list);
 			}
 
-			for (CrudOperation crudoper : getCrudOperations(crudanno)) {
+			for (CrudOperation crudoper : this.getCrudOperations(crudanno)) {
 				CrudMethod cm = new CrudMethod(entityClz, crudoper, crudanno);
-				if (!exists(list, cm) && !cm.getCrudOper().equals(CrudOperation.SEARCH)) {
+				if (!this.exists(list, cm) && !cm.getCrudOper().equals(CrudOperation.SEARCH)) {
 					list.add(cm);
 				}
 			}
@@ -597,21 +598,21 @@ public class InterfaceUtils {
 //			list.add(cm);
 //		}
 //	}
-	
+
 	// -- crud methods
 	/**
-	 * Does this method has any (or all) crud operation. NOT included is the
-	 * Search crud
+	 * Does this method has any (or all) crud operation. NOT included is the Search
+	 * crud
 	 * 
 	 * @param aMethod
 	 * @return
 	 */
 	public boolean hasCrudOperation(Class<?> aClass) {
-		return !getCrudOperations(aClass).isEmpty();
+		return !this.getCrudOperations(aClass).isEmpty();
 	}
 
 	public boolean hasSearchOperation(Class<?> aClass) {
-		return getSearchAnnotion(aClass) != null;
+		return this.getSearchAnnotion(aClass) != null;
 	}
 
 	/**
@@ -621,8 +622,8 @@ public class InterfaceUtils {
 	 * @return
 	 */
 	public boolean hasCrudOperation(Class<?> aClass, CrudOperation aOperation) {
-		if (hasCrudOperation(aClass)) {
-			List<CrudOperation> crudops = getCrudOperations(aClass);
+		if (this.hasCrudOperation(aClass)) {
+			List<CrudOperation> crudops = this.getCrudOperations(aClass);
 			for (CrudOperation op : crudops) {
 				if (op.name().equals(aOperation.name())) {
 					return true;
@@ -633,8 +634,8 @@ public class InterfaceUtils {
 	}
 
 	public List<CrudOperation> getCrudOperations(Class<?> aClass) {
-		List<CrudOperation> result = new ArrayList<>(); 
-		RestService restsrv = (RestService) tu.getAnnotation(aClass, RestService.class);
+		List<CrudOperation> result = new ArrayList<>();
+		RestService restsrv = (RestService) this.tu.getAnnotation(aClass, RestService.class);
 		if (restsrv != null) {
 			for (CrudOperation crudop : restsrv.operations()) {
 				if (crudop.equals(CrudOperation.ALL)) {
@@ -681,23 +682,24 @@ public class InterfaceUtils {
 
 		return result;
 	}
-	
-	
+
 	/**
-	 * returns true is this method should generate a rest GET method (default !) 
+	 * returns true is this method should generate a rest GET method (default !)
+	 * 
 	 * @param aMethod
 	 */
 	public boolean isRestGetMethod(Method aMethod) {
-		RestMethod anno = (RestMethod) getAnnotation(aMethod, RestMethod.class);
-		return anno == null || anno.GET(); 
+		RestMethod anno = (RestMethod) this.getAnnotation(aMethod, RestMethod.class);
+		return anno == null || anno.GET();
 	}
 
 	/**
-	 * returns true is this method should generate a rest GET method (default !) 
+	 * returns true is this method should generate a rest GET method (default !)
+	 * 
 	 * @param aMethod
 	 */
 	public boolean isRestPostMethod(Method aMethod) {
-		RestMethod anno = (RestMethod) getAnnotation(aMethod, RestMethod.class);
-		return anno != null && anno.POST(); 
+		RestMethod anno = (RestMethod) this.getAnnotation(aMethod, RestMethod.class);
+		return anno != null && anno.POST();
 	}
 }

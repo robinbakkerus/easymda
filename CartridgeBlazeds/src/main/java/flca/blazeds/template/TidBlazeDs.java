@@ -1,4 +1,4 @@
-package mda.template;
+package flca.blazeds.template;
 
 
 public enum TidBlazeDs {

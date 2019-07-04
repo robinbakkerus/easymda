@@ -1,7 +1,7 @@
 package jrb.blazeds;
 
+import flca.blazeds.template.IBlazeDsService;
 import jrb.blazeds.example.GetKlantbeeld;
-import mda.template.type.IBlazeDsService;
 
 public class KlantbeeldSelector implements IBlazeDsService {
 

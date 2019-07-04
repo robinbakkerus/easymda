@@ -1,4 +1,4 @@
-package mda.template;
+package flca.blazeds.template;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package mda.template;
+package flca.blazeds.template;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,6 @@ import blazeds.BlazeDsProtobuf;
 import flca.mda.codegen.data.ITemplate;
 import flca.mda.codegen.data.Template;
 import flca.mda.codegen.data.TemplateMergeStrategy;
-import mda.template.type.IBlazeDsService;
 
 
 public class BlazeDsTemplates {

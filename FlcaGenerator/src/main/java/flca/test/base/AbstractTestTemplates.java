@@ -129,7 +129,7 @@ public abstract class AbstractTestTemplates {
 	protected String generate(Class<?> aClass, ITemplate aTemplate) {
 		try {
 			GenerateQueue.reset();
-			String result = tp.generate(aClass, aTemplate, null, false);
+			String result = tp.generate(aClass, aTemplate, null, true);
 			generateAdditionClasses();
 			if (result != null) {
 				new SimpleClibboardHelper().save(result);

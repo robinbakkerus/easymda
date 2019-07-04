@@ -2,9 +2,8 @@ package blazeds;
 
 import java.util.*;
 import flca.mda.api.util.*;
-import mda.template.*;
-import mda.template.type.*;
-import flca.mda.codegen.data.*;
+import flca.blazeds.api.*;
+import flca.blazeds.template.*;
 
 public class BlazeDsMapperTest
 {

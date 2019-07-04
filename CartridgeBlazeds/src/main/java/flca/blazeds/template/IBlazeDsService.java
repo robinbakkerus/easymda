@@ -1,4 +1,4 @@
-package mda.template.type;
+package flca.blazeds.template;
 
 public interface IBlazeDsService {
 

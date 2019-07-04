@@ -1,13 +1,15 @@
-package flca.mda.api.util;
+package flca.blazeds.api;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import flca.blazeds.template.BlazeDsTemplates;
+import flca.blazeds.template.TidBlazeDs;
+import flca.mda.api.util.Fw;
+import flca.mda.api.util.TypeUtils;
 import flca.mda.codegen.helpers.GenerateQueue;
-import mda.template.BlazeDsTemplates;
-import mda.template.TidBlazeDs;
 
 public class BlazeDsTypeUtils extends TypeUtils {
 
@@ -106,7 +108,6 @@ public class BlazeDsTypeUtils extends TypeUtils {
 			GenerateQueue.append(aClass1, BlazeDsTemplates.getTemplate(TidBlazeDs.MAPPER));  
 		}
 	}
-	
 
 	public void addToMappedClasses(Class<?> aClass) {
 		MAPPED_CLASSES.add(aClass);
