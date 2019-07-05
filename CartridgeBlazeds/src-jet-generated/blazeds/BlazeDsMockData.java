@@ -102,6 +102,9 @@ public class BlazeDsMockData
 			args = (Object[]) argument;
 			if (args[0] instanceof JetArgument) {
 				arg = (JetArgument) args[0];
+			} else {
+				arg = new JetArgument();
+				arg.setElement(args[0]);
 			}
 		}
 	} 
@@ -112,7 +115,7 @@ public class BlazeDsMockData
      InterfaceUtils iu = new InterfaceUtils(); 
      AppUtils au = new AppUtils(); 
      Object element = arg.getElement(); 
-     Class cc = element.getClass(); 
+     Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();
      String pck = nu.getCurrentPackage();
      GetFieldsModus EXC = GetFieldsModus.EXCLUDE; 

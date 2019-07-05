@@ -1,0 +1,12 @@
+<%@ jet package="cartridge" 
+imports="java.util.*  java.lang.reflect.* flca.mda.api.util.* flca.blazeds.api.* flca.blazeds.template.* "
+package="blazeds"
+class="BlazeDsProtobufMsg" %>
+<%@ include file="include/java-class-init.jetinc" %>
+<% ProtobufTypeUtils pbu = new ProtobufTypeUtils(); %>
+
+<% String name = pbu.protoMessageName(cc); %>
+message <%=name%> {
+
+}
+
