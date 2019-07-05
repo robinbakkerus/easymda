@@ -5,8 +5,17 @@ class="BlazeDsProtobufMsg" %>
 <%@ include file="include/java-class-init.jetinc" %>
 <% ProtobufTypeUtils pbu = new ProtobufTypeUtils(); %>
 
+<% List<Fw> fwList = tu.getFieldsExc(cc, FwSelectType.SPECIAL, FwSelectType.ID); %>
 <% String name = pbu.protoMessageName(cc); %>
+<% int index = 1; %>
+	
 message <%=name%> {
-
+<%  for (Fw fw : fwList) { %>
+<%	if (fw.isEnum()) { %>
+	<%=pbu.getProtobufTypename(fw)%>
+	<%=pbu.protoMessageName(fw.getField().getType())%> <%=fw.name()%> = <%=index++ %>;
+<%	  } else { %>
+	<%=pbu.getProtobufTypename(fw)%> <%=fw.name()%> = <%=index++ %>;
+<%	  } %>
+<% } %>	
 }
-

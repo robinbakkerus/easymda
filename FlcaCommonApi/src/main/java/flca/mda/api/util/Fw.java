@@ -27,6 +27,17 @@ public class Fw implements TypeConstants {
 	
 	/**
 	 * ctor used for normal fields
+	 * @param field
+	 * @param ownerClass
+	 */
+	public Fw(Field field, Class<?> ownerClass) {
+		super();
+		this.field = field;
+		this.ownerClass = ownerClass;
+	}
+
+	/**
+	 * ctor used for normal fields
 	 * @param tu
 	 * @param field
 	 */

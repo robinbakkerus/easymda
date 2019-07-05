@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
+import flca.mda.api.util.Fw;
 import flca.mda.api.util.InterfaceUtils;
 import flca.mda.api.util.TypeUtils;
 
@@ -53,4 +54,40 @@ public class ProtobufTypeUtils {
 			}			
 		}
 	}
+	
+	public String getProtobufTypename(final Fw fw) {
+		if (fw.isEnum()) {
+			return this.getProtobufTypenameEnum(fw);
+		} else if (fw.isCollection()) {
+			return this.getProtobufTypenameCollection(fw);
+		} else if (fw.isSimple()) {
+			return ProtobufTypeMapper.getProtobufTypename(fw.getField().getType());
+		} else {
+			return this.protoMessageName(fw.getField().getType());
+		}
+	}
+
+	private String getProtobufTypenameCollection(final Fw fw) {
+		Class<?> clz = fw.genericType();
+		if (tu.isSimpleField(clz)) {
+			String typename = ProtobufTypeMapper.getProtobufTypename(clz);
+			return "repeated " + typename;
+		} else {
+			return "repeated " + this.protoMessageName(clz);
+		}
+	}
+	
+	private String getProtobufTypenameEnum(final Fw fw) {
+		final StringBuffer sb = new StringBuffer();
+		int index  = 0;
+		Class<?> clz = fw.genericType();
+		sb.append("enum " + this.protoMessageName(clz) + "{" + "\n");
+		Object enumtypes[] = clz.getEnumConstants();
+		for (Object obj : enumtypes) {
+			sb.append("\t\t"+ obj.toString() + " = " + (index++) + ";\n");
+		}
+		sb.append("\t}" + "\n");
+		return sb.toString();
+	}
+
 }
