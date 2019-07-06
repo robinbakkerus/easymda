@@ -2,6 +2,7 @@ package flca.blazeds.api;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import flca.mda.api.util.Fw;
@@ -42,7 +43,7 @@ public class ProtobufTypeUtils {
 	private void findAllMethodReturnTypes(Method m, Set<Class<?>> r) {
 		Class<?> rettyp = m.getReturnType();
 		if (!tu.isSimpleField(rettyp)) {
-			r.add(rettyp);
+			findRecursiveNestedTypes(rettyp, r);
 		}
 	}
 
@@ -50,11 +51,23 @@ public class ProtobufTypeUtils {
 		Class<?> paramTypes[] = m.getParameterTypes();
 		for (Class<?> clz : paramTypes) {
 			if (!tu.isSimpleField(clz)) {
-				r.add(clz);
+				findRecursiveNestedTypes(clz, r);
 			}			
 		}
 	}
-	
+
+	private void findRecursiveNestedTypes(Class<?> parent, Set<Class<?>> r) {
+		if (!r.contains(parent)) {
+			r.add(parent);
+			List<Fw> fws = tu.getAllFields(parent);
+			for (Fw fw : fws) {
+				if (!fw.isSimple() && !fw.isId()) {
+					findRecursiveNestedTypes(fw.genericType(), r);
+				}
+			}
+		}
+	}
+
 	public String getProtobufTypename(final Fw fw) {
 		if (fw.isEnum()) {
 			return this.getProtobufTypenameEnum(fw);

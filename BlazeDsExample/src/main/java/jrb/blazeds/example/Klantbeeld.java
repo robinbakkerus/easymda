@@ -10,6 +10,7 @@ public class Klantbeeld {
 	private String achternaam;
 	private Date geboorteDatum;
 	private Geslacht geslacht;
+	private Adres adres;
 	private List<PensioenAanspraak> aanspraken;
 	
 	public Integer getKlantId() {
@@ -47,6 +48,12 @@ public class Klantbeeld {
 	}
 	public void setAanspraken(List<PensioenAanspraak> aanspraken) {
 		this.aanspraken = aanspraken;
+	}
+	public Adres getAdres() {
+		return adres;
+	}
+	public void setAdres(Adres adres) {
+		this.adres = adres;
 	}
 	
 }

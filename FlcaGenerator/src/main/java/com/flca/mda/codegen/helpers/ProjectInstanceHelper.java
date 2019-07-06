@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import mda.type.IBaseType;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaModelException;
@@ -22,6 +20,7 @@ import flca.mda.codegen.data.SubsValueType;
 import flca.mda.codegen.helpers.FileHelper;
 import flca.mda.codegen.helpers.ShellUtils;
 import flca.mda.codegen.helpers.StrUtil;
+import mda.type.IBaseType;
 
 /**
  * This helper maintains all objects of the JavaProject that is
@@ -60,19 +59,19 @@ public class ProjectInstanceHelper {
 	}
 
 	public void setModelProject(IJavaProject aModelProject, List<String> aSelectedClassnames) {
-		if (currentProject == null || !key(aModelProject).equals(key(currentProject))) {
-			currentProject = aModelProject;
+		if (this.currentProject == null || !this.key(aModelProject).equals(this.key(this.currentProject))) {
+			this.currentProject = aModelProject;
 		}
-		selectedClassnames = aSelectedClassnames;
+		this.selectedClassnames = aSelectedClassnames;
 	}
 
 	public void refresh() {
-		String cp = getClasspath(currentProject);
-		doRefresh(cp);
+		String cp = this.getClasspath(this.currentProject);
+		this.doRefresh(cp);
 	}
 
 	private void doRefresh(String aClasspath) {
-		allInstances.clear();
+		this.allInstances.clear();
 		// String rootdir = cp.substring(0, cp.lastIndexOf("/"));
 
 		List<File> classfnames = FileHelper.findFiles(aClasspath, new ClassFilter(), true);
@@ -80,19 +79,19 @@ public class ProjectInstanceHelper {
 			String fqn = StrUtil.getFullyQualifiedClassname(aClasspath, file);
 
 			try {
-				addInstance(fqn);
+				this.addInstance(fqn);
 			} catch (Exception e) {
 				LogHelper.error("error creating instance " + fqn, e);
 			}
 		}
 
-		addModelClassesToDatastore();
-		saveBasePackage(); //TODO
+		this.addModelClassesToDatastore();
+		this.saveBasePackage(); // TODO
 	}
 
 	private void addInstance(String aFqName) {
-		if (!allInstances.contains(aFqName)) {
-			allInstances.add(aFqName);
+		if (!this.allInstances.contains(aFqName)) {
+			this.allInstances.add(aFqName);
 		}
 	}
 
@@ -109,19 +108,19 @@ public class ProjectInstanceHelper {
 	}
 
 	public IJavaProject getCurrentProject() {
-		return currentProject;
+		return this.currentProject;
 	}
 
 	public List<String> getSelectedClassnames() {
-		return selectedClassnames;
+		return this.selectedClassnames;
 	}
 
 	public void setCurrentProject(IJavaProject value) {
-		currentProject = value;
+		this.currentProject = value;
 	}
 
 	public String getProjectName() {
-		return currentProject.getElementName();
+		return this.currentProject.getElementName();
 	}
 
 	public String getProjectLocation(IJavaProject project) {
@@ -131,7 +130,7 @@ public class ProjectInstanceHelper {
 	}
 
 	public String getCurrentProjectLocation() {
-		return getProjectLocation(currentProject);
+		return this.getProjectLocation(this.currentProject);
 	}
 
 	static class ClassFilter implements FileFilter {
@@ -165,7 +164,7 @@ public class ProjectInstanceHelper {
 			} else {
 				if (pathname.getName().endsWith(".java")) {
 					String s = StrUtil.replSlashsToDots(pathname.getPath());
-					return (s.indexOf("." + fqn + ".") > 0);
+					return (s.indexOf("." + this.fqn + ".") > 0);
 				}
 			}
 
@@ -176,11 +175,11 @@ public class ProjectInstanceHelper {
 	private void addModelClassesToDatastore() {
 		ClassLoader loader = ClassloaderHelper.getInstance().getClassLoader();
 
-		for (String fqn : allInstances) {
+		for (String fqn : this.allInstances) {
 			try {
 				Class<?> clz = loader.loadClass(fqn);
 
-				if (isModelClass(clz)) {
+				if (this.isModelClass(clz)) {
 					DataStore.getInstance().addModelClass(clz);
 				}
 			} catch (Throwable t) {
@@ -195,10 +194,10 @@ public class ProjectInstanceHelper {
 	}
 
 	private boolean isModelClass(Class<?> aClass) {
-		if (tu == null) {
-			tu = new TypeUtils();
+		if (this.tu == null) {
+			this.tu = new TypeUtils();
 		}
-		return tu.hasType(aClass, IBaseType.class) || aClass.isEnum();
+		return this.tu.hasType(aClass, IBaseType.class) || aClass.isEnum();
 	}
 
 	public boolean hasValidTargetDirs() {

@@ -46,7 +46,7 @@ public class MockJavaProject implements IJavaProject
 	public IPath getOutputLocation() throws JavaModelException
 	{
 		String s = mockProject.getLocation().toPortableString();
-		return new MockPath(s + "/bin");
+		return new MockPath(s + "/target/classes/java/main");
 	}
 	
 	@Override

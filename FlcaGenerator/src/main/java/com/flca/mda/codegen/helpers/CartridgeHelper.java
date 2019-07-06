@@ -18,8 +18,6 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import mda.type.IRegisterTemplates;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +35,7 @@ import flca.mda.codegen.data.TemplatesStore;
 import flca.mda.codegen.data.TemplatesStoreData;
 import flca.mda.codegen.data.TemplatesTree;
 import flca.mda.codegen.helpers.FileHelper;
+import mda.type.IRegisterTemplates;
 
 public class CartridgeHelper {
 	private static Logger logger = LoggerFactory.getLogger(CartridgeHelper.class);
@@ -48,7 +47,7 @@ public class CartridgeHelper {
 	private Set<ITemplate> selectedTemplates = new HashSet<ITemplate>();
 
 	protected TypeUtils tu = new TypeUtils();
-	
+
 	public static CartridgeHelper getInstance() {
 		if (sInstance == null) {
 			sInstance = new CartridgeHelper();
@@ -60,38 +59,38 @@ public class CartridgeHelper {
 	}
 
 	/**
-	 * return all the classpath File(s) of the cartridges that are registed in
-	 * the dropins/easymda/cartrdiges folder and are enabled (on the wizzard
-	 * page#1) Note the cartridgeClassPaths are filled during the initialize()
-	 * method
+	 * return all the classpath File(s) of the cartridges that are registed in the
+	 * dropins/easymda/cartrdiges folder and are enabled (on the wizzard page#1)
+	 * Note the cartridgeClassPaths are filled during the initialize() method
 	 * 
 	 * @return
 	 */
 	public Collection<CartridgeClasspathData> getAllCartridgeClassPaths() {
-		if (cartridgeClassPaths == null) {
-			cartridgeClassPaths = setupCartridgeClassPaths();
+		if (this.cartridgeClassPaths == null) {
+			this.cartridgeClassPaths = this.setupCartridgeClassPaths();
 		}
-		return cartridgeClassPaths.values();
+		return this.cartridgeClassPaths.values();
 	}
 
 	public boolean getCartridgeEnableStatus(File aFile) {
 		String key = CartridgeClasspathData.getClasspathKey(aFile);
-		if (cartridgeClassPaths != null && cartridgeClassPaths.containsKey(key)) {
-			return cartridgeClassPaths.get(key).isEnabled();
+		if (this.cartridgeClassPaths != null && this.cartridgeClassPaths.containsKey(key)) {
+			return this.cartridgeClassPaths.get(key).isEnabled();
 		} else {
 			return false;
 		}
 	}
 
-	/** 
+	/**
 	 * Here we may enable or disable a cartridge jar-file or bin dir
+	 * 
 	 * @param aFile
 	 * @param aValue
 	 */
 	public void setCartridgeEnableStatus(String aPath, Boolean aValue) {
-		if (getAllCartridgeClassPaths() != null) {
-			if (cartridgeClassPaths.containsKey(aPath)) {
-				CartridgeClasspathData data = cartridgeClassPaths.get(aPath);
+		if (this.getAllCartridgeClassPaths() != null) {
+			if (this.cartridgeClassPaths.containsKey(aPath)) {
+				CartridgeClasspathData data = this.cartridgeClassPaths.get(aPath);
 				data.setEnabled(aValue);
 			}
 		} else {
@@ -100,16 +99,15 @@ public class CartridgeHelper {
 	}
 
 	/**
-	 * return all the classpath File(s) of the cartridges that are registed in
-	 * the dropins/easymda/cartrdiges folder and are enabled (on the wizzard
-	 * page#1) Note the cartridgeClassPaths are filled during the initialize()
-	 * method
+	 * return all the classpath File(s) of the cartridges that are registed in the
+	 * dropins/easymda/cartrdiges folder and are enabled (on the wizzard page#1)
+	 * Note the cartridgeClassPaths are filled during the initialize() method
 	 * 
 	 * @return
 	 */
 	public Collection<CartridgeClasspathData> getEnabledCartridgeClassPaths() {
 		Collection<CartridgeClasspathData> result = new ArrayList<CartridgeClasspathData>();
-		Collection<CartridgeClasspathData> paths = getAllCartridgeClassPaths();
+		Collection<CartridgeClasspathData> paths = this.getAllCartridgeClassPaths();
 
 		for (CartridgeClasspathData data : paths) {
 			if (data.isEnabled()) {
@@ -130,54 +128,52 @@ public class CartridgeHelper {
 		return TemplatesStore.getInstance().getData();
 	}
 
-
 	/**
-	 * This method will look for all cartridges in plugin/cartrdiges folder,
-	 * either as a jar file or a link file. It will populate the TemplatesStore
-	 * dataMap, and also corresponding SubVals
+	 * This method will look for all cartridges in plugin/cartrdiges folder, either
+	 * as a jar file or a link file. It will populate the TemplatesStore dataMap,
+	 * and also corresponding SubVals
 	 */
 	public void initialize(Collection<CartridgeClasspathData> aCartridges) {
-		selectedTemplates.clear();
+		this.selectedTemplates.clear();
 		TemplatesStore.getInstance().clear();
 
-		if (cartridgeClassPaths == null) {
-			setupCartridgeClassPaths();
+		if (this.cartridgeClassPaths == null) {
+			this.setupCartridgeClassPaths();
 		}
 
-		if (cartridgeClassPaths != null) {
-			initializeCartridgeClasspaths(aCartridges);
+		if (this.cartridgeClassPaths != null) {
+			this.initializeCartridgeClasspaths(aCartridges);
 		} else {
 			logger.error("cartridgeClassPaths is null??");
 			throw new RuntimeException("cartridge classpaths are null");
 		}
 
-		storeCartridgeDir();
+		this.storeCartridgeDir();
 		ProjectInstanceHelper.getInstance().refresh();
 	}
 
 	private void storeCartridgeDir() {
 		File cartridgeDir = PluginHelper.getInstance().getCartridgeDir();
-		logger.info("setting " + CodegenConstants.DATASTORE_CARTRIDGE_DIR + " -> " + cartridgeDir.getAbsolutePath() );
+		logger.info("setting " + CodegenConstants.DATASTORE_CARTRIDGE_DIR + " -> " + cartridgeDir.getAbsolutePath());
 		SubsValue subsval = new SubsValue(CodegenConstants.DATASTORE_CARTRIDGE_DIR, cartridgeDir.getAbsolutePath());
 		subsval.setType(SubsValueType.NONE);
 		DataStore.getInstance().addSubsValue(subsval);
 	}
 
-	private void initializeCartridgeClasspaths(
-			Collection<CartridgeClasspathData> aCartridges) {
+	private void initializeCartridgeClasspaths(Collection<CartridgeClasspathData> aCartridges) {
 		ClassloaderHelper.getInstance().setupCurrentClassloader();
 
-		for (CartridgeClasspathData data : getAllCartridgeClassPaths()) {
+		for (CartridgeClasspathData data : this.getAllCartridgeClassPaths()) {
 			TemplatesStore.getInstance().add(data.getFile());
 		}
 
-		findTemplateTrees(aCartridges);
+		this.findTemplateTrees(aCartridges);
 	}
-	
+
 	private void findTemplateTrees(Collection<CartridgeClasspathData> aCartridges) {
 		for (CartridgeClasspathData data : aCartridges) {
 			try {
-				findTemplatesTree(data.getFile()); // this will also do a: TemplatesStore.getInstance().add(...)
+				this.findTemplatesTree(data.getFile()); // this will also do a: TemplatesStore.getInstance().add(...)
 			} catch (InvocationTargetException e) {
 				LogHelper.error("error setup templates: " + e.getCause(), e);
 			} catch (Exception e) {
@@ -196,7 +192,7 @@ public class CartridgeHelper {
 	 * @param aTemplatesDir
 	 */
 	private void findTemplatesTree(File aCartridgeCP) throws Exception {
-		Class<?> registerTemplatesClz = findRegisterTemplatesClass(aCartridgeCP);
+		Class<?> registerTemplatesClz = this.findRegisterTemplatesClass(aCartridgeCP);
 
 		Object obj = registerTemplatesClz.newInstance();
 		TemplatesTree templateTree = new TemplatesTreeCloner().clone(obj);
@@ -212,28 +208,29 @@ public class CartridgeHelper {
 	 * @return
 	 */
 	private Map<String, CartridgeClasspathData> setupCartridgeClassPaths() {
-		cartridgeClassPaths = new HashMap<String, CartridgeClasspathData>();
+		this.cartridgeClassPaths = new HashMap<String, CartridgeClasspathData>();
 
 		File cartridgeDir = PluginHelper.getInstance().getCartridgeDir();
 
 		List<File> jarFiles = FileHelper.findFiles(cartridgeDir.getPath(), new CartridgeJarFilter(), false);
 		for (File file : jarFiles) {
-			cartridgeClassPaths.put(CartridgeClasspathData.getClasspathKey(file), new CartridgeClasspathData(file, true));
+			this.cartridgeClassPaths.put(CartridgeClasspathData.getClasspathKey(file),
+					new CartridgeClasspathData(file, true));
 		}
 
 		List<File> linkFiles = FileHelper.findFiles(cartridgeDir.getPath(), new CartridgeLinkFilter(), false);
 		for (File file : linkFiles) {
-			String path = readLinkFile(file);
+			String path = this.readLinkFile(file);
 			if (path != null) {
 				LogHelper.info("using cartridges: " + path + " via linkfile: " + file);
-				cartridgeClassPaths.put(CartridgeClasspathData.getClasspathKey(new File(path)), new CartridgeClasspathData(new File(path), true));
+				this.cartridgeClassPaths.put(CartridgeClasspathData.getClasspathKey(new File(path)),
+						new CartridgeClasspathData(new File(path), true));
 			}
 		}
 
-		return cartridgeClassPaths;
+		return this.cartridgeClassPaths;
 	}
 
-	
 	private String readLinkFile(File file) {
 		FileInputStream fis = null;
 		try {
@@ -251,7 +248,7 @@ public class CartridgeHelper {
 	public Collection<URL> getCartridgesClasspathUrls() {
 		Collection<URL> result = new HashSet<URL>();
 
-		for (CartridgeClasspathData data : getEnabledCartridgeClassPaths()) {
+		for (CartridgeClasspathData data : this.getEnabledCartridgeClassPaths()) {
 			try {
 				result.add(data.getFile().toURI().toURL());
 			} catch (MalformedURLException e) {
@@ -279,13 +276,13 @@ public class CartridgeHelper {
 
 	public void updateSelectedTemplate(ITemplate aTemplate, boolean aSelected) {
 		if (aSelected) {
-			if (!selectedTemplates.contains(aTemplate)) {
-				selectedTemplates.add(aTemplate);
+			if (!this.selectedTemplates.contains(aTemplate)) {
+				this.selectedTemplates.add(aTemplate);
 				return;
 			}
 		} else {
-			if (selectedTemplates.contains(aTemplate)) {
-				selectedTemplates.remove(aTemplate);
+			if (this.selectedTemplates.contains(aTemplate)) {
+				this.selectedTemplates.remove(aTemplate);
 				return;
 			}
 		}
@@ -293,12 +290,13 @@ public class CartridgeHelper {
 	}
 
 	public Set<ITemplate> getSelectedTemplates() {
-		return selectedTemplates;
+		return this.selectedTemplates;
 	}
 
 	public ITemplate getTemplate(String aTemplateName) {
 		for (TemplatesStoreData storeData : TemplatesStore.getInstance().getData().values()) {
-			if (storeData != null && storeData.getTemplatesTree() != null && storeData.getTemplatesTree().getBranches() != null) {
+			if (storeData != null && storeData.getTemplatesTree() != null
+					&& storeData.getTemplatesTree().getBranches() != null) {
 				for (TemplatesBranch branch : storeData.getTemplatesTree().getBranches()) {
 					for (ITemplate template : branch.getTemplates()) {
 						if (aTemplateName.equals(template.getName())) {
@@ -312,7 +310,7 @@ public class CartridgeHelper {
 	}
 
 	public IRegisterTemplates findIRegisterTemplatesFile(File aCartridgeCP) throws Exception {
-		Class<?> clz = findRegisterTemplatesClass(aCartridgeCP);
+		Class<?> clz = this.findRegisterTemplatesClass(aCartridgeCP);
 		if (clz != null) {
 			return (IRegisterTemplates) clz.newInstance();
 		} else {
@@ -320,16 +318,16 @@ public class CartridgeHelper {
 			msg += "\nYou should add a jarfile(s) under <eclipse>/dropins/easymda-1.0/cartridges";
 			msg += "\nOr a xxx.link file(s) with a path pointing to a java project containg jet templates (a cartridge)";
 			LogHelper.error(msg);
-			throw new Exception(msg);		
+			throw new Exception(msg);
 		}
 	}
-	
+
 	private Class<?> findRegisterTemplatesClass(File aCartridgeCP) throws Exception {
 		Class<?> result = null;
 		if (aCartridgeCP.getName().toLowerCase().endsWith(".jar")) {
-			result = findRegisterClassViaJarfile(aCartridgeCP, IRegisterTemplates.class);
+			result = this.findRegisterClassViaJarfile(aCartridgeCP, IRegisterTemplates.class);
 		} else {
-			result = findRegisterClassViaBindir(aCartridgeCP, IRegisterTemplates.class);
+			result = this.findRegisterClassViaBindir(aCartridgeCP, IRegisterTemplates.class);
 		}
 
 		if (result == null) {
@@ -351,7 +349,7 @@ public class CartridgeHelper {
 			try {
 				String clsname = FileHelper.getFqn(file, aCartridgeCP.getAbsolutePath());
 				Class<?> clz = loader.loadClass(clsname);
-				if (tu.hasType(clz, aFindClass)) {
+				if (this.tu.hasType(clz, aFindClass)) {
 					result = clz;
 					return result;
 				}
@@ -375,18 +373,20 @@ public class CartridgeHelper {
 				if (ze.getName().endsWith(".class")) {
 					String fqn = FileHelper.getFqn(new File(ze.getName()), null);
 					Class<?> clz = loader.loadClass(fqn);
-					if (tu.hasType(clz, aFindClass)) {
+					if (this.tu.hasType(clz, aFindClass)) {
 						result = clz;
 						break;
 					}
 				}
 			}
 			return result;
-		} catch(Throwable t) {
-			logger.error("error at findRegisterClassViaJarfile "  + t);
+		} catch (Throwable t) {
+			logger.error("error at findRegisterClassViaJarfile " + t);
 			return null;
 		} finally {
-			if (zf != null) {zf.close();}
+			if (zf != null) {
+				zf.close();
+			}
 		}
 	}
 
@@ -414,7 +414,7 @@ public class CartridgeHelper {
 
 		if (TemplatesStore.getInstance().getData().values() != null) {
 			for (TemplatesStoreData data : TemplatesStore.getInstance().getData().values()) {
-				if (isSelectedCartridge(data)) {
+				if (this.isSelectedCartridge(data)) {
 					Collection<SubsValue> subsvals = data.getSubstitutes();
 					if (subsvals != null) {
 						DataStore.getInstance().mergeSubsValues(subsvals, false);
@@ -435,8 +435,8 @@ public class CartridgeHelper {
 		}
 		return false;
 	}
-	//---------------------- filters ----------------------
-	
+	// ---------------------- filters ----------------------
+
 	class CartridgeLinkFilter implements FileFilter {
 		@Override
 		public boolean accept(File pathname) {
