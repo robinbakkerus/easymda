@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package jrb.grpc;
+
+service GetKlantbeeld {
+	rpc getKlantbeeld(SelectKlantbeeldMsg) returns (KlantbeeldMsg);
+} 
+	
+
+	
+message KlantbeeldMsg {
+	int32 klantId = 1;
+	string voornaam = 2;
+	string achternaam = 3;
+	int64 geboorteDatum = 4;
+	enum GeslachtMsg{
+		MAN = 0;
+		VROUW = 1;
+	}
+
+	GeslachtMsg geslacht = 5;
+	AdresMsg adres = 6;
+	repeated PensioenAanspraakMsg aanspraken = 7;	
+}
+
+	
+message PensioenAanspraakMsg {
+	enum PensioenAanspraakTypeMsg{
+		TYPE_A = 0;
+		TYPE_B = 1;
+	}
+
+	PensioenAanspraakTypeMsg type = 1;
+	string uitkering = 2;
+	int64 einddatum = 3;	
+}
+
+	
+message AdresMsg {
+	string adres = 1;
+	string postcode = 2;
+	string plaats = 3;	
+}
+
+	
+message SelectKlantbeeldMsg {
+	int32 klantId = 1;
+	string achternaam = 2;	
+}

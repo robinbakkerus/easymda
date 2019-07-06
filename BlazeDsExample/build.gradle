@@ -8,13 +8,55 @@
 
 apply from: "../common.gradle"
 
+apply plugin: 'com.google.protobuf'
+
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
+  }
+}
+
+protobuf {
+  protoc {
+    artifact = "com.google.protobuf:protoc:3.7.1"
+  }
+  plugins {
+    grpc {
+      artifact = 'io.grpc:protoc-gen-grpc-java:1.21.0'
+    }
+  }
+  generateProtoTasks {
+    all()*.plugins {
+      grpc {}
+    }
+  }
+}
+
 defaultTasks 'standard'
 
 archivesBaseName = "blazeds.example"
 
+sourceSets {
+   main {
+      java {
+         srcDirs = ["src/main/java", "src/test/java", "build/generated/source/proto/main/java", "build/generated/source/proto/main/grpc" ]
+      }
+   }  
+}
+
 buildDir = "target"
 
+def grpcVersion = '1.21.0' // CURRENT_GRPC_VERSION
+def protobufVersion = '3.7.1'
+
 dependencies {
+	implementation 'io.grpc:grpc-netty-shaded:1.21.0'
+	implementation 'io.grpc:grpc-protobuf:1.21.0'
+	implementation 'io.grpc:grpc-stub:1.21.0'
+	
 	compile "commons-lang:commons-lang:2.6",
 		"org.slf4j:slf4j-api:1.6.4",
 		"easymda:easymda.cartridge.blazeds:5.0",
@@ -40,7 +82,8 @@ dependencies {
 			"../FlcaPlugin/lib/org.eclipse.ui.workbench_3.104.0.v20130204-164612.jar",
 			"../FlcaPlugin/lib/org.eclipse.core.contenttype_3.4.200.v20120523-2004.jar",
 			"../FlcaPlugin/lib/org.eclipse.core.commands_3.6.2.v20130123-162658.jar"
-		)	
+		)
+		
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'

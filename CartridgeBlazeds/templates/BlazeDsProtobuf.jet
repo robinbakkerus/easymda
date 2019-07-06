@@ -7,7 +7,12 @@ class="BlazeDsProtobuf" %>
 <% ProtobufTypeUtils pbu = new ProtobufTypeUtils(); %>
 syntax = "proto3";
 
-package grpc.testing;
+option java_multiple_files = true;
+option java_package = "jrb.grpc.blazeds";
+option java_outer_classname = "<%=cc.getSimpleName()%>Proto";
+option objc_class_prefix = "HLW";
+
+package jrb.grpc;
 
 service <%=cc.getSimpleName()%> {
 <% for (Method method : iu.getMethods(cc)) { %>
