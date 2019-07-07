@@ -51,9 +51,9 @@ public class BlazeDsProtobuf
 
      BlazeDsTypeUtils tu = new BlazeDsTypeUtils();
      NameUtils nu = new NameUtils();
-     TemplateUtils tplu = new TemplateUtils();
      InterfaceUtils iu = new InterfaceUtils(); 
      AppUtils au = new AppUtils(); 
+     ProtobufTypeUtils pbu = new ProtobufTypeUtils(); 
      Object element = arg.getElement(); 
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();
@@ -61,7 +61,6 @@ public class BlazeDsProtobuf
      GetFieldsModus EXC = GetFieldsModus.EXCLUDE; 
      GetFieldsModus INC = GetFieldsModus.INCLUDE; 
      cc = (Class) element; 
-     ProtobufTypeUtils pbu = new ProtobufTypeUtils(); 
     stringBuffer.append(TEXT_1);
     stringBuffer.append(cc.getSimpleName());
     stringBuffer.append(TEXT_2);

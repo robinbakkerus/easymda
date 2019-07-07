@@ -4,7 +4,6 @@ package="blazeds"
 class="BlazeDsProtobuf" %>
 <%@ include file="include/java-class-init.jetinc" %>
 <% cc = (Class) element; %>
-<% ProtobufTypeUtils pbu = new ProtobufTypeUtils(); %>
 syntax = "proto3";
 
 option java_multiple_files = true;

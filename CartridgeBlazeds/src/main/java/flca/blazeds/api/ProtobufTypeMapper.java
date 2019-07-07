@@ -7,6 +7,7 @@ import java.util.Map;
 public class ProtobufTypeMapper {
 
 	private static final Map<Class<?>, String> sTypeMap;
+	private static final Map<Class<?>, String> sMapperMap;
 		
 	static {
 		sTypeMap = new HashMap<>();
@@ -25,6 +26,13 @@ public class ProtobufTypeMapper {
 		sTypeMap.put(java.util.Date.class, "int64");
 		sTypeMap.put(BigDecimal.class, "string");
 	}
+
+	static {
+		sMapperMap = new HashMap<>();
+		sMapperMap.put(java.util.Date.class, "ProtobufDateMapper");
+		sMapperMap.put(java.sql.Date.class, "ProtobufDateMapper");
+		sMapperMap.put(BigDecimal.class, "ProtobufBigDecimalMapper");
+	}
 	
 	public static String getProtobufTypename(final Class<?> aClass) {
 		if (sTypeMap.containsKey(aClass)) {
@@ -33,4 +41,9 @@ public class ProtobufTypeMapper {
 			return "???";
 		}
 	}
+	
+	public static String getProtobufMapper(final Class<?> aClass) {
+		return sMapperMap.get(aClass);
+	}
+	
 }

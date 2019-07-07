@@ -63,9 +63,9 @@ public class BlazeDsMapperTest
 
      BlazeDsTypeUtils tu = new BlazeDsTypeUtils();
      NameUtils nu = new NameUtils();
-     TemplateUtils tplu = new TemplateUtils();
      InterfaceUtils iu = new InterfaceUtils(); 
      AppUtils au = new AppUtils(); 
+     ProtobufTypeUtils pbu = new ProtobufTypeUtils(); 
      Object element = arg.getElement(); 
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();
@@ -90,7 +90,7 @@ public class BlazeDsMapperTest
      List<Fw> entityFws = tu.getFields(entityClass, EXC, FwSelectType.ID); 
      String toUncapname = nu.uncapName(toClassname); 
      String entityUncapname = nu.uncapName(entityClassname); 
-     String mapper = toClassname + "Mapper"; //tplu.getClassName(TidBeanMapper.BEANMAPPER_TO.name()); 
+     String mapper = toClassname + "Mapper"; 
      impu.addImport(toClass);
      impu.addImport(entityClass);
      impu.addImport("org.junit.Test"); 

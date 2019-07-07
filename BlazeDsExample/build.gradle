@@ -81,7 +81,8 @@ dependencies {
 			"../FlcaPlugin/lib/org.eclipse.ui.ide_3.8.2.v20121106-165923.jar",
 			"../FlcaPlugin/lib/org.eclipse.ui.workbench_3.104.0.v20130204-164612.jar",
 			"../FlcaPlugin/lib/org.eclipse.core.contenttype_3.4.200.v20120523-2004.jar",
-			"../FlcaPlugin/lib/org.eclipse.core.commands_3.6.2.v20130123-162658.jar"
+			"../FlcaPlugin/lib/org.eclipse.core.commands_3.6.2.v20130123-162658.jar",
+			"../FlcaPlugin/lib/org.eclipse.emf.common_2.8.0.v20130125-0546.jar"
 		)
 		
 

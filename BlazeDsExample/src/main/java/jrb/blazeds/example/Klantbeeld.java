@@ -1,5 +1,6 @@
 package jrb.blazeds.example;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +11,7 @@ public class Klantbeeld {
 	private String achternaam;
 	private Date geboorteDatum;
 	private Geslacht geslacht;
+	private BigDecimal saldo;
 	private Adres adres;
 	private List<PensioenAanspraak> aanspraken;
 	
@@ -36,6 +38,13 @@ public class Klantbeeld {
 	}
 	public void setGeboorteDatum(Date geboorteDatum) {
 		this.geboorteDatum = geboorteDatum;
+	}
+	
+	public BigDecimal getSaldo() {
+		return saldo;
+	}
+	public void setSaldo(BigDecimal saldo) {
+		this.saldo = saldo;
 	}
 	public Geslacht getGeslacht() {
 		return geslacht;

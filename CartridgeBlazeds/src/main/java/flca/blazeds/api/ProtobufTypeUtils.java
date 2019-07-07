@@ -103,4 +103,17 @@ public class ProtobufTypeUtils {
 		return sb.toString();
 	}
 
+	/**
+	 * return the name of the corresping mapper class, or null if no specific mapper is needed.
+	 * @param fw
+	 * @return
+	 */
+	public String getMapper(final Fw fw) {
+		String mapper = ProtobufTypeMapper.getProtobufMapper(fw.type());
+		if (mapper != null) {
+			return mapper;
+		} else {
+			return null;
+		}
+	}
 }

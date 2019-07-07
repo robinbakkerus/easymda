@@ -111,9 +111,9 @@ public class BlazeDsMockData
 
      BlazeDsTypeUtils tu = new BlazeDsTypeUtils();
      NameUtils nu = new NameUtils();
-     TemplateUtils tplu = new TemplateUtils();
      InterfaceUtils iu = new InterfaceUtils(); 
      AppUtils au = new AppUtils(); 
+     ProtobufTypeUtils pbu = new ProtobufTypeUtils(); 
      Object element = arg.getElement(); 
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();

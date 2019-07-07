@@ -3,7 +3,6 @@ imports="java.util.*  java.lang.reflect.* flca.mda.api.util.* flca.blazeds.api.*
 package="blazeds"
 class="BlazeDsProtobufMsg" %>
 <%@ include file="include/java-class-init.jetinc" %>
-<% ProtobufTypeUtils pbu = new ProtobufTypeUtils(); %>
 
 <% List<Fw> fwList = tu.getFieldsExc(cc, FwSelectType.SPECIAL, FwSelectType.ID); %>
 <% String name = pbu.protoMessageName(cc); %>
