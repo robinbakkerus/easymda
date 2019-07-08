@@ -6,7 +6,6 @@ import flca.mda.codegen.helpers.SourceCodeUtils;
 
 public class JetArgument {
 	private Object element;
-	private Class<?> elementClass;
 	private ITemplate template;
 	private String sourceCode;
 
@@ -17,16 +16,12 @@ public class JetArgument {
 
 	public JetArgument(Object aSourceElem, ITemplate aTemplate, String aSourceCode) {
 		this(aTemplate, aSourceCode);
-
 		element = aSourceElem;
-		elementClass = aSourceElem.getClass();
 	}
 
 	public JetArgument(Class<?> aSourceClass, ITemplate aTemplate, String aSourceCode) {
 		this(aTemplate, aSourceCode);
-
-		element = null;
-		elementClass = aSourceClass;
+		element = aSourceClass;
 	}
 
 	private JetArgument(ITemplate aTemplate, String aSourceCode) {
@@ -55,11 +50,11 @@ public class JetArgument {
 	}
 
 	public Class<?> getElementClass() {
-		return elementClass;
-	}
-
-	public void setElementClass(Class<?> elementClass) {
-		this.elementClass = elementClass;
+		if (element != null) {
+			return (element instanceof Class<?>) ? (Class<?>) element : element.getClass();
+		} else {
+			return null;
+		}
 	}
 
 	public ITemplate getTemplate() {

@@ -7,14 +7,16 @@ class="BlazeDsProtobufMsg" %>
 <% List<Fw> fwList = tu.getFieldsExc(cc, FwSelectType.SPECIAL, FwSelectType.ID); %>
 <% String name = pbu.protoMessageName(cc); %>
 <% int index = 1; %>
-	
+<% if (tu.isEnum(cc)) { %>
+<%=pbu.generateProtobufEnumMsg(cc)%>
+<% } else { %>
 message <%=name%> {
 <%  for (Fw fw : fwList) { %>
 <%	if (fw.isEnum()) { %>
-	<%=pbu.getProtobufTypename(fw)%>
 	<%=pbu.protoMessageName(fw.getField().getType())%> <%=fw.name()%> = <%=index++ %>;
-<%	  } else { %>
+<%	   } else { %>
 	<%=pbu.getProtobufTypename(fw)%> <%=fw.name()%> = <%=index++ %>;
-<%	  } %>
-<% } %>	
+<%	   } %>
+<%  } %>	
 }
+<% } %>

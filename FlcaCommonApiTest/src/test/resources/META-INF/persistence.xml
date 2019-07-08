@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
+  <persistence-unit name="Demo" transaction-type="RESOURCE_LOCAL">
+
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <non-jta-data-source>jdbc/Demo</non-jta-data-source>
+
+<!-- 
+    <properties>
+      <property name="hibernate.dialect"              value="org.hibernate.dialect.DerbyDialect"/>
+      <property name="hibernate.cache.provider_class" value="org.hibernate.cache.HashtableCacheProvider"/>
+    </properties>
+
+    <properties>
+      <property name="hibernate.dialect"              value="com.flca.frw.dao.SQLiteDialect"/>
+      <property name="hibernate.cache.provider_class" value="org.hibernate.cache.HashtableCacheProvider"/>
+    </properties>
+-->
+  </persistence-unit>
+</persistence>

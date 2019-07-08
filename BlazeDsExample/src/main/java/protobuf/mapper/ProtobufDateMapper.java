@@ -8,7 +8,7 @@ public class ProtobufDateMapper {
 		return date.getTime();
 	}
 	
-	public static Date fromProtobuf(final long protoDate) {
-		return new Date(protoDate);
+	public static Date fromProtobuf(final long value) {
+		return new Date(value);
 	}
 }

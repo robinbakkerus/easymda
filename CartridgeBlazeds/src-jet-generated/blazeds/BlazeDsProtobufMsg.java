@@ -19,13 +19,14 @@ public class BlazeDsProtobufMsg
 
   public final String NL = nl == null ? (System.getProperties().getProperty("line.separator")) : nl;
   protected final String TEXT_1 = "";
-  protected final String TEXT_2 = NL + "\t" + NL + "message ";
-  protected final String TEXT_3 = " {";
-  protected final String TEXT_4 = NL + "\t";
-  protected final String TEXT_5 = " ";
-  protected final String TEXT_6 = " = ";
-  protected final String TEXT_7 = ";";
-  protected final String TEXT_8 = "\t" + NL + "}";
+  protected final String TEXT_2 = NL;
+  protected final String TEXT_3 = NL + "message ";
+  protected final String TEXT_4 = " {";
+  protected final String TEXT_5 = NL + "\t";
+  protected final String TEXT_6 = " ";
+  protected final String TEXT_7 = " = ";
+  protected final String TEXT_8 = ";";
+  protected final String TEXT_9 = "\t" + NL + "}";
 
   public String generate(Object argument)
   {
@@ -63,31 +64,35 @@ public class BlazeDsProtobufMsg
      List<Fw> fwList = tu.getFieldsExc(cc, FwSelectType.SPECIAL, FwSelectType.ID); 
      String name = pbu.protoMessageName(cc); 
      int index = 1; 
+     if (tu.isEnum(cc)) { 
     stringBuffer.append(TEXT_2);
-    stringBuffer.append(name);
+    stringBuffer.append(pbu.generateProtobufEnumMsg(cc));
+     } else { 
     stringBuffer.append(TEXT_3);
+    stringBuffer.append(name);
+    stringBuffer.append(TEXT_4);
       for (Fw fw : fwList) { 
     	if (fw.isEnum()) { 
-    stringBuffer.append(TEXT_4);
-    stringBuffer.append(pbu.getProtobufTypename(fw));
-    stringBuffer.append(TEXT_4);
+    stringBuffer.append(TEXT_5);
     stringBuffer.append(pbu.protoMessageName(fw.getField().getType()));
-    stringBuffer.append(TEXT_5);
-    stringBuffer.append(fw.name());
     stringBuffer.append(TEXT_6);
-    stringBuffer.append(index++ );
-    stringBuffer.append(TEXT_7);
-    	  } else { 
-    stringBuffer.append(TEXT_4);
-    stringBuffer.append(pbu.getProtobufTypename(fw));
-    stringBuffer.append(TEXT_5);
     stringBuffer.append(fw.name());
-    stringBuffer.append(TEXT_6);
-    stringBuffer.append(index++ );
     stringBuffer.append(TEXT_7);
-    	  } 
-     } 
+    stringBuffer.append(index++ );
     stringBuffer.append(TEXT_8);
+    	   } else { 
+    stringBuffer.append(TEXT_5);
+    stringBuffer.append(pbu.getProtobufTypename(fw));
+    stringBuffer.append(TEXT_6);
+    stringBuffer.append(fw.name());
+    stringBuffer.append(TEXT_7);
+    stringBuffer.append(index++ );
+    stringBuffer.append(TEXT_8);
+    	   } 
+      } 
+    stringBuffer.append(TEXT_9);
+     } 
+    stringBuffer.append(TEXT_2);
     return stringBuffer.toString();
   }
 }

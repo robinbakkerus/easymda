@@ -25,7 +25,7 @@ public class BlazeDsProtobuf
   protected final String TEXT_5 = "(";
   protected final String TEXT_6 = ") returns (";
   protected final String TEXT_7 = ");";
-  protected final String TEXT_8 = NL + "} " + NL + "\t";
+  protected final String TEXT_8 = NL + "}\t";
   protected final String TEXT_9 = NL;
 
   public String generate(Object argument)

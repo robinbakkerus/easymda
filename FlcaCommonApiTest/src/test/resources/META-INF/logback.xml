@@ -1,0 +1,26 @@
+<configuration>
+
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		<File>/tmp/log/tomcat.log</File>
+		<Append>true</Append>
+		<Encoding>UTF-8</Encoding>
+		<BufferedIO>false</BufferedIO>
+		<ImmediateFlush>true</ImmediateFlush>
+		
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</Pattern>
+		</layout>
+	</appender>
+	
+	<root>
+		<level value="error" />
+		<appender-ref ref="FILE" />
+	</root>
+
+  <logger name="com.flca">
+		<level value="INFO" />
+		<appender-ref ref="FILE" />
+  </logger>
+
+</configuration>
+

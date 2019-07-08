@@ -13,65 +13,66 @@ public class ProtobufTypeUtils {
 
 	private final InterfaceUtils iu = new InterfaceUtils();
 	private final TypeUtils tu = new TypeUtils();
-	
+
 	/**
 	 * return the equivalent name used for protobuf messages
+	 * 
 	 * @param name
 	 * @return
 	 */
 	public String protoMessageName(String name) {
-		return name + "Msg";	
+		return name + "Msg";
 	}
 
 	public String protoMessageName(Class<?> clazz) {
-		return clazz.getSimpleName() + "Msg";	
+		return clazz.getSimpleName() + "Msg";
 	}
-	
+
 	/**
-	 * return all, not primitive, types used in the given interface class, from all the methods. 
-	 * This includes the method parameters, and return types.
+	 * return all, not primitive, types used in the given interface class, from all
+	 * the methods. This includes the method parameters, and return types.
 	 */
 	public Set<Class<?>> findAllMethodTypes(Class<?> clazz) {
 		Set<Class<?>> r = new HashSet<>();
-		for (Method m : iu.getMethods(clazz)) {
-			findAllMethodReturnTypes(m, r);
-			findAllMethodArgumentTypes(m, r);
+		for (Method m : this.iu.getMethods(clazz)) {
+			this.findAllMethodReturnTypes(m, r);
+			this.findAllMethodArgumentTypes(m, r);
 		}
 		return r;
 	}
 
 	private void findAllMethodReturnTypes(Method m, Set<Class<?>> r) {
 		Class<?> rettyp = m.getReturnType();
-		if (!tu.isSimpleField(rettyp)) {
-			findRecursiveNestedTypes(rettyp, r);
+		if (!this.tu.isSimpleField(rettyp)) {
+			this.findRecursiveNestedTypes(rettyp, r);
 		}
 	}
 
 	private void findAllMethodArgumentTypes(Method m, Set<Class<?>> r) {
 		Class<?> paramTypes[] = m.getParameterTypes();
 		for (Class<?> clz : paramTypes) {
-			if (!tu.isSimpleField(clz)) {
-				findRecursiveNestedTypes(clz, r);
-			}			
+			if (!this.tu.isSimpleField(clz)) {
+				this.findRecursiveNestedTypes(clz, r);
+			}
 		}
 	}
 
 	private void findRecursiveNestedTypes(Class<?> parent, Set<Class<?>> r) {
 		if (!r.contains(parent)) {
 			r.add(parent);
-			List<Fw> fws = tu.getAllFields(parent);
+			List<Fw> fws = this.tu.getAllFields(parent);
 			for (Fw fw : fws) {
-				if (!fw.isSimple() && !fw.isId()) {
-					findRecursiveNestedTypes(fw.genericType(), r);
+				if (fw.isEnum()) {
+					r.add(fw.type());
+				} else if (!fw.isSimple() && !fw.isId()) {
+					this.findRecursiveNestedTypes(fw.genericType(), r);
 				}
 			}
 		}
 	}
 
 	public String getProtobufTypename(final Fw fw) {
-		if (fw.isEnum()) {
-			return this.getProtobufTypenameEnum(fw);
-		} else if (fw.isCollection()) {
+		if (fw.isCollection()) {
 			return this.getProtobufTypenameCollection(fw);
 		} else if (fw.isSimple()) {
 			return ProtobufTypeMapper.getProtobufTypename(fw.getField().getType());
@@ -82,29 +83,36 @@ public class ProtobufTypeUtils {
 
 	private String getProtobufTypenameCollection(final Fw fw) {
 		Class<?> clz = fw.genericType();
-		if (tu.isSimpleField(clz)) {
+		if (this.tu.isSimpleField(clz)) {
 			String typename = ProtobufTypeMapper.getProtobufTypename(clz);
 			return "repeated " + typename;
 		} else {
 			return "repeated " + this.protoMessageName(clz);
 		}
 	}
-	
-	private String getProtobufTypenameEnum(final Fw fw) {
+
+	/**
+	 * generates the proto snippet for the given enum class
+	 * @param aClass
+	 * @return
+	 */
+	public String generateProtobufEnumMsg(final Class<?> aClass) {
 		final StringBuffer sb = new StringBuffer();
-		int index  = 0;
-		Class<?> clz = fw.genericType();
-		sb.append("enum " + this.protoMessageName(clz) + "{" + "\n");
-		Object enumtypes[] = clz.getEnumConstants();
+		int index = 0;
+		sb.append("enum " + this.protoMessageName(aClass) + "{" + "\n");
+		Object enumtypes[] = aClass.getEnumConstants();
 		for (Object obj : enumtypes) {
-			sb.append("\t\t"+ obj.toString() + " = " + (index++) + ";\n");
+			sb.append("\t" + obj.toString() + " = " + (index++) + ";\n");
 		}
-		sb.append("\t}" + "\n");
+		sb.append("}" + "\n");
 		return sb.toString();
 	}
 
+
 	/**
-	 * return the name of the corresping mapper class, or null if no specific mapper is needed.
+	 * return the name of the corresping mapper class, or null if no specific mapper
+	 * is needed.
+	 * 
 	 * @param fw
 	 * @return
 	 */
@@ -112,8 +120,19 @@ public class ProtobufTypeUtils {
 		String mapper = ProtobufTypeMapper.getProtobufMapper(fw.type());
 		if (mapper != null) {
 			return mapper;
+		} else if (fw.isEnum() || fw.isBean() || fw.isCollection()) {
+			return fw.genericTypeName() + "Mapper";
 		} else {
 			return null;
 		}
+	}
+	
+	/**
+	 * return something like jrb.grpc.GetKlantbeeldOuterClass.*
+	 * TODO how to obtain the gprc service name from the given class.
+	 * @return
+	 */
+	public String getGrpcImport(Class<?> aClass) {
+		return "jrb.grpc.blazeds.*";
 	}
 }

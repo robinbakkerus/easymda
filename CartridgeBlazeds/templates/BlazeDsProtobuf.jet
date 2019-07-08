@@ -19,8 +19,7 @@ service <%=cc.getSimpleName()%> {
 <% Class arg0type = iu.getParameterType(method, 0); String arg0name = pbu.protoMessageName(arg0type); //todo support meerdere args %>
 	rpc <%=srvname%>(<%=arg0name%>) returns (<%=respname%>);
 <% } //for-loop %>
-} 
-	
+}	
 <% for (Class<?> clz : pbu.findAllMethodTypes(cc)) { %>
 <% String includeCode = tu.include(BlazeDsProtobufMsg.class, clz);%>
 <%=includeCode%>

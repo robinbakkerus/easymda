@@ -164,6 +164,22 @@ public class Fw implements TypeConstants {
 		return AnnotationsHelper.hasAnnotation(this, Id.class);
 	}
 	
+	/**
+	 * returns true if this type is a nested Pojo
+	 * @return
+	 */
+	public boolean isBean() {
+		if (field != null) {
+			return !tu.isSimpleField(field.getType()) && !this.isEnum() && !this.isCollection(); 
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * return true if is this (generic)type extends IEntityType.
+	 * @return
+	 */
 	public boolean isEntity() {
 		return tu.hasType(genericType(), IEntityType.class);
 	}
@@ -333,6 +349,10 @@ public class Fw implements TypeConstants {
 
 	public boolean isCollection() {
 		return (tu.isCollection(type()));
+	}
+
+	public boolean isArray() {
+		return (tu.isCollection(type()));//TODO
 	}
 
 	public String getAnnotations() {
