@@ -1,10 +1,12 @@
 package flca.mda.codegen.data;
 
+import java.util.List;
+
+import flca.mda.api.util.TypeUtils;
+import flca.mda.codegen.helpers.StrUtil;
 import mda.type.IAnyClass;
 import mda.type.IAnyEnum;
 import mda.type.IAnyInterface;
-import flca.mda.api.util.TypeUtils;
-import flca.mda.codegen.helpers.StrUtil;
 
 public class Template implements ITemplate {
 	private String name;
@@ -151,12 +153,12 @@ public class Template implements ITemplate {
 	@Override
 	public boolean appliesTo(Class<?> aTestClass) {
 		if (applyToClasses != null && aTestClass != null) {
-			Class<?> types[] = tu.getAllSuperTypes(aTestClass);
+			List<Class<?>> superTypes = tu.getAllSuperTypes(aTestClass);
 			for (Class<?> applyToClz : applyToClasses) {
 				if (aTestClass.equals(applyToClz)) {
 					return true;
 				} else {
-					for (Class<?> clz : types) {
+					for (Class<?> clz : superTypes) {
 						if (applyToClz.getName().equals(clz.getName())) {
 							return true;
 						}

@@ -3,7 +3,7 @@ package jrb.blazeds.klantbeeld.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class PensioenAanspraak {
+public abstract class PensioenAanspraak {
 
 	private PensioenAanspraakType type;
 	private BigDecimal uitkering;

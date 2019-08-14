@@ -11,6 +11,7 @@ import mda.annotation.jpa.OneToMany;
 import mda.annotation.jpa.OneToOne;
 import mda.type.IEntityType;
 import flca.mda.codegen.helpers.AnnotationsHelper;
+import flca.mda.codegen.helpers.ModelClasses;
 import flca.mda.codegen.helpers.StrUtil;
 
 /**
@@ -20,6 +21,7 @@ import flca.mda.codegen.helpers.StrUtil;
  */
 public class Fw implements TypeConstants {
 	protected TypeUtils tu = new TypeUtils();
+	protected NameUtils nu = new NameUtils();
 	protected ValidatorUtils vu = new ValidatorUtils();
 	private Field field; // a normal field
 	private SpecialField specialField; // used for example, for the Id if there is no explicit Id field defined
@@ -225,6 +227,10 @@ public class Fw implements TypeConstants {
 		} else {
 			return false;
 		}
+	}
+	
+	public boolean isModelClass() {
+		return ModelClasses.getAllClasses().contains(this.type()) || ModelClasses.getAllClasses().contains(this.genericType());
 	}
 
 	public boolean isRelation() {
@@ -507,6 +513,22 @@ public class Fw implements TypeConstants {
 		return result;
 	}
 
+	/**
+	 * Return the getter, ex: "getName" 
+	 * @return
+	 */
+	public String getter() {
+		return String.format("get%s", nu.capName(this.getField()));
+	}
+
+	/**
+	 * Return the setter, ex: "getName" 
+	 * @return
+	 */
+	public String setter() {
+		return String.format("set%s", nu.capName(this.getField()));
+	}
+	
 	/**
 	 * return the random value 
 	 * @return

@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import mda.type.IBaseType;
-import flca.mda.api.util.TypeUtils;
 import flca.mda.codegen.CodegenConstants;
 import flca.mda.codegen.helpers.IniFileHelper;
 import flca.mda.codegen.helpers.IniFileSection;
@@ -33,8 +31,6 @@ public class DataStore {
 	private Map<String, IniFileSection> sections;
 	private Set<Class<?>> modelClasses;
 	
-	private static TypeUtils tu = new TypeUtils();
-
 	public static DataStore getInstance() {
 		if (sInstance == null) {
 			sInstance = new DataStore();
@@ -101,8 +97,7 @@ public class DataStore {
 	}
 
 	public void addModelClass(Class<?> aClass) {
-		// skip this class if it already exist, and only allow if it is a model class
-		if (!modelClasses.contains(aClass) && (tu.hasType(aClass, IBaseType.class) || aClass.isEnum())) {
+		if (!modelClasses.contains(aClass)) {
 			modelClasses.add((aClass));
 		}
 	}
@@ -300,6 +295,7 @@ public class DataStore {
 		m5.invoke(datastoreClone, new Object[] { DataStore.getInstance().getModelProjectDir() });
 	}
 
+	
 	// --------
 	static class PrefsFileFilter implements FileFilter {
 		@Override

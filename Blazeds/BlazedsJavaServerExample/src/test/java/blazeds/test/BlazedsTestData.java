@@ -8,8 +8,8 @@ import flca.mda.codegen.data.SubsValue;
 import flca.test.base.AbstractTestTemplatesData;
 
 public class BlazedsTestData extends AbstractTestTemplatesData {
-	String MODEL_DIR = "BlazedsExample";
-	String CARTRIDGE_DIR = "CartridgeBlazeds";
+	String MODEL_DIR = "BlazedsJavaServerExample";
+	String CARTRIDGE_DIR = "BlazedsCartridge";
 	String PLUGIN_DIR = "FlcaGenerator";
 
 	@Override
@@ -19,7 +19,7 @@ public class BlazedsTestData extends AbstractTestTemplatesData {
 
 	@Override
 	public File getModelDir() {
-		return new File(getProjectDir() + "/" + this.MODEL_DIR);
+		return new File(getProjectDir() + "/" + this.MODEL_DIR + "/bin/main");
 	}
 
 	@Override

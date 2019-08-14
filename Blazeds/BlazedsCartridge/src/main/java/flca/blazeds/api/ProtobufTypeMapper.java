@@ -1,6 +1,9 @@
 package flca.blazeds.api;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,11 +30,15 @@ public class ProtobufTypeMapper {
 		sTypeMap.put(BigDecimal.class, "string");
 	}
 
+	//this contains the posfix method name from ProtobufMapper
 	static {
 		sMapperMap = new HashMap<>();
-		sMapperMap.put(java.util.Date.class, "ProtobufDateMapper");
-		sMapperMap.put(java.sql.Date.class, "ProtobufDateMapper");
-		sMapperMap.put(BigDecimal.class, "ProtobufBigDecimalMapper");
+		sMapperMap.put(java.util.Date.class, "PbDate");
+		sMapperMap.put(java.sql.Date.class, "PbSqlDate");
+		sMapperMap.put(Timestamp.class, "PbTimestamp");
+		sMapperMap.put(LocalDate.class, "PbLocalDate");
+		sMapperMap.put(LocalDateTime.class, "PbLocalDateTime");
+		sMapperMap.put(BigDecimal.class, "PbBigDecimal");
 	}
 	
 	public static String getProtobufTypename(final Class<?> aClass) {
@@ -42,8 +49,28 @@ public class ProtobufTypeMapper {
 		}
 	}
 	
-	public static String getProtobufMapper(final Class<?> aClass) {
-		return sMapperMap.get(aClass);
+	/**
+	 * Returns true if for the given class a special mapper method is available in ProtobufMapper 
+	 * @param aClass
+	 * @return
+	 */
+	public static boolean hasProtobufTypeMapper(final Class<?> aClass) {
+		return sMapperMap.get(aClass) != null;
+	} 
+
+	public static String getProtobufTypeGetter(final Class<?> aClass) {
+		if (hasProtobufTypeMapper(aClass)) {
+			return "ProtobufMapper.from" + sMapperMap.get(aClass);
+		} else {
+			return null;
+		}
 	}
 	
+	public static String getProtobufTypeSetter(final Class<?> aClass) {
+		if (hasProtobufTypeMapper(aClass)) {
+			return "ProtobufMapper.to" + sMapperMap.get(aClass);
+		} else {
+			return null;
+		}
+	}
 }

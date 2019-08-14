@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import flca.mda.codegen.data.DataStore;
 import flca.mda.codegen.data.SubsValue;
 import flca.mda.codegen.helpers.AnnotationsHelper;
 import flca.mda.codegen.helpers.FilenameHelper;
-import flca.mda.codegen.helpers.SubClassesHelper;
+import flca.mda.codegen.helpers.ModelClasses;
 import flca.mda.common.api.helpers.ImportHelper;
 import mda.annotation.jpa.Inheritance;
 import mda.annotation.jpa.JoinTable;
@@ -57,9 +58,8 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * This will convert the given object to an instance of the given class. We
-	 * need this method because the model class was loaded a different
-	 * classloader.
+	 * This will convert the given object to an instance of the given class. We need
+	 * this method because the model class was loaded a different classloader.
 	 * 
 	 * @param aFromObject
 	 * @param toClass
@@ -78,12 +78,12 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * Returns the primitive or class name for the given Type. Class names will
-	 * be added as imports to the GenModel's ImportManager, and the imported
-	 * form will be returned.
+	 * Returns the primitive or class name for the given Type. Class names will be
+	 * added as imports to the GenModel's ImportManager, and the imported form will
+	 * be returned.
 	 */
 	public String getImportedConcreteType(Class<?> aClass, Class<?> aGenericType) {
-		Class<?> concreteClass = getConcreteClass(aClass);
+		Class<?> concreteClass = this.getConcreteClass(aClass);
 
 		if (!concreteClass.isPrimitive()) {
 			ImportHelper.addImport(concreteClass);
@@ -92,7 +92,7 @@ public class TypeUtils implements TypeConstants {
 			ImportHelper.addImport(aGenericType);
 		}
 
-		if (isCollection(aClass)) {
+		if (this.isCollection(aClass)) {
 			if (aGenericType != null) {
 				return concreteClass.getSimpleName() + "<" + aGenericType.getSimpleName() + ">";
 			} else {
@@ -104,8 +104,8 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * return the generic type of the given field or the actual type if this is
-	 * not a generic type
+	 * return the generic type of the given field or the actual type if this is not
+	 * a generic type
 	 * 
 	 * @param aField
 	 * @return
@@ -127,7 +127,7 @@ public class TypeUtils implements TypeConstants {
 				return null;// should not be possible
 			}
 		} else {
-			ImportHelper.addImport(getTypeName(aField.getType()));
+			ImportHelper.addImport(this.getTypeName(aField.getType()));
 			return aField.getType();
 		}
 	}
@@ -139,14 +139,13 @@ public class TypeUtils implements TypeConstants {
 	 * @param aClass
 	 * @return
 	 */
-	public Class<?>[] getAllSuperTypes(Class<?> aClass) {
+	public List<Class<?>> getAllSuperTypes(Class<?> aClass) {
 		List<Class<?>> result = new ArrayList<Class<?>>();
 
-		getAllSuperTypes(aClass, result);
-		getAllInterfaces(aClass, result);
+		this.getAllSuperTypes(aClass, result);
+		this.getAllInterfaces(aClass, result);
 
-		Class<?> types[] = new Class[0];
-		return result.toArray(types);
+		return result;
 	}
 
 	/**
@@ -158,7 +157,7 @@ public class TypeUtils implements TypeConstants {
 	 */
 	public Class<?>[] getAllInterfaces(Class<?> aClass) {
 		List<Class<?>> result = new ArrayList<Class<?>>();
-		getAllInterfaces(aClass, result);
+		this.getAllInterfaces(aClass, result);
 		Class<?> types[] = new Class[0];
 		return result.toArray(types);
 	}
@@ -167,7 +166,7 @@ public class TypeUtils implements TypeConstants {
 		Class<?> interfaces[] = aClass.getInterfaces();
 		for (Class<?> intf : interfaces) {
 			aResult.add(intf);
-			getAllInterfaces(intf, aResult);
+			this.getAllInterfaces(intf, aResult);
 		}
 	}
 
@@ -188,7 +187,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public boolean hasType(Class<?> aSourceClass, Class<?> aTestForClass) {
-		Class<?> clazzes[] = getAllSuperTypes(aSourceClass);
+		List<Class<?>> clazzes = this.getAllSuperTypes(aSourceClass);
 		for (Class<?> clz : clazzes) {
 			if (clz.getName().equals(aTestForClass.getName())) {
 				return true;
@@ -205,7 +204,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public boolean hasInterface(Class<?> aSourceClass, Class<?> aTestForClass) {
-		Class<?> clazzes[] = getAllInterfaces(aSourceClass);
+		Class<?> clazzes[] = this.getAllInterfaces(aSourceClass);
 		for (Class<?> clz : clazzes) {
 			if (clz.getName().equals(aTestForClass.getName())) {
 				return true;
@@ -222,15 +221,23 @@ public class TypeUtils implements TypeConstants {
 	 */
 	public List<Field> getAllTheFields(Class<?> aSourceClass) {
 		List<Field> result = new ArrayList<Field>();
+		this.getAllFields(aSourceClass, result);
+		return result;
+	}
 
+	private void getAllFields(Class<?> aSourceClass, List<Field> result) {
 		Field fields[] = aSourceClass.getDeclaredFields();
 		for (Field field : fields) {
 			result.add(field);
 		}
 
-		return result;
+		Class<?> superClz = this.getSuperClass(aSourceClass);
+		while (superClz != null && !superClz.equals(Object.class)) {
+			this.getAllFields(superClz, result);
+			superClz = this.getSuperClass(superClz);
+		}
 	}
-
+	
 	protected Fw makeIdFieldWrapper(Class<?> ownerClass) {
 		return new IdFieldWrapper(this, ownerClass);
 	}
@@ -248,7 +255,7 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	public void importIfNeeded(Fw aField) {
-		importIfNeeded(aField.type(), aField.genericType());
+		this.importIfNeeded(aField.type(), aField.genericType());
 	}
 
 	public void importIfNeeded(Class<?> aClass, Type aGenericType) {
@@ -266,8 +273,8 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * returns boolean to indicatie that this field needs to be surounded with
-	 * an Option[]
+	 * returns boolean to indicatie that this field needs to be surounded with an
+	 * Option[]
 	 * 
 	 * @param fw
 	 * @return
@@ -277,7 +284,7 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	public List<Class<?>> getAllImportedClasses() {
-		return getAllImportedClasses(currentClass());
+		return this.getAllImportedClasses(this.currentClass());
 	}
 
 	/**
@@ -289,7 +296,7 @@ public class TypeUtils implements TypeConstants {
 	 */
 	public List<Class<?>> getAllImportedClasses(Class<?> aSourceClass) {
 		List<Class<?>> result = new ArrayList<Class<?>>();
-		for (Fw fld : getAllFields(aSourceClass)) {
+		for (Fw fld : this.getAllFields(aSourceClass)) {
 			if (fld.isEnum() || !fld.isSimple()) {
 				result.add(fld.type());
 			}
@@ -298,8 +305,8 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * return the given field annotation of the given field, or null if this
-	 * field is not annotated
+	 * return the given field annotation of the given field, or null if this field
+	 * is not annotated
 	 * 
 	 * @param aField
 	 * @param aAnnotation
@@ -310,13 +317,11 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * return the given Class annotation of the given class, or null if this
-	 * field is not annotated
+	 * return the given Class annotation of the given class, or null if this field
+	 * is not annotated
 	 * 
-	 * @param aClass
-	 *            Class
-	 * @param aAnnotation
-	 *            Class
+	 * @param aClass      Class
+	 * @param aAnnotation Class
 	 * @return
 	 */
 	public Annotation getAnnotation(Class<?> aClass, Class<?> aAnnotation) {
@@ -324,13 +329,11 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * return the given Class annotation of the given class, or null if this
-	 * field is not annotated
+	 * return the given Class annotation of the given class, or null if this field
+	 * is not annotated
 	 * 
-	 * @param aClass
-	 *            Class
-	 * @param aAnnotation
-	 *            Annotation
+	 * @param aClass      Class
+	 * @param aAnnotation Annotation
 	 * @return
 	 */
 	public Annotation getAnnotation(Class<?> aClass, Annotation aAnnotation) {
@@ -338,8 +341,8 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * return the given method annotation of the given method, or null if this
-	 * field is not annotated
+	 * return the given method annotation of the given method, or null if this field
+	 * is not annotated
 	 * 
 	 * @param aMethod
 	 * @param aAnnotation
@@ -353,20 +356,18 @@ public class TypeUtils implements TypeConstants {
 	 * return true of the given field annotation is defined on the given field
 	 * 
 	 * @param aField
-	 * @param aAnnotation
-	 *            Class
+	 * @param aAnnotation Class
 	 * @return
 	 */
 	public boolean hasAnnotation(Fw aField, Class<?> aAnnotation) {
-		return getAnnotation(aField, aAnnotation) != null;
+		return this.getAnnotation(aField, aAnnotation) != null;
 	}
 
 	/**
 	 * return true of the given field annotation is defined on the given field
 	 * 
 	 * @param aField
-	 * @param aFqNameToLookfor
-	 *            fully qualified classname String
+	 * @param aFqNameToLookfor fully qualified classname String
 	 * @return
 	 */
 	public boolean hasAnnotation(Fw aField, String aFqNameToLookfor) {
@@ -436,12 +437,12 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public boolean isCollection(Class<?> aClass) {
-		return (getCollectionTypes().contains(aClass.getName()));
+		return (this.getCollectionTypes().contains(aClass.getName()));
 	}
 
 	/**
-	 * this returns the concrete class of given class, this may be overwritten
-	 * in for example ScalaTypeUtils etc for example the
+	 * this returns the concrete class of given class, this may be overwritten in
+	 * for example ScalaTypeUtils etc for example the
 	 * 
 	 * <pre>
 	 * Set -> HashSet
@@ -452,8 +453,8 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public Class<?> getConcreteClass(Class<?> aClass) {
-		if (getConcreteTypes().containsKey(aClass)) {
-			return getConcreteTypes().get(aClass);
+		if (this.getConcreteTypes().containsKey(aClass)) {
+			return this.getConcreteTypes().get(aClass);
 		} else {
 			return aClass;
 		}
@@ -489,7 +490,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public Class<?> getIdType(Class<?> aClass) {
-		Fw pkfld = getExplicitIdField(aClass);
+		Fw pkfld = this.getExplicitIdField(aClass);
 		if (pkfld != null) {
 			Class<?> result = pkfld.type();
 			ImportHelper.addImport(result);
@@ -500,17 +501,17 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	public Class<?> getIdType() {
-		return getIdType(currentClass());
+		return this.getIdType(this.currentClass());
 	}
 
 	/**
-	 * returns the name of the fieldtype that defines the primary key for the
-	 * given class
+	 * returns the name of the fieldtype that defines the primary key for the given
+	 * class
 	 * 
 	 * @return
 	 */
 	public String getIdTypeName(Class<?> aClass) {
-		return getIdType(aClass).getSimpleName();
+		return this.getIdType(aClass).getSimpleName();
 	}
 
 	/**
@@ -520,7 +521,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public String getIdTypeName() {
-		return getIdType(currentClass()).getSimpleName();
+		return this.getIdType(this.currentClass()).getSimpleName();
 	}
 
 	/**
@@ -529,7 +530,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public Fw getExplicitIdField(Class<?> aClass) {
-		return getExplicitIdField(getFields(aClass, INC, FwSelectType.SIMPLE));
+		return this.getExplicitIdField(this.getFields(aClass, INC, FwSelectType.SIMPLE));
 	}
 
 	/**
@@ -554,7 +555,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public String getIdName(Class<?> aClass) {
-		Fw pkfld = getExplicitIdField(aClass);
+		Fw pkfld = this.getExplicitIdField(aClass);
 		if (pkfld != null) {
 			return pkfld.name();
 		}
@@ -563,19 +564,19 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	public boolean hasExplicitId(Class<?> aClass) {
-		return getExplicitIdField(aClass) != null;
+		return this.getExplicitIdField(aClass) != null;
 	}
 
 	public boolean isEntity(Class<?> aClass) {
-		return hasType(aClass, IEntityType.class);
+		return this.hasType(aClass, IEntityType.class);
 	}
 
 	public boolean isDto(Class<?> aClass) {
-		return hasType(aClass, IDtoType.class);
+		return this.hasType(aClass, IDtoType.class);
 	}
 
 	public boolean isService(Class<?> aClass) {
-		return hasType(aClass, IServiceType.class);
+		return this.hasType(aClass, IServiceType.class);
 	}
 
 	/**
@@ -594,10 +595,10 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	public String generateIdGetterSetter() {
-		if (hasExplicitId(currentClass())) {
-			return generateExplicitIdGetterSetter();
+		if (this.hasExplicitId(this.currentClass())) {
+			return this.generateExplicitIdGetterSetter();
 		} else {
-			return generateStdIdGetterSetter();
+			return this.generateStdIdGetterSetter();
 		}
 	}
 
@@ -607,11 +608,11 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	private String generateExplicitIdGetterSetter() {
-		Class<?> clz = currentClass();
-		String explicitIdName = getIdName(clz);
-		String explicitIdType = getIdTypeName(clz);
+		Class<?> clz = this.currentClass();
+		String explicitIdName = this.getIdName(clz);
+		String explicitIdType = this.getIdTypeName(clz);
 		StringBuffer sb = new StringBuffer();
-		sb.append("\tpublic " + explicitIdType + " " + explicitIdGetter() + " {\n");
+		sb.append("\tpublic " + explicitIdType + " " + this.explicitIdGetter() + " {\n");
 		sb.append("\t\treturn this." + explicitIdName + ";\n");
 		sb.append("\t}\n");
 		sb.append("\tpublic void set" + nu.capName(explicitIdName) + "(" + explicitIdType + " aValue) {\n");
@@ -622,8 +623,8 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * use this method if no explicit @Id field exists. TODO make more
-	 * 'plugable' (using ini file?)
+	 * use this method if no explicit @Id field exists. TODO make more 'plugable'
+	 * (using ini file?)
 	 * 
 	 * @return
 	 */
@@ -639,33 +640,43 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	public String idGetter() {
-		if (hasExplicitId(currentClass())) {
-			return explicitIdGetter();
+		if (this.hasExplicitId(this.currentClass())) {
+			return this.explicitIdGetter();
 		} else {
 			return "getId()";
 		}
 	}
 
 	private String explicitIdGetter() {
-		Class<?> clz = currentClass();
-		String explicitIdName = getIdName(clz);
+		Class<?> clz = this.currentClass();
+		String explicitIdName = this.getIdName(clz);
 		return "get" + nu.capName(explicitIdName) + "()";
 	}
 
 	/**
+	 * return all superclasses of the given class.
+	 * 
+	 * @see SubClassHelper
+	 * @return
+	 */
+	public List<Class<?>> getSuperClasses(Class<?> aClass) {
+		return ModelClasses.getAllSuperClasses(aClass);
+	}
+
+	/**
 	 * return all subclasses of the given class.
+	 * This is a List (and not a Set) because the last entry is the least significant (but not Object)
 	 * 
 	 * @see SubClassHelper
 	 * @return
 	 */
 	public List<Class<?>> getSubClasses(Class<?> aClass) {
-		return SubClassesHelper.getAllSubClasses(aClass);
+		return ModelClasses.getAllSubClasses(aClass);
 	}
 
 	/**
-	 * return the superclass of the given class. Note it will NOT return the
-	 * obvious Object.class, if the superclass is Object.class then null is
-	 * returned
+	 * return the superclass of the given class. Note it will NOT return the obvious
+	 * Object.class, if the superclass is Object.class then null is returned
 	 * 
 	 * @return
 	 */
@@ -685,17 +696,37 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public boolean hasSubClasses(Class<?> aClass) {
-		return getSubClasses(aClass) != null && getSubClasses(aClass).size() > 0;
+		return this.getSubClasses(aClass) != null && this.getSubClasses(aClass).size() > 0;
 	}
 
 	/**
-	 * returns true if the given model class has is the base class from which
-	 * other classes may extend note this is an alias for hasInheritance
+	 * Does this class has a SubClass ?
+	 * 
+	 * @param aClass
+	 * @return
+	 */
+	public boolean hasSuperClasses(Class<?> aClass) {
+		return this.getSuperClasses(aClass) != null && this.getSuperClasses(aClass).size() > 0;
+	}
+	/**
+	 * returns true if the given model class has is the base class from which other
+	 * classes may extend note this is an alias for hasInheritance
 	 * 
 	 * @return
 	 */
 	public boolean isBaseClass(Class<?> aClass) {
-		return hasInheritance(aClass);
+		return this.hasInheritance(aClass);
+	}
+
+	/**
+	 * Returns true if given class is abstract
+	 * 
+	 * @param aClass
+	 * @return
+	 */
+	public boolean isAbstract(Class<?> aClass) {
+		boolean b = Modifier.isAbstract(aClass.getModifiers());
+		return b;
 	}
 
 	/**
@@ -705,7 +736,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public boolean isSubClass(Class<?> aClass) {
-		return getSuperClass(aClass) != null;
+		return this.getSuperClass(aClass) != null;
 	}
 
 	/**
@@ -714,7 +745,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public boolean isNormalClass(Class<?> aClass) {
-		return !isBaseClass(aClass) && !isSubClass(aClass);
+		return !this.isBaseClass(aClass) && !this.isSubClass(aClass);
 	}
 
 	private static final String IMPLEMENTS = " implements ";
@@ -725,9 +756,9 @@ public class TypeUtils implements TypeConstants {
 			for (int i = 0; i < aDefaultImplements.length; i++) {
 				impls[i] = aDefaultImplements[i].getName();
 			}
-			return getExtendsAndImplements(aClass, impls);
+			return this.getExtendsAndImplements(aClass, impls);
 		} else {
-			return getExtendsAndImplements(aClass, new String[] {});
+			return this.getExtendsAndImplements(aClass, new String[] {});
 		}
 	}
 
@@ -743,7 +774,7 @@ public class TypeUtils implements TypeConstants {
 		Class<?> intfs[] = aClass.getInterfaces();
 		if (intfs.length > 0) {
 			for (Class<?> intf : intfs) {
-				if (!isCodegenInterface(intf)) {
+				if (!this.isCodegenInterface(intf)) {
 					if (result.indexOf(IMPLEMENTS) < 0) {
 						result += IMPLEMENTS;
 					}
@@ -773,32 +804,32 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * This returns the Fw with the given fieldname in the given class, or null
-	 * if not found
+	 * This returns the Fw with the given fieldname in the given class, or null if
+	 * not found
 	 * 
 	 * @param aClass
 	 * @return
 	 */
 	public Fw getFieldByName(Class<?> aClass, String aFieldname) {
-		for (Field fld : getAllTheFields(aClass)) {
+		for (Field fld : this.getAllTheFields(aClass)) {
 			if (fld.getName().equals(aFieldname))
-				return makeFw(fld, aClass);
+				return this.makeFw(fld, aClass);
 		}
 		return null;
 	}
 
 	/**
-	 * This returns the Field with the given type in the given class, or null if
-	 * not found
+	 * This returns the Field with the given type in the given class, or null if not
+	 * found
 	 * 
 	 * @param aClass
 	 * @param aFieldType
 	 * @return
 	 */
 	public Fw getFieldByType(Class<?> aClass, Class<?> aFieldType) {
-		for (Field fld : getAllTheFields(aClass)) {
+		for (Field fld : this.getAllTheFields(aClass)) {
 			if (fld.getType().equals(aFieldType))
-				return makeFw(fld, aClass);
+				return this.makeFw(fld, aClass);
 		}
 		return null;
 	}
@@ -814,14 +845,14 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public boolean isJoinTable(Fw fw) {
-		if (hasAnnotation(fw, JoinTable.class)) {
+		if (this.hasAnnotation(fw, JoinTable.class)) {
 			return true;
 		} else {
-			if (hasAnnotation(fw, OneToMany.class)) {
-				OneToMany anno = (OneToMany) getAnnotation(fw, OneToMany.class);
+			if (this.hasAnnotation(fw, OneToMany.class)) {
+				OneToMany anno = (OneToMany) this.getAnnotation(fw, OneToMany.class);
 				// TODO other scenario
 				return (anno.mappedBy() != null && anno.mappedBy().trim().length() > 0);
-			} else if (hasAnnotation(fw, ManyToMany.class)) {
+			} else if (this.hasAnnotation(fw, ManyToMany.class)) {
 				return true;
 			}
 			return false;
@@ -852,9 +883,9 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	public boolean hasAbstractAnnotation() {
-		Class<?> clz = currentClass();
+		Class<?> clz = this.currentClass();
 
-		return (hasAnnotation(clz, mda.annotation.Abstract.class));
+		return (this.hasAnnotation(clz, mda.annotation.Abstract.class));
 	}
 
 	public String getSerialVersionUID() {
@@ -862,11 +893,12 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * use this method if you want to include generated code from a jet template
-	 * indicated with the snippet class. The second param is the argument that
-	 * is passed to this jet template. The major difference with the
-	 * <b>generate</b> method is that this is not called via an ITemplate but
-	 * with class of the jet file.
+	 * Use this method if you want to include generated code from a jet template
+	 * indicated with the snippet class. The second param is the argument that is
+	 * passed to this jet template. The major difference with the <b>generate</b>
+	 * method is that this is not called via an ITemplate but with class of the jet
+	 * file. Example: <%= tu.include(Snippet.class, cc) %>
+	 * 
 	 * 
 	 * @param aFqClassname
 	 * @param aArgument
@@ -905,8 +937,8 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * return a valid classname given a Class This method also takes into
-	 * account an Array class. Such a class would normally return something like
+	 * return a valid classname given a Class This method also takes into account an
+	 * Array class. Such a class would normally return something like
 	 * "[Lcom.xxx.Aclasname;"
 	 * 
 	 * @param aClass
@@ -921,7 +953,7 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	public String getSimpleClassname(Class<?> aClass) {
-		String result = getClassname(aClass);
+		String result = this.getClassname(aClass);
 		if (result.indexOf(".") > 0) {
 			result = result.substring(result.lastIndexOf(".") + 1);
 		}
@@ -977,14 +1009,14 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * returns the Table name that belong to the current active class. If the
-	 * class is annotated with @Table and the name is provided, this will be
-	 * returned else the classname is returned
+	 * returns the Table name that belong to the current active class. If the class
+	 * is annotated with @Table and the name is provided, this will be returned else
+	 * the classname is returned
 	 * 
 	 * @return
 	 */
 	public String getTableName() {
-		return getTableName(currentClass());
+		return this.getTableName(this.currentClass());
 	}
 
 	/**
@@ -996,8 +1028,8 @@ public class TypeUtils implements TypeConstants {
 	 */
 	public String getTableName(Class<?> aClass) {
 		String result = aClass.getSimpleName();
-		if (hasAnnotation(aClass, Table.class)) {
-			Table anno = (Table) getAnnotation(aClass, Table.class);
+		if (this.hasAnnotation(aClass, Table.class)) {
+			Table anno = (Table) this.getAnnotation(aClass, Table.class);
 			if (anno.name() != null && !anno.name().isEmpty())
 				result = anno.name();
 		}
@@ -1005,8 +1037,8 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * This methods validates the given class, to check if alle annotations are
-	 * set correctly
+	 * This methods validates the given class, to check if alle annotations are set
+	 * correctly
 	 * 
 	 * @param aClass
 	 * @return
@@ -1015,7 +1047,7 @@ public class TypeUtils implements TypeConstants {
 
 		boolean status = AnnotationsHelper.validate(aClass, aMessages);
 
-		for (Fw fw : getAllFields(aClass)) {
+		for (Fw fw : this.getAllFields(aClass)) {
 			status = status && AnnotationsHelper.validate(fw, aMessages);
 		}
 		return status;
@@ -1061,19 +1093,17 @@ public class TypeUtils implements TypeConstants {
 
 	/**
 	 * This returns true if the first class, is nested (somewhere) in the second
-	 * class. for example: In Tsta you have: Set<Tstc> cs; In TstC you have:
-	 * Tsta a; Within Tstc you can check field a if it Tstc is nested with Tsta
-	 * like this: boolean nested = tu.isNestedIn(cc, fw.getType());
+	 * class. for example: In Tsta you have: Set<Tstc> cs; In TstC you have: Tsta a;
+	 * Within Tstc you can check field a if it Tstc is nested with Tsta like this:
+	 * boolean nested = tu.isNestedIn(cc, fw.getType());
 	 * 
-	 * @param testclass
-	 *            the class to be tested if it is inside
-	 * @param fromclass
-	 *            the root class that is scanned
+	 * @param testclass the class to be tested if it is inside
+	 * @param fromclass the root class that is scanned
 	 * @return true if nested
 	 */
 	public boolean isNestedIn(Class<?> testclass, Class<?> rootclass) {
 		boolean result = false;
-		NestedObjects nestedobjs = getNestedObjects(rootclass);
+		NestedObjects nestedobjs = this.getNestedObjects(rootclass);
 		for (NestedObject nested : nestedobjs.getNestedObjects()) {
 			if (nested.getNestedType().equals(testclass)) {
 				result = true;
@@ -1109,8 +1139,8 @@ public class TypeUtils implements TypeConstants {
 
 	/**
 	 * return the current cartrdiges folder. While running the plugin this is
-	 * <eclipse-dir>/flca.easymda.generator_xxx/cartridges While junit testing
-	 * this is the value returned by the TestTemplatesData interface method:
+	 * <eclipse-dir>/flca.easymda.generator_xxx/cartridges While junit testing this
+	 * is the value returned by the TestTemplatesData interface method:
 	 * getPluginDir(), eg <easymda>/flca.mda.generator/cartridges
 	 * 
 	 * @return
@@ -1120,10 +1150,10 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * return the current cartrdiges folder. While running the plugin this is
-	 * root dir of the selected class or package While junit testing this is the
-	 * value returned by the TestTemplatesData interface method: getModelDir(),
-	 * eg <easymda>/flca.mda.test.model.webapp
+	 * return the current cartrdiges folder. While running the plugin this is root
+	 * dir of the selected class or package While junit testing this is the value
+	 * returned by the TestTemplatesData interface method: getModelDir(), eg
+	 * <easymda>/flca.mda.test.model.webapp
 	 * 
 	 * @return
 	 */
@@ -1137,7 +1167,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public boolean hasInheritance(Class<?> aClass) {
-		return hasAnnotation(aClass, Inheritance.class);
+		return this.hasAnnotation(aClass, Inheritance.class);
 	}
 
 	/**
@@ -1150,7 +1180,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public List<Fw> getFieldsInc(final Class<?> aClass, final FwSelectType... aSelectOptions) {
-		return getFields(aClass, GetFieldsModus.INCLUDE, aSelectOptions);
+		return this.getFields(aClass, GetFieldsModus.INCLUDE, aSelectOptions);
 	}
 
 	/**
@@ -1164,12 +1194,12 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public List<Fw> getFieldsExc(final Class<?> aClass, final FwSelectType... aSelectOptions) {
-		return getFields(aClass, GetFieldsModus.EXCLUDE, aSelectOptions);
+		return this.getFields(aClass, GetFieldsModus.EXCLUDE, aSelectOptions);
 	}
 
 	/**
-	 * This method combines getFieldsInc and getFieldsExc The result is
-	 * equivalent to the result of: List<Fw> fields = getFieldsInc(aClass,
+	 * This method combines getFieldsInc and getFieldsExc The result is equivalent
+	 * to the result of: List<Fw> fields = getFieldsInc(aClass,
 	 * aIncludeSelectOptions) return filterOut(aClass, fields,
 	 * aExcludeSelectOptions);
 	 * 
@@ -1184,8 +1214,8 @@ public class TypeUtils implements TypeConstants {
 		FwSelectType[] incArr = aIncludeSelectOptions.toArray(new FwSelectType[aIncludeSelectOptions.size()]);
 		FwSelectType[] excArr = aExcludeSelectOptions.toArray(new FwSelectType[aExcludeSelectOptions.size()]);
 
-		List<Fw> fields = getFieldsInc(aClass, incArr);
-		return filterOut(aClass, fields, excArr);
+		List<Fw> fields = this.getFieldsInc(aClass, incArr);
+		return this.filterOut(aClass, fields, excArr);
 	}
 
 	/**
@@ -1195,30 +1225,31 @@ public class TypeUtils implements TypeConstants {
 	 * @param aSelectOptions
 	 * @return
 	 */
-	public List<Fw> getFields(final Class<?> aClass, final GetFieldsModus aModus, final FwSelectType... aSelectOptions) {
+	public List<Fw> getFields(final Class<?> aClass, final GetFieldsModus aModus,
+			final FwSelectType... aSelectOptions) {
 		if (GetFieldsModus.INCLUDE.equals(aModus)) {
-			return getFieldsInclude(aClass, aSelectOptions);
+			return this.getFieldsInclude(aClass, aSelectOptions);
 		} else {
-			return getFieldsExclude(aClass, aSelectOptions);
+			return this.getFieldsExclude(aClass, aSelectOptions);
 		}
 	}
 
 	public List<Fw> getAllFields(final Class<?> aClass) {
 		List<Fw> result = new ArrayList<>();
-		result.addAll(getSpecialFields(aClass));
-		for (Field fld : getAllTheFields(aClass)) {
-			result.add(makeFw(fld, aClass));
+		result.addAll(this.getSpecialFields(aClass));
+		for (Field fld : this.getAllTheFields(aClass)) {
+			result.add(this.makeFw(fld, aClass));
 		}
 
-		removeDoubleIdField(result);
-		return sortAllFields(result);
+		this.removeDoubleIdField(result);
+		return this.sortAllFields(result);
 	}
 
 	private void removeDoubleIdField(List<Fw> result) {
 		// remove the double id field if ness.
-		Fw explicitId = getExplicitIdField(result);
+		Fw explicitId = this.getExplicitIdField(result);
 		if (explicitId != null) {
-			Fw specialId = getSpecialIdField(result);
+			Fw specialId = this.getSpecialIdField(result);
 			if (specialId != null) {
 				result.remove(specialId);
 			}
@@ -1251,7 +1282,7 @@ public class TypeUtils implements TypeConstants {
 		for (Fw fw : fields) {
 			boolean keep = true;
 			for (FwSelectType selctype : aSelectOptions) {
-				if (includeField(aClass, fw, selctype)) {
+				if (this.includeField(aClass, fw, selctype)) {
 					keep = false;
 					break;
 				}
@@ -1274,17 +1305,17 @@ public class TypeUtils implements TypeConstants {
 
 	protected List<Fw> getSpecialFields(Class<?> aClass) {
 		List<Fw> result = new ArrayList<Fw>();
-		result.add(makeIdFieldWrapper(aClass));
+		result.add(this.makeIdFieldWrapper(aClass));
 		return result;
 	}
 
 	private List<Fw> getFieldsInclude(final Class<?> aClass, final FwSelectType... aSelectOptions) {
 		List<Fw> result = new ArrayList<>();
-		List<Fw> allfields = getAllFields(aClass);
+		List<Fw> allfields = this.getAllFields(aClass);
 
 		for (Fw fieldWrapper : allfields) {
 			for (FwSelectType selcopt : aSelectOptions) {
-				if (includeField(aClass, fieldWrapper, selcopt)) {
+				if (this.includeField(aClass, fieldWrapper, selcopt)) {
 					result.add(fieldWrapper);
 					break;
 				}
@@ -1294,14 +1325,14 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	private List<Fw> getFieldsExclude(final Class<?> aClass, final FwSelectType... aSelectOptions) {
-		List<Fw> result = getAllFields(aClass);
+		List<Fw> result = this.getAllFields(aClass);
 		List<Fw> delFields = new ArrayList<>();
-		if (hasSelectOptSuper(aSelectOptions) && getSuperClass(aClass) != null) {
-			result.addAll(getAllFields(getSuperClass(aClass)));
+		if (this.hasSelectOptSuper(aSelectOptions) && this.getSuperClass(aClass) != null) {
+			result.addAll(this.getAllFields(this.getSuperClass(aClass)));
 		}
 		for (Fw fieldWrapper : result) {
 			for (FwSelectType selcopt : aSelectOptions) {
-				if (includeField(aClass, fieldWrapper, selcopt)) {
+				if (this.includeField(aClass, fieldWrapper, selcopt)) {
 					delFields.add(fieldWrapper);
 				}
 			}
@@ -1352,7 +1383,7 @@ public class TypeUtils implements TypeConstants {
 		} else if (aFieldType.equals(FwSelectType.DISCRIMINATOR)) {
 			return fw.isSpecial() && FwSelectType.DISCRIMINATOR.equals(fw.getSpecialfield().getSpecialFieldType());
 		} else if (aFieldType.equals(FwSelectType.ID)) {
-			if (hasExplicitId(aClass)) {
+			if (this.hasExplicitId(aClass)) {
 				return !fw.isSpecial() && fw.isId();
 			} else {
 				return fw.isSpecial() && FwSelectType.ID.equals(fw.getSpecialfield().getSpecialFieldType());
@@ -1363,16 +1394,16 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * Returns the primitive or class name for the given Type. Class names will
-	 * be added as imports to the GenModel's ImportManager, and the imported
-	 * form will be returned.
+	 * Returns the primitive or class name for the given Type. Class names will be
+	 * added as imports to the GenModel's ImportManager, and the imported form will
+	 * be returned.
 	 */
 	public String getTypeName(Class<?> aClass) {
 		if (!aClass.isPrimitive()) {
 			ImportHelper.addImport(aClass);
 		}
 
-		if (isCollection(aClass)) {
+		if (this.isCollection(aClass)) {
 			return aClass.getSimpleName() + "<?" + ">";
 		} else {
 			return aClass.getSimpleName();
@@ -1380,9 +1411,9 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * Returns the primitive or class name for the given Type. Class names will
-	 * be added as imports to the GenModel's ImportManager, and the imported
-	 * form will be returned.
+	 * Returns the primitive or class name for the given Type. Class names will be
+	 * added as imports to the GenModel's ImportManager, and the imported form will
+	 * be returned.
 	 */
 	public String getTypeName(Class<?> aClass, Class<?> aGenericType) {
 		if (!aClass.isPrimitive()) {
@@ -1392,7 +1423,7 @@ public class TypeUtils implements TypeConstants {
 			ImportHelper.addImport(aGenericType);
 		}
 
-		if (isCollection(aClass)) {
+		if (this.isCollection(aClass)) {
 			if (aGenericType != null) {
 				return aClass.getSimpleName() + "<" + aGenericType.getSimpleName() + ">";
 			} else {
@@ -1407,7 +1438,7 @@ public class TypeUtils implements TypeConstants {
 	public boolean isSimpleField(Class<?> aClass) {
 		if (aClass == null) {
 			return true;
-		} else if (isCollection(aClass)) {
+		} else if (this.isCollection(aClass)) {
 			return false;
 		} else {
 			return aClass.isPrimitive() || aClass.getName().startsWith("java") || aClass.isEnum();
@@ -1439,7 +1470,7 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	public boolean isNumericType(Class<?> aClass) {
-		if (isSimpleField(aClass)) {
+		if (this.isSimpleField(aClass)) {
 			String typename = aClass.getSimpleName();
 			return NUMERIC_FIELDS.indexOf(typename.toLowerCase()) >= 0;
 		} else {
@@ -1451,6 +1482,10 @@ public class TypeUtils implements TypeConstants {
 		return "String".equals(type.getSimpleName());
 	}
 
+	public boolean isBigDecimalType(Class<?> type) {
+		return "BigDecimal".equals(type.getSimpleName());
+	}
+
 	/**
 	 * return true if the given class is int Integer long Long short or Short
 	 * 
@@ -1458,7 +1493,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public boolean isIntType(Class<?> type) {
-		if (isSimpleField(type)) {
+		if (this.isSimpleField(type)) {
 			String typename = type.getName().toLowerCase();
 			if (typename.startsWith("java.lang")) {
 				typename = typename.substring(10);
@@ -1476,7 +1511,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public boolean isDecimalType(Class<?> type) {
-		if (isSimpleField(type)) {
+		if (this.isSimpleField(type)) {
 			String typename = type.getName().toLowerCase();
 			if (typename.startsWith("java.lang") || typename.startsWith("java.math")) {
 				typename = typename.substring(10);
@@ -1494,7 +1529,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public boolean isDateType(Class<?> type) {
-		if (isSimpleField(type)) {
+		if (this.isSimpleField(type)) {
 			String typename = type.getName();
 			return (DATE_FIELDS.indexOf(typename) >= 0);
 		} else {
@@ -1603,7 +1638,7 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	public boolean hasDefaultValue(Class<?> aClass) {
-		String dv = getDefaultValue(aClass);
+		String dv = this.getDefaultValue(aClass);
 		return dv != null && dv.length() > 0;
 	}
 

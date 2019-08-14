@@ -1,0 +1,18 @@
+package blazeds.test;
+
+import org.junit.Test;
+
+import flca.blazeds.template.BlazeDsTemplates;
+import flca.blazeds.template.TidBlazeDs;
+
+public class GenerateMappersTest extends GenerateBaseTest {
+
+	@Test
+	public void testGenerateMappers() {
+		for (Class<?> clz : ALL_CLASSES) {
+			String s = this.generate(clz, BlazeDsTemplates.getTemplate(TidBlazeDs.MAPPER));
+			System.out.println(s);
+		}
+	}
+	
+}

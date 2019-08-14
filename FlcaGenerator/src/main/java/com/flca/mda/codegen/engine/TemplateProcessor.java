@@ -1,13 +1,12 @@
 package com.flca.mda.codegen.engine;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.junit.Assert;
@@ -22,7 +21,6 @@ import flca.mda.codegen.data.CopyTemplate;
 import flca.mda.codegen.data.DataStore;
 import flca.mda.codegen.data.ITemplate;
 import flca.mda.codegen.data.ITemplateHooks;
-import flca.mda.codegen.data.Template;
 import flca.mda.codegen.helpers.AnnotationsHelper;
 import flca.mda.codegen.helpers.FilenameHelper;
 import flca.mda.codegen.helpers.SourceCodeUtils;
@@ -81,7 +79,7 @@ public class TemplateProcessor {
 		Object elemInstance = null;
 
 		if (aModelClass != null) {
-			if (!aModelClass.isInterface() && !aModelClass.isEnum()) {
+			if (!aModelClass.isInterface() && !aModelClass.isEnum() && !this.isAbstract(aModelClass)) {
 				elemInstance = aModelClass.newInstance();
 			}
 
@@ -95,6 +93,10 @@ public class TemplateProcessor {
 		return null;
 	}
 
+	private boolean isAbstract(Class<?> aClass) {
+		return Modifier.isAbstract(aClass.getModifiers());
+	}
+	
 	private GenerateResult doGenerateElement(ITemplate aTemplate, Class<?> aModelClass, Object elemInstance,
 			Object... aExtraArgs) {
 		try {
@@ -160,27 +162,27 @@ public class TemplateProcessor {
 		return sb.toString();
 	}
 
-	private Object makeJetArgument(Object aModel, ITemplate aTemplate, String sourcecode, boolean aInterface)
-			throws Exception {
-		Class<?> templateClz = this.loader.loadClass(Template.class.getName());
-		Class<?> itemplateClz = this.loader.loadClass(ITemplate.class.getName());
-
-		Class<?> paramTypes[] = new Class<?>[] { Object.class, itemplateClz, String.class };
-		if (aInterface) {
-			paramTypes = new Class<?>[] { Class.class, itemplateClz, String.class };
-		}
-
-		Object cloneTemplate = templateClz.newInstance();
-		BeanUtils.copyProperties(cloneTemplate, aTemplate);
-
-		Object values[] = new Object[] { aModel, cloneTemplate, sourcecode };
-
-		Class<?> clazz = this.loader.loadClass(JetArgument.class.getName());
-		Constructor<?> ctor = clazz.getConstructor(paramTypes);
-		Object result = ctor.newInstance(values);
-
-		return result;
-	}
+//	private Object makeJetArgument(Object aModel, ITemplate aTemplate, String sourcecode, boolean aInterface)
+//			throws Exception {
+//		Class<?> templateClz = this.loader.loadClass(Template.class.getName());
+//		Class<?> itemplateClz = this.loader.loadClass(ITemplate.class.getName());
+//
+//		Class<?> paramTypes[] = new Class<?>[] { Object.class, itemplateClz, String.class };
+//		if (aInterface) {
+//			paramTypes = new Class<?>[] { Class.class, itemplateClz, String.class };
+//		}
+//
+//		Object cloneTemplate = templateClz.newInstance();
+//		BeanUtils.copyProperties(cloneTemplate, aTemplate);
+//
+//		Object values[] = new Object[] { aModel, cloneTemplate, sourcecode };
+//
+//		Class<?> clazz = this.loader.loadClass(JetArgument.class.getName());
+//		Constructor<?> ctor = clazz.getConstructor(paramTypes);
+//		Object result = ctor.newInstance(values);
+//
+//		return result;
+//	}
 
 	private boolean generateThisObject(ITemplate aTemplate, Class<?> aClass) {
 		boolean r = aTemplate.appliesTo(aClass);

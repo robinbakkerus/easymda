@@ -1,0 +1,24 @@
+<%@ jet package="cartridge" 
+imports="java.util.* flca.mda.api.util.* flca.blazeds.api.* flca.blazeds.template.* "
+package="blazeds"
+class="BlazeDsMapperEnum" %>
+<%@ include file="./include/java-class-init.jetinc" %>
+<% List<Fw> fws = tu.getFields(cc, EXC, FwSelectType.ID); %>
+<% String name = cc.getSimpleName(); %>
+<% String toUncapname = nu.uncapName(cc); %>
+
+public class <%=classname%> {
+	/**
+	* returns the Pojo enum from the given Protobuf enum
+	*/
+	public static <%=name%> fromPb(final <%=name%>Msg sourceMsg) {
+		return <%=name%>.valueOf(sourceMsg.name());
+	}
+
+	/**
+	* returns the Protobuf enum from the given Pojo enum
+	*/
+	public static <%=name%>Msg toPb(final <%=name%> source) {
+		return <%=name%>Msg.valueOf(source.name());
+	}
+}

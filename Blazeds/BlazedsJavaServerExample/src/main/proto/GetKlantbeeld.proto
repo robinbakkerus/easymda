@@ -40,8 +40,19 @@ message PensioenAanspraakMsg {
 	PensioenAanspraakTypeMsg type = 1;
 	string uitkering = 2;
 	int64 einddatum = 3;	
+	oneof PensioenAanspraak {
+		VroegPensioenAanspraakMsg vroegPensioenAanspraak = 4;
+		WeduwePensioenAanspraakMsg weduwePensioenAanspraak= 5;
+	}
 }
 
+message VroegPensioenAanspraakMsg {
+	int32 looptijd = 1;
+}
+
+message WeduwePensioenAanspraakMsg {
+	int64 partnerOverleden = 1;
+}
 
 message AdresMsg {
 	string adres = 1;

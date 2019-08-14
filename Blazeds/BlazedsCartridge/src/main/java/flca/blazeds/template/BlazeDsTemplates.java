@@ -123,8 +123,8 @@ public class BlazeDsTemplates {
 		Template r = new Template();
 		r.setName(TidBlazeDs.MOCKDATA_LOADER.name());
 		r.setPackage("<%=PACKAGE%>");
-		r.setClassname("Test" + "<%=CLASSNAME%>" + "MockData");
-		r.setTargetDir(TSTGEN);
+		r.setClassname("<%=CLASSNAME%>" + "Mock");
+		r.setTargetDir(SRCGEN);
 		r.setFileExtension(".java");
 		r.setGeneratorFqn(BlazeDsMockData.class.getName());
 		r.setJetPath("/BlazeDsMockData.jet");

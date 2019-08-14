@@ -1,19 +1,22 @@
 package flca.blazeds.api;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import flca.mda.api.util.Fw;
 import flca.mda.api.util.InterfaceUtils;
+import flca.mda.api.util.NameUtils;
 import flca.mda.api.util.TypeUtils;
 
 public class ProtobufTypeUtils {
 
 	private final InterfaceUtils iu = new InterfaceUtils();
 	private final TypeUtils tu = new TypeUtils();
-
+	private final NameUtils nu = new NameUtils();
+	
 	/**
 	 * return the equivalent name used for protobuf messages
 	 * 
@@ -108,31 +111,52 @@ public class ProtobufTypeUtils {
 		return sb.toString();
 	}
 
-
-	/**
-	 * return the name of the corresping mapper class, or null if no specific mapper
-	 * is needed.
-	 * 
-	 * @param fw
-	 * @return
-	 */
-	public String getMapper(final Fw fw) {
-		String mapper = ProtobufTypeMapper.getProtobufMapper(fw.type());
-		if (mapper != null) {
-			return mapper;
-		} else if (fw.isEnum() || fw.isBean() || fw.isCollection()) {
-			return fw.genericTypeName() + "Mapper";
+	public boolean hasPbMapper(final Fw fw) {
+		if (ProtobufTypeMapper.hasProtobufTypeMapper(fw.type())) {
+			return true;
 		} else {
-			return null;
+			return fw.isModelClass();
+		}
+	} 
+
+	public String getPbGetter(final Fw fw) {
+		if (this.hasPbMapper(fw)) {
+			String getter = ProtobufTypeMapper.getProtobufTypeGetter(fw.type());
+			if (getter != null) {
+				return getter;
+			} else {
+				return String.format("%sMapper.fromPb", fw.genericTypeName());
+			}
+		} else {
+			final String capName = nu.capName(fw.name());
+			return "get" + capName;
 		}
 	}
 	
+	public String getPbSetter(final Fw fw) {
+		if (this.hasPbMapper(fw)) {
+			String getter = ProtobufTypeMapper.getProtobufTypeSetter(fw.type());
+			if (getter != null) {
+				return getter;
+			} else {
+				return String.format("%sMapper.toPb", fw.genericTypeName());
+			}
+		} else {
+			final String capName = nu.capName(fw.name());
+			return "set" + capName;
+		}
+	}
+
 	/**
-	 * return something like jrb.grpc.GetKlantbeeldOuterClass.*
+	 * return something like jrb.grpc.blazeds.* and jrb.grpc.blazeds.ExampleMsg.*
 	 * TODO how to obtain the gprc service name from the given class.
 	 * @return
 	 */
-	public String getGrpcImport(Class<?> aClass) {
-		return "jrb.grpc.blazeds.*";
+	public List<String> getGrpcImports(Class<?> aClass) {
+		List<String> r = new ArrayList<>();
+		final String basePck = "jrb.grpc.blazeds"; //TODO
+		r.add(basePck + ".*");
+		r.add(String.format("%s.%sMsg.*", basePck, aClass.getSimpleName()));
+		return r;
 	}
 }

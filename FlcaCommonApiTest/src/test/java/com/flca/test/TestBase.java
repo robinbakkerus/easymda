@@ -12,12 +12,6 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import test.mock.MockJavaProject;
-import test.mock.MockMonitor;
-import test.mock.MockPath;
-import test.mock.MockProject;
-
-import com.flca.mda.codegen.engine.TemplateProcessor;
 import com.flca.mda.codegen.helpers.CartridgeHelper;
 import com.flca.mda.codegen.helpers.ClassloaderHelper;
 import com.flca.mda.codegen.helpers.LogHelper;
@@ -29,9 +23,12 @@ import flca.mda.codegen.data.DataStore;
 import flca.mda.codegen.data.SubsValue;
 import flca.mda.codegen.data.TemplatesStore;
 import flca.mda.codegen.helpers.IniFileHelper;
-import flca.mda.codegen.helpers.SubClassesHelper;
+import flca.mda.codegen.helpers.SuperClassesHelper;
 import flca.test.base.TestTemplatesBase;
 import flca.test.base.TestTemplatesData;
+import test.mock.MockJavaProject;
+import test.mock.MockPath;
+import test.mock.MockProject;
 
 /**
  * Extend from this class if your jUnit test also requires the "generator setup" like DataStore TemplateStore etc
@@ -62,7 +59,7 @@ public abstract class TestBase {
 
 			DataStore.getInstance().readSavedSubsValues(new File(ProjectInstanceHelper.getInstance().getCurrentProjectLocation()));
 			
-			SubClassesHelper.initialize();
+			SuperClassesHelper.initialize();
 
 			IniFileHelper.initialize(aProvidedData.getPluginDir());
 
@@ -73,7 +70,7 @@ public abstract class TestBase {
 			DataStore.getInstance().cloneForApi(sLoader);
 			TemplatesStore.getInstance().cloneForApi(sLoader);
 
-			IJavaProject modelproj = makeJavaProject(aProvidedData.getModelDir().getPath());
+			//IJavaProject modelproj = makeJavaProject(aProvidedData.getModelDir().getPath());
 			
 		} catch (Throwable e) {
 			LogHelper.error("error in beforeOnceBase", e);

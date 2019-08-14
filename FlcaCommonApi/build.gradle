@@ -21,5 +21,19 @@ dependencies {
 	)
 }
 
+// gradle dependencies are ordered on name!
+task aaa() doLast {
+}
 
+aaa.dependsOn {
+	standard
+}
+
+task copyJar(type: Copy) {
+    from( "target/libs")
+    into( "../FlcaGenerator/lib" )
+}
+
+task s(dependsOn: [aaa, copyJar] ) doLast {
+}
 

@@ -38,7 +38,7 @@ import flca.mda.codegen.data.SubsValue;
 import flca.mda.codegen.data.SubsValueType;
 import flca.mda.codegen.helpers.IniFileHelper;
 import flca.mda.codegen.helpers.IniFileSection;
-import flca.mda.codegen.helpers.SubClassesHelper;
+import flca.mda.codegen.helpers.ModelClasses;
 
 public class GenerateCodeHandler extends AbstractHandler {
 	
@@ -63,6 +63,7 @@ public class GenerateCodeHandler extends AbstractHandler {
 
 		return null;
 	}
+	
 
 	private void runGenerator(ExecutionEvent event) {
 		// trigger the actual generators, after the wizard is finished
@@ -119,7 +120,7 @@ public class GenerateCodeHandler extends AbstractHandler {
 		DataStore.getInstance().reset();
 		readCartridgesStatusValues(getModelDir());
 		storeModelDir();
-		SubClassesHelper.initialize();
+		ModelClasses.initialize(this.getModelDir());
 	}
 
 	private File getModelDir() {

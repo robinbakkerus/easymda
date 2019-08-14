@@ -2,7 +2,6 @@ package jrb.blazeds.grpc;
 
 import io.grpc.stub.StreamObserver;
 import jrb.blazeds.klantbeeld.model.Klantbeeld;
-import jrb.blazeds.klantbeeld.model.KlantbeeldMapper;
 import jrb.blazeds.klantbeeld.service.GetKlantbeeld;
 import jrb.blazeds.klantbeeld.service.GetKlantbeeldImpl;
 import jrb.blazeds.klantbeeld.service.SelectKlantbeeld;
@@ -20,8 +19,8 @@ public class GetKlantbeeldGrpcImpl extends GetKlantbeeldGrpc.GetKlantbeeldImplBa
 		System.out.println("getKlantbeeld called ...");
 		final SelectKlantbeeld selectKlantbeeld = SelectKlantbeeldMapper.fromProtobuf(request);
 		final Klantbeeld klantbeeld = this.klantbeeldService.getKlantbeeld(selectKlantbeeld);
-		final KlantbeeldMsg response = KlantbeeldMapper.toProtobuf(klantbeeld);
-		responseObserver.onNext(response);
-		responseObserver.onCompleted();
+//		final KlantbeeldMsg response = KlantbeeldMapper.toProtobuf(klantbeeld);
+//		responseObserver.onNext(response);
+//		responseObserver.onCompleted();
 	}
 }

@@ -7,25 +7,29 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import jrb.blazeds.klantbeeld.model.PensioenAanspraakType;
+import jrb.blazeds.klantbeeld.model.PensioenAanspraakTypeMapper;
 
 import jrb.grpc.blazeds.*;
 
-import protobuf.mapper.*;
+import jrb.grpc.blazeds.PensioenAanspraakTypeMsg.*;
+
+import protobuf.mapper.ProtobufMapper;
   
 
 
 public class PensioenAanspraakTypeMapper {
 	/**
-	* return the Pojo enum from the given Protobuf enum
+	* returns the Pojo enum from the given Protobuf enum
 	*/
-	public static PensioenAanspraakType fromProtobuf(final PensioenAanspraakTypeMsg sourceMsg) {
+	public static PensioenAanspraakType fromPb(final PensioenAanspraakTypeMsg sourceMsg) {
 		return PensioenAanspraakType.valueOf(sourceMsg.name());
 	}
 
 	/**
-	* return the Protobuf enum from the given Pojo enum
+	* returns the Protobuf enum from the given Pojo enum
 	*/
-	public static PensioenAanspraakTypeMsg toProtobuf(final PensioenAanspraakType source) {
+	public static PensioenAanspraakTypeMsg toPb(final PensioenAanspraakType source) {
 		return PensioenAanspraakTypeMsg.valueOf(source.name());
 	}
 }
+

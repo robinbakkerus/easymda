@@ -13,11 +13,6 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import test.mock.MockJavaProject;
-import test.mock.MockMonitor;
-import test.mock.MockPath;
-import test.mock.MockProject;
-
 import com.flca.mda.codegen.engine.TemplateProcessor;
 import com.flca.mda.codegen.engine.data.CartridgeClasspathData;
 import com.flca.mda.codegen.helpers.CartridgeHelper;
@@ -35,7 +30,11 @@ import flca.mda.codegen.data.TemplatesStore;
 import flca.mda.codegen.helpers.GenerateQueue;
 import flca.mda.codegen.helpers.IniFileHelper;
 import flca.mda.codegen.helpers.ShellUtils;
-import flca.mda.codegen.helpers.SubClassesHelper;
+import flca.mda.codegen.helpers.ModelClasses;
+import test.mock.MockJavaProject;
+import test.mock.MockMonitor;
+import test.mock.MockPath;
+import test.mock.MockProject;
 
 /**
  * Abstract base class that can be user flca.mda.test.xxxx project to test generate templates.
@@ -70,7 +69,7 @@ public abstract class AbstractTestTemplates {
 
 			DataStore.getInstance().readSavedSubsValues(new File(ProjectInstanceHelper.getInstance().getCurrentProjectLocation()));
 			
-			SubClassesHelper.initialize();
+			ModelClasses.initialize(new File(aProvidedData.getModelDir().getPath()));
 
 			IniFileHelper.initialize(aProvidedData.getPluginDir());
 
@@ -82,6 +81,8 @@ public abstract class AbstractTestTemplates {
 			TemplatesStore.getInstance().cloneForApi(sLoader);
 
 			IJavaProject modelproj = makeJavaProject(aProvidedData.getModelDir().getPath());
+			File modelDirFile = new File(aProvidedData.getModelDir().getPath());
+			DataStore.getInstance().setModelProjectDir(modelDirFile);
 //			saver = new SaveGeneratedCodeHelper(modelproj, new MockMonitor());
 			tp = new TemplateProcessor(modelproj, new MockMonitor());
 			
