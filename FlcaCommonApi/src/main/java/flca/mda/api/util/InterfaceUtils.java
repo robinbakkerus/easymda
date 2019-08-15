@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import flca.mda.codegen.CodegenConstants;
-import flca.mda.codegen.data.DataStore;
 import flca.mda.codegen.helpers.AnnotationsHelper;
+import flca.mda.codegen.helpers.ModelClasses;
 import flca.mda.codegen.helpers.StrUtil;
 import flca.mda.common.api.helpers.ImportHelper;
 import mda.annotation.JavaDoc;
@@ -464,7 +464,7 @@ public class InterfaceUtils {
 	}
 
 	protected void fillOperationMap() {
-		for (Class<?> clz : DataStore.getInstance().getModelClasses()) {
+		for (Class<?> clz : ModelClasses.getAllClasses()) {
 			if (clz.isInterface()) {
 				for (Method m : clz.getMethods()) {
 					if (!this.skipMethod(m.getName())) {
@@ -525,7 +525,7 @@ public class InterfaceUtils {
 	}
 
 	private void fillCrudsMap() {
-		for (Class<?> entityClz : DataStore.getInstance().getModelClasses()) {
+		for (Class<?> entityClz : ModelClasses.getAllClasses()) {
 			if (this.tu.hasType(entityClz, IEntityType.class) || this.tu.hasType(entityClz, IDtoType.class)) {
 				if (this.hasCrudOperation(entityClz)) {
 					this.addCrudAnnots(entityClz);

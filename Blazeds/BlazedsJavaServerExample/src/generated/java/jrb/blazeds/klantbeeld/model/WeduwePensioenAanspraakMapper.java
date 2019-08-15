@@ -2,6 +2,10 @@
 
 package jrb.blazeds.klantbeeld.model;
  
+import java.math.BigDecimal;
+
+import java.sql.Timestamp;
+
 import java.util.*;
 
 import java.util.stream.Collectors;
@@ -25,9 +29,6 @@ public class WeduwePensioenAanspraakMapper {
 	public static WeduwePensioenAanspraak fromPb(final WeduwePensioenAanspraakMsg sourceMsg) {
 		final WeduwePensioenAanspraak result = new WeduwePensioenAanspraak();
 		result.setPartnerOverleden(ProtobufMapper.fromPbTimestamp(sourceMsg.getPartnerOverleden()));
-		result.setType(PensioenAanspraakTypeMapper.fromPb(sourceMsg.getType()));
-		result.setUitkering(ProtobufMapper.fromPbBigDecimal(sourceMsg.getUitkering()));
-		result.setEinddatum(ProtobufMapper.fromPbDate(sourceMsg.getEinddatum()));
 		return result;
 	}	
 
@@ -37,9 +38,6 @@ public class WeduwePensioenAanspraakMapper {
 	public static WeduwePensioenAanspraakMsg toPb(final WeduwePensioenAanspraak source) {
 		final WeduwePensioenAanspraakMsg.Builder builder = WeduwePensioenAanspraakMsg.newBuilder();
 		if (source.getPartnerOverleden() != null) builder.setPartnerOverleden(ProtobufMapper.toPbTimestamp(source.getPartnerOverleden()));
-		if (source.getType() != null) builder.setType(PensioenAanspraakTypeMapper.toPb(source.getType()));
-		if (source.getUitkering() != null) builder.setUitkering(ProtobufMapper.toPbBigDecimal(source.getUitkering()));
-		if (source.getEinddatum() != null) builder.setEinddatum(ProtobufMapper.toPbDate(source.getEinddatum()));
 		return builder.build();
 	}
 	

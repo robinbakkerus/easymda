@@ -57,9 +57,7 @@ public class BlazeDsMapperEnum
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();
      String pck = nu.getCurrentPackage();
-     GetFieldsModus EXC = GetFieldsModus.EXCLUDE; 
-     GetFieldsModus INC = GetFieldsModus.INCLUDE; 
-     List<Fw> fws = tu.getFields(cc, EXC, FwSelectType.ID); 
+     List<Fw> fws = tu.getFields(cc, FwSelect.newBuilder().withSuper(false).build()); 
      String name = cc.getSimpleName(); 
      String toUncapname = nu.uncapName(cc); 
     stringBuffer.append(TEXT_1);

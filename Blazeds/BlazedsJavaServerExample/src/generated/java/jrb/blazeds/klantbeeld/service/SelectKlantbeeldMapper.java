@@ -7,39 +7,43 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import jrb.blazeds.klantbeeld.service.SelectKlantbeeld;
+import jrb.blazeds.klantbeeld.service.SelectKlantbeeldMapper;
 
 import jrb.grpc.blazeds.*;
 
-import protobuf.mapper.*;
+import jrb.grpc.blazeds.SelectKlantbeeldMsg.*;
+
+import protobuf.mapper.ProtobufMapper;
   
 
 
 public class SelectKlantbeeldMapper {
 	/**
-	* return the Pojo object from the given Protobuf object
+	* Returns the Pojo object from the given Protobuf object.
 	*/
-	public static SelectKlantbeeld fromProtobuf(final SelectKlantbeeldMsg sourceMsg) {
+	public static SelectKlantbeeld fromPb(final SelectKlantbeeldMsg sourceMsg) {
 		final SelectKlantbeeld result = new SelectKlantbeeld();
 		result.setKlantId(sourceMsg.getKlantId());
-		result.setAchternaam(sourceMsg.getAchternaam());		
+		result.setAchternaam(sourceMsg.getAchternaam());
 		return result;
 	}	
 
 	/**
-	* return the Protobuf object from the given Pojo object
+	* Returns the Protobuf object from the given Pojo object
 	*/
-	public static SelectKlantbeeldMsg toProtobuf(final SelectKlantbeeld source) {
+	public static SelectKlantbeeldMsg toPb(final SelectKlantbeeld source) {
 		final SelectKlantbeeldMsg.Builder builder = SelectKlantbeeldMsg.newBuilder();
-		builder.setKlantId(source.getKlantId());
-		builder.setAchternaam(source.getAchternaam());		
+		if (source.getKlantId() != null) builder.setKlantId(source.getKlantId());
+		if (source.getAchternaam() != null) builder.setAchternaam(source.getAchternaam());
 		return builder.build();
 	}
 	
-	public static List<SelectKlantbeeld> fromProtobuf(final List<SelectKlantbeeldMsg> sourceMsgList) {
-		return sourceMsgList.stream().map(e -> fromProtobuf(e)).collect(Collectors.toList());
+	public static List<SelectKlantbeeld> fromPb(final List<SelectKlantbeeldMsg> sourceMsgList) {
+		return sourceMsgList.stream().map(e -> fromPb(e)).collect(Collectors.toList());
 	}
 
-	public static List<SelectKlantbeeldMsg> toProtobuf(final List<SelectKlantbeeld> sourceList) {
-		return sourceList.stream().map(e -> toProtobuf(e)).collect(Collectors.toList());
+	public static List<SelectKlantbeeldMsg> toPb(final List<SelectKlantbeeld> sourceList) {
+		return sourceList.stream().map(e -> toPb(e)).collect(Collectors.toList());
 	}
 }
+

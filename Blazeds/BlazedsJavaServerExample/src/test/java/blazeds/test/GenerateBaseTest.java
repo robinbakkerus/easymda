@@ -15,8 +15,7 @@ import jrb.blazeds.klantbeeld.service.SelectKlantbeeld;
 
 public class GenerateBaseTest extends AbstractTestTemplates {
 
-	static final Class<?>[] ALL_CLASSES = new Class<?>[] {
-		GetKlantbeeld.class, 
+	static final Class<?>[] MSG_CLASSES = new Class<?>[] {
 		SelectKlantbeeld.class,
 		Geslacht.class,
 		PensioenAanspraakType.class,
@@ -27,6 +26,10 @@ public class GenerateBaseTest extends AbstractTestTemplates {
 		WeduwePensioenAanspraak.class,
 	};
 
+	static final Class<?>[] SRV_CLASSES = new Class<?>[] {
+		GetKlantbeeld.class, 
+	};
+	
 	@BeforeClass
 	public static void beforeOnce() {
 		AbstractTestTemplates.beforeOnceBase(new BlazedsTestData());

@@ -9,7 +9,7 @@ public class GenerateMocksTest extends GenerateBaseTest {
 
 	@Test
 	public void testGenerateKlantbeeldMock() {
-		for (Class<?> clz : ALL_CLASSES) {
+		for (Class<?> clz : MSG_CLASSES) {
 			if (!clz.isEnum()) {
 				String s = this.generate(clz, BlazeDsTemplates.getTemplate(TidBlazeDs.MOCKDATA_LOADER));
 				System.out.println(s);

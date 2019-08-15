@@ -48,22 +48,22 @@ public class ProtobufTypeUtilsTest {
 
 	@Test
 	public void testGetPbGetter() {
-//		Fw fw = this.getFw(Klantbeeld.class, "voornaam");
-//		assertEquals("getVoornaam", pbu.getPbGetter(fw));
-//
-//		fw = this.getFw(Klantbeeld.class, "geboorteDatum");
-//		System.out.println(pbu.getPbGetter(fw));
-//		assertEquals("ProtobufMapper.fromPbDate", pbu.getPbGetter(fw));
-//
-//		fw = this.getFw(Klantbeeld.class, "adres");
-//		System.out.println(pbu.getPbGetter(fw));
-//		assertEquals("AdresMapper.fromPb", pbu.getPbGetter(fw));
-//
-//		fw = this.getFw(Klantbeeld.class, "geslacht");
-//		System.out.println(pbu.getPbGetter(fw));
-//		assertEquals("GeslachtMapper.fromPb", pbu.getPbGetter(fw));
+		Fw fw = this.getFw(Klantbeeld.class, "voornaam");
+		assertEquals("getVoornaam", pbu.getPbGetter(fw));
 
-		Fw fw = this.getFw(Klantbeeld.class, "aanspraken");
+		fw = this.getFw(Klantbeeld.class, "geboorteDatum");
+		System.out.println(pbu.getPbGetter(fw));
+		assertEquals("ProtobufMapper.fromPbDate", pbu.getPbGetter(fw));
+
+		fw = this.getFw(Klantbeeld.class, "adres");
+		System.out.println(pbu.getPbGetter(fw));
+		assertEquals("AdresMapper.fromPb", pbu.getPbGetter(fw));
+
+		fw = this.getFw(Klantbeeld.class, "geslacht");
+		System.out.println(pbu.getPbGetter(fw));
+		assertEquals("GeslachtMapper.fromPb", pbu.getPbGetter(fw));
+
+		fw = this.getFw(Klantbeeld.class, "aanspraken");
 		System.out.println(pbu.getPbGetter(fw));
 		assertEquals("GeslachtMapper.fromPb", pbu.getPbGetter(fw));
 	}

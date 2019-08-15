@@ -20,7 +20,6 @@ import flca.mda.codegen.data.SubsValueType;
 import flca.mda.codegen.helpers.FileHelper;
 import flca.mda.codegen.helpers.ShellUtils;
 import flca.mda.codegen.helpers.StrUtil;
-import mda.type.IBaseType;
 
 /**
  * This helper maintains all objects of the JavaProject that is
@@ -85,7 +84,6 @@ public class ProjectInstanceHelper {
 			}
 		}
 
-		this.addModelClassesToDatastore();
 		this.saveBasePackage(); // TODO
 	}
 
@@ -172,32 +170,9 @@ public class ProjectInstanceHelper {
 		}
 	}
 
-	private void addModelClassesToDatastore() {
-		ClassLoader loader = ClassloaderHelper.getInstance().getClassLoader();
-
-		for (String fqn : this.allInstances) {
-			try {
-				Class<?> clz = loader.loadClass(fqn);
-
-				if (this.isModelClass(clz)) {
-					DataStore.getInstance().addModelClass(clz);
-				}
-			} catch (Throwable t) {
-				logger.error("error parsing model class " + fqn);
-			}
-		}
-	}
-
 	private void saveBasePackage() {
 		String basepck = "todo"; // ((IApplicationType) o).getBasePackage();
 		DataStore.getInstance().addSubsValue(new SubsValue(CodegenConstants.BASE_PACKAGE, basepck, SubsValueType.NONE));
-	}
-
-	private boolean isModelClass(Class<?> aClass) {
-		if (this.tu == null) {
-			this.tu = new TypeUtils();
-		}
-		return this.tu.hasType(aClass, IBaseType.class) || aClass.isEnum();
 	}
 
 	public boolean hasValidTargetDirs() {

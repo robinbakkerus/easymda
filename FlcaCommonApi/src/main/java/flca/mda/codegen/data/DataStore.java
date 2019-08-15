@@ -29,7 +29,6 @@ public class DataStore {
 	private Set<SubsValue> subsvalues;
 	private File modelProjectDir;
 	private Map<String, IniFileSection> sections;
-	private Set<Class<?>> modelClasses;
 	
 	public static DataStore getInstance() {
 		if (sInstance == null) {
@@ -40,14 +39,11 @@ public class DataStore {
 
 	private DataStore() {
 		sections = new HashMap<String, IniFileSection>();
-		modelClasses = new HashSet<Class<?>>();
-
 		reset();
 	}
 
 	public void reset() {
 		subsvalues = new HashSet<SubsValue>();
-		modelClasses.clear();
 	}
 
 	public Collection<SubsValue> getSubsvalues() {
@@ -96,13 +92,6 @@ public class DataStore {
 		}
 	}
 
-	public void addModelClass(Class<?> aClass) {
-		if (!modelClasses.contains(aClass)) {
-			modelClasses.add((aClass));
-		}
-	}
-
-
 	public String getValue(String aKey) {
 		SubsValue subsval = getSubsValue(aKey);
 		if (subsval != null) {
@@ -145,14 +134,6 @@ public class DataStore {
 		}
 
 		return null;
-	}
-
-	public Set<Class<?>> getModelClasses() {
-		return modelClasses;
-	}
-
-	public void setModelClasses(Set<Class<?>> modelClasses) {
-		this.modelClasses = modelClasses;
 	}
 
 	public boolean containsSubsFrom(String aName) {
@@ -257,23 +238,6 @@ public class DataStore {
 		return getValue(CodegenConstants.BASE_PACKAGE);
 	}
 	
-	public boolean isProjectModelClass(String aFqn) {
-		for (Class<?> clz : getModelClasses()) {
-			if (aFqn.equals(clz.getName())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	// ----------
-	// instance
-	// Collection<SubsValue> subsvalues;
-	// Set<Class<?>> modelClasses;
-	// IniFileSection templatesPrefs;
-	// File modelProjectDir;
-	// String basePackage;
-	// Map<String, IniFileSection> sections;
 
 	/**
 	 * We need this method to copy the actual data of thee DataStore to a new DataStore object 
@@ -287,12 +251,10 @@ public class DataStore {
 		Object datastoreClone = m1.invoke(null, new Object[] {});
 		Method m2 = clz.getMethod("setSubsvalues", new Class[] { Set.class });
 		m2.invoke(datastoreClone, new Object[] { DataStore.getInstance().getSubsvalues() });
-		Method m3 = clz.getMethod("setModelClasses", new Class[] { Set.class });
-		m3.invoke(datastoreClone, new Object[] { DataStore.getInstance().getModelClasses() });
-		Method m4 = clz.getMethod("setSections", new Class[] { Map.class });
-		m4.invoke(datastoreClone, new Object[] { DataStore.getInstance().getSections() });
-		Method m5 = clz.getMethod("setModelProjectDir", new Class[] { File.class });
-		m5.invoke(datastoreClone, new Object[] { DataStore.getInstance().getModelProjectDir() });
+		Method m3 = clz.getMethod("setSections", new Class[] { Map.class });
+		m3.invoke(datastoreClone, new Object[] { DataStore.getInstance().getSections() });
+		Method m4 = clz.getMethod("setModelProjectDir", new Class[] { File.class });
+		m4.invoke(datastoreClone, new Object[] { DataStore.getInstance().getModelProjectDir() });
 	}
 
 	

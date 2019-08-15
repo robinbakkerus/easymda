@@ -58,10 +58,8 @@ public class BlazeDsProtobufMsg
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();
      String pck = nu.getCurrentPackage();
-     GetFieldsModus EXC = GetFieldsModus.EXCLUDE; 
-     GetFieldsModus INC = GetFieldsModus.INCLUDE; 
     stringBuffer.append(TEXT_1);
-     List<Fw> fwList = tu.getFieldsExc(cc, FwSelectType.SPECIAL, FwSelectType.ID); 
+     List<Fw> fwList = tu.getFields(cc, FwSelect.newBuilder().build()); 
      String name = pbu.protoMessageName(cc); 
      int index = 1; 
      if (tu.isEnum(cc)) { 

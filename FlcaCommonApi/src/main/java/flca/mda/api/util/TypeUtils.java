@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -237,22 +238,14 @@ public class TypeUtils implements TypeConstants {
 			superClz = this.getSuperClass(superClz);
 		}
 	}
-	
+
 	protected Fw makeIdFieldWrapper(Class<?> ownerClass) {
 		return new IdFieldWrapper(this, ownerClass);
 	}
 
-	protected List<Fw> getSpecialFields(Class<?> aClass, FwSelectType... selectOpts) {
-		return new ArrayList<Fw>();
-	}
-
-	protected boolean hasSelectOption(FwSelectType checkOption, FwSelectType... selectOpts) {
-		for (FwSelectType opt : selectOpts) {
-			if (opt.equals(checkOption))
-				return true;
-		}
-		return false;
-	}
+//	protected List<Fw> getSpecialFields(Class<?> aClass, FwSelectType... selectOpts) {
+//		return new ArrayList<Fw>();
+//	}
 
 	public void importIfNeeded(Fw aField) {
 		this.importIfNeeded(aField.type(), aField.genericType());
@@ -530,7 +523,13 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public Fw getExplicitIdField(Class<?> aClass) {
-		return this.getExplicitIdField(this.getFields(aClass, INC, FwSelectType.SIMPLE));
+		FwSelect fwSelect = FwSelect.emptyBuilder().withId(true).build();
+		List<Fw> fws = this.getFields(aClass, fwSelect);
+		if (fws.size() > 0) {
+			return fws.get(0);
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -664,8 +663,8 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * return all subclasses of the given class.
-	 * This is a List (and not a Set) because the last entry is the least significant (but not Object)
+	 * return all subclasses of the given class. This is a List (and not a Set)
+	 * because the last entry is the least significant (but not Object)
 	 * 
 	 * @see SubClassHelper
 	 * @return
@@ -708,6 +707,7 @@ public class TypeUtils implements TypeConstants {
 	public boolean hasSuperClasses(Class<?> aClass) {
 		return this.getSuperClasses(aClass) != null && this.getSuperClasses(aClass).size() > 0;
 	}
+
 	/**
 	 * returns true if the given model class has is the base class from which other
 	 * classes may extend note this is an alias for hasInheritance
@@ -811,9 +811,10 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public Fw getFieldByName(Class<?> aClass, String aFieldname) {
+		List<Field> classFields = Arrays.asList(aClass.getDeclaredFields());
 		for (Field fld : this.getAllTheFields(aClass)) {
 			if (fld.getName().equals(aFieldname))
-				return this.makeFw(fld, aClass);
+				return this.makeFw(fld, aClass, !classFields.contains(fld));
 		}
 		return null;
 	}
@@ -827,9 +828,10 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public Fw getFieldByType(Class<?> aClass, Class<?> aFieldType) {
+		List<Field> classFields = Arrays.asList(aClass.getDeclaredFields());
 		for (Field fld : this.getAllTheFields(aClass)) {
 			if (fld.getType().equals(aFieldType))
-				return this.makeFw(fld, aClass);
+				return this.makeFw(fld, aClass, !classFields.contains(fld));
 		}
 		return null;
 	}
@@ -996,7 +998,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public IApplicationType getApplicationBaseType() {
-		return ModelClassesUtils.findApplicationType();
+		return ModelClasses.findApplicationType();
 	}
 
 	/**
@@ -1059,7 +1061,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public List<Class<?>> getAllModelEntities() {
-		return ModelClassesUtils.findModelClassesWithInterface(IEntityType.class);
+		return ModelClasses.findModelClassesWithInterface(IEntityType.class);
 	}
 
 	/**
@@ -1068,7 +1070,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public List<Class<?>> getAllModelServices() {
-		return ModelClassesUtils.findModelClassesWithInterface(IServiceType.class);
+		return ModelClasses.findModelClassesWithInterface(IServiceType.class);
 	}
 
 	/**
@@ -1077,7 +1079,7 @@ public class TypeUtils implements TypeConstants {
 	 * @return
 	 */
 	public List<Class<?>> getAllModelEnums() {
-		return ModelClassesUtils.findModelEnums();
+		return ModelClasses.findModelEnums();
 	}
 
 	/**
@@ -1171,74 +1173,28 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * Return all the fieldwrappers that correspond with the FwSelectType's This
-	 * method starts empty and only the Fw's that correspond are returned
-	 * 
-	 * @see getFieldsExc
-	 * @param aClass
-	 * @param aSelectOptions
-	 * @return
-	 */
-	public List<Fw> getFieldsInc(final Class<?> aClass, final FwSelectType... aSelectOptions) {
-		return this.getFields(aClass, GetFieldsModus.INCLUDE, aSelectOptions);
-	}
-
-	/**
-	 * Return all the fieldwrappers that correspond with the FwSelectType's This
-	 * method starts with all the available Fw's and substract the Fw's that
-	 * correspond with the selectoptions
-	 * 
-	 * @see getFieldsInc
-	 * @param aClass
-	 * @param aSelectOptions
-	 * @return
-	 */
-	public List<Fw> getFieldsExc(final Class<?> aClass, final FwSelectType... aSelectOptions) {
-		return this.getFields(aClass, GetFieldsModus.EXCLUDE, aSelectOptions);
-	}
-
-	/**
-	 * This method combines getFieldsInc and getFieldsExc The result is equivalent
-	 * to the result of: List<Fw> fields = getFieldsInc(aClass,
-	 * aIncludeSelectOptions) return filterOut(aClass, fields,
-	 * aExcludeSelectOptions);
 	 * 
 	 * @param aClass
-	 * @param aIncludeSelectOptions
-	 * @param aExcludeSelectOptions
+	 * @param FwSelect
 	 * @return
 	 */
-	public List<Fw> getFields(final Class<?> aClass, final List<FwSelectType> aIncludeSelectOptions,
-			final List<FwSelectType> aExcludeSelectOptions) {
-
-		FwSelectType[] incArr = aIncludeSelectOptions.toArray(new FwSelectType[aIncludeSelectOptions.size()]);
-		FwSelectType[] excArr = aExcludeSelectOptions.toArray(new FwSelectType[aExcludeSelectOptions.size()]);
-
-		List<Fw> fields = this.getFieldsInc(aClass, incArr);
-		return this.filterOut(aClass, fields, excArr);
-	}
-
-	/**
-	 * 
-	 * @param aClass
-	 * @param aModus
-	 * @param aSelectOptions
-	 * @return
-	 */
-	public List<Fw> getFields(final Class<?> aClass, final GetFieldsModus aModus,
-			final FwSelectType... aSelectOptions) {
-		if (GetFieldsModus.INCLUDE.equals(aModus)) {
-			return this.getFieldsInclude(aClass, aSelectOptions);
-		} else {
-			return this.getFieldsExclude(aClass, aSelectOptions);
+	public List<Fw> getFields(final Class<?> aClass, final FwSelect fwSelect) {
+		List<Fw> r = new ArrayList<>();
+		for (Fw fw : this.getAllFields(aClass)) {
+			if (this.includeField(aClass, fw, fwSelect)) {
+				r.add(fw);
+			}
 		}
+		return r;
 	}
 
 	public List<Fw> getAllFields(final Class<?> aClass) {
 		List<Fw> result = new ArrayList<>();
 		result.addAll(this.getSpecialFields(aClass));
+		List<Field> classFields = Arrays.asList(aClass.getDeclaredFields());
 		for (Field fld : this.getAllTheFields(aClass)) {
-			result.add(this.makeFw(fld, aClass));
+			boolean isSuperField = !classFields.contains(fld);
+			result.add(this.makeFw(fld, aClass, isSuperField));
 		}
 
 		this.removeDoubleIdField(result);
@@ -1272,31 +1228,8 @@ public class TypeUtils implements TypeConstants {
 		return result;
 	}
 
-	/**
-	 * Filter out all the Fw's that correspond with the given select options
-	 * 
-	 * @return
-	 */
-	public List<Fw> filterOut(Class<?> aClass, List<Fw> fields, final FwSelectType... aSelectOptions) {
-		List<Fw> result = new ArrayList<>();
-		for (Fw fw : fields) {
-			boolean keep = true;
-			for (FwSelectType selctype : aSelectOptions) {
-				if (this.includeField(aClass, fw, selctype)) {
-					keep = false;
-					break;
-				}
-			}
-
-			if (keep) {
-				result.add(fw);
-			}
-		}
-		return result;
-	}
-
-	protected Fw makeFw(final Field fld, Class<?> ownerClass) {
-		return new Fw(this, fld, ownerClass);
+	protected Fw makeFw(final Field fld, Class<?> ownerClass, boolean superField) {
+		return new Fw(this, fld, ownerClass, superField);
 	}
 
 	protected Fw makeFw(final SpecialField fld, Class<?> ownerClass) {
@@ -1309,90 +1242,86 @@ public class TypeUtils implements TypeConstants {
 		return result;
 	}
 
-	private List<Fw> getFieldsInclude(final Class<?> aClass, final FwSelectType... aSelectOptions) {
-		List<Fw> result = new ArrayList<>();
-		List<Fw> allfields = this.getAllFields(aClass);
+	private boolean includeField(final Class<?> aClass, final Fw fw, final FwSelect fwSelect) {
+		boolean result = false;
 
-		for (Fw fieldWrapper : allfields) {
-			for (FwSelectType selcopt : aSelectOptions) {
-				if (this.includeField(aClass, fieldWrapper, selcopt)) {
-					result.add(fieldWrapper);
-					break;
-				}
+		if (fw.isOneToOneField()) {
+			if (fwSelect.isIncOneToOne() != null) {
+				result = fwSelect.isIncOneToOne();
+			} else if (fwSelect.isIncRelations() != null) {
+				result = fwSelect.isIncRelations();
 			}
 		}
+		
+		if (fw.isOneToManyField()) {
+			if (fwSelect.isIncOneToMany() != null) {
+				result = fwSelect.isIncOneToMany();
+			} else if (fwSelect.isIncRelations() != null) {
+				result = fwSelect.isIncRelations();
+			}
+		}
+		
+		if (fw.isManyToOneField()) {
+			if (fwSelect.isIncManyToOne() != null) {
+				result = fwSelect.isIncManyToOne();
+			} else if (fwSelect.isIncRelations() != null) {
+				result = fwSelect.isIncRelations();
+			}
+		}
+		
+		if (fw.isManyToManyField()) {
+			if (fwSelect.isIncManyToMany() != null) {
+				result = fwSelect.isIncManyToMany();
+			} else if (fwSelect.isIncRelations() != null) {
+				result = fwSelect.isIncRelations();
+			}
+		}
+		
+		if (fw.isSimple()) {
+			if (fwSelect.isIncSimple() != null) result = fwSelect.isIncSimple();
+		}
+		
+		if (fw.isModelClass()) {
+			if (fwSelect.isIncModelClass() != null) result = fwSelect.isIncModelClass();
+		}
+		
+		if (fw.isCollection()) {
+			if (fwSelect.isIncCollection() != null) result = fwSelect.isIncCollection();
+		}
+		
+		if (fw.isEnum()) {
+			if (fwSelect.isIncEnum() != null) result = fwSelect.isIncEnum();
+		}
+		
+		if (fw.isSpecial()) {
+			if (fwSelect.isIncSpecials() != null) result = fwSelect.isIncSpecials();
+		}
+		
+		if (fw.isSpecial() && fw.getSpecialfield().getSpecialFieldType() == SpecialField.SpecialType.DISCRIMINATOR) {
+			if (fwSelect.isIncDiscriminator() != null) {
+				result = fwSelect.isIncDiscriminator();
+			} else if (fwSelect.isIncSpecials() != null) {
+				result = fwSelect.isIncSpecials();
+			}
+		}
+		
+		if (fw.isSpecial() && fw.getSpecialfield().getSpecialFieldType() == SpecialField.SpecialType.ID) {
+			if (fwSelect.isIncId() != null) {
+				result = fwSelect.isIncId();
+			} else if (fwSelect.isIncSpecials() != null) {
+				result = fwSelect.isIncSpecials();
+			}
+		}
+		
+		if (fw.isSuper()) {
+			if (fwSelect.isIncSuper() != null) result = fwSelect.isIncSuper();
+		}
+
+
 		return result;
 	}
 
-	private List<Fw> getFieldsExclude(final Class<?> aClass, final FwSelectType... aSelectOptions) {
-		List<Fw> result = this.getAllFields(aClass);
-		List<Fw> delFields = new ArrayList<>();
-		if (this.hasSelectOptSuper(aSelectOptions) && this.getSuperClass(aClass) != null) {
-			result.addAll(this.getAllFields(this.getSuperClass(aClass)));
-		}
-		for (Fw fieldWrapper : result) {
-			for (FwSelectType selcopt : aSelectOptions) {
-				if (this.includeField(aClass, fieldWrapper, selcopt)) {
-					delFields.add(fieldWrapper);
-				}
-			}
-		}
-
-		for (Fw delfld : delFields) {
-			result.remove(delfld);
-		}
-		return result;
-	}
-
-	private boolean hasSelectOptSuper(final FwSelectType... aSelectOptions) {
-		for (FwSelectType opt : aSelectOptions) {
-			if (FwSelectType.SUPER.equals(opt)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean includeField(final Class<?> aClass, final Fw fw, final FwSelectType aFieldType) {
-		if (aFieldType.equals(FwSelectType.ALL)) {
-			return true;
-		} else if (aFieldType.equals(FwSelectType.ALL)) {
-			return false;
-		} else if (aFieldType.equals(FwSelectType.ONETOONE)) {
-			return fw.isOneToOneField();
-		} else if (aFieldType.equals(FwSelectType.ONETOMANY)) {
-			return fw.isOneToManyField();
-		} else if (aFieldType.equals(FwSelectType.MANYTOONE)) {
-			return fw.isManyToOneField();
-		} else if (aFieldType.equals(FwSelectType.MANYTOMANY)) {
-			return fw.isManyToManyField();
-		} else if (aFieldType.equals(FwSelectType.RELATIONS)) {
-			return fw.isOneToOneField() || fw.isOneToManyField() || fw.isManyToOneField() || fw.isManyToManyField();
-		} else if (aFieldType.equals(FwSelectType.SIMPLE)) {
-			return fw.isSimple();
-		} else if (aFieldType.equals(FwSelectType.ENUM)) {
-			return fw.isEnum();
-		} else if (aFieldType.equals(FwSelectType.VAL)) {
-			return fw.isVal();
-		} else if (aFieldType.equals(FwSelectType.VAR)) {
-			return !fw.isSpecial() && fw.isVar();
-		} else if (aFieldType.equals(FwSelectType.SPECIAL)) {
-			return fw.isSpecial();
-		} else if (aFieldType.equals(FwSelectType.OFD)) {
-			return fw.isSpecial() && FwSelectType.OFD.equals(fw.getSpecialfield().getSpecialFieldType());
-		} else if (aFieldType.equals(FwSelectType.DISCRIMINATOR)) {
-			return fw.isSpecial() && FwSelectType.DISCRIMINATOR.equals(fw.getSpecialfield().getSpecialFieldType());
-		} else if (aFieldType.equals(FwSelectType.ID)) {
-			if (this.hasExplicitId(aClass)) {
-				return !fw.isSpecial() && fw.isId();
-			} else {
-				return fw.isSpecial() && FwSelectType.ID.equals(fw.getSpecialfield().getSpecialFieldType());
-			}
-		} else {
-			return false;
-		}
-	}
-
+	
 	/**
 	 * Returns the primitive or class name for the given Type. Class names will be
 	 * added as imports to the GenModel's ImportManager, and the imported form will

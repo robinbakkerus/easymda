@@ -70,8 +70,6 @@ public class BlazeDsMapperTest
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();
      String pck = nu.getCurrentPackage();
-     GetFieldsModus EXC = GetFieldsModus.EXCLUDE; 
-     GetFieldsModus INC = GetFieldsModus.INCLUDE; 
     stringBuffer.append(TEXT_1);
     stringBuffer.append(TEXT_2);
     stringBuffer.append(pck);
@@ -86,8 +84,8 @@ public class BlazeDsMapperTest
      String toClassname = toClass.getSimpleName(); 
      Class entityClass = (Class) args[1]; 
      String entityClassname = entityClass.getSimpleName(); 
-     List<Fw> toFws = tu.getFields(toClass, EXC, FwSelectType.ID); 
-     List<Fw> entityFws = tu.getFields(entityClass, EXC, FwSelectType.ID); 
+     List<Fw> toFws = tu.getFields(toClass, FwSelect.newBuilder().build()); 
+     List<Fw> entityFws = tu.getFields(entityClass, FwSelect.newBuilder().build()); 
      String toUncapname = nu.uncapName(toClassname); 
      String entityUncapname = nu.uncapName(entityClassname); 
      String mapper = toClassname + "Mapper"; 

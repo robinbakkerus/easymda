@@ -12,6 +12,7 @@ public abstract class AbstractExample {
 	private Set<Boat> boats;
 	private Opel[] opels;
 	private Collection<FordMax> fordMaxColl;
+	private VehicleType typ;
 	
 	public Collection<FordMax> getFordMaxColl() {
 		return fordMaxColl;
@@ -49,6 +50,10 @@ public abstract class AbstractExample {
 	public void setOpels(Opel[] opels) {
 		this.opels = opels;
 	}
-	
-	
+	public VehicleType getTyp() {
+		return typ;
+	}
+	public void setTyp(VehicleType typ) {
+		this.typ = typ;
+	}
 }

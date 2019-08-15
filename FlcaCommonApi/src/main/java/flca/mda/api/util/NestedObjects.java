@@ -37,10 +37,14 @@ public class NestedObjects implements TypeConstants {
 	private List<NestedObject> fillNested(Class<?> aClass, List<NestedObject> aNestedObjects, int aIndex) {
 		List<NestedObject> result = aNestedObjects;
 		// -- in 4 separate steps so that the order is more predictable
-		List<Fw> fields = tu.getFieldsInc(aClass, O2M_FLD);
-		fields.addAll(tu.getFieldsInc(aClass, M2O_FLD));
-		fields.addAll(tu.getFieldsInc(aClass, M2M_FLD));
-		fields.addAll(tu.getFieldsInc(aClass, O2O_FLD));
+		FwSelect fwSelect = FwSelect.emptyBuilder().withOneToMany(true).build();
+		List<Fw> fields = tu.getFields(aClass, fwSelect);
+		fwSelect = FwSelect.emptyBuilder().withManyToOne(true).build();
+		fields.addAll(tu.getFields(aClass, fwSelect));
+		fwSelect = FwSelect.emptyBuilder().withManyToMany(true).build();
+		fields.addAll(tu.getFields(aClass, fwSelect));
+		fwSelect = FwSelect.emptyBuilder().withOneToOne(true).build();
+		fields.addAll(tu.getFields(aClass, fwSelect));
 
 		for (Fw fw : fields) {
 			if (fw.isOwner()) {

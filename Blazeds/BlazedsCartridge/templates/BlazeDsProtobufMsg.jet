@@ -4,7 +4,7 @@ package="blazeds"
 class="BlazeDsProtobufMsg" %>
 <%@ include file="include/java-class-init.jetinc" %>
 
-<% List<Fw> fwList = tu.getFieldsExc(cc, FwSelectType.SPECIAL, FwSelectType.ID); %>
+<% List<Fw> fwList = tu.getFields(cc, FwSelect.newBuilder().build()); %>
 <% String name = pbu.protoMessageName(cc); %>
 <% int index = 1; %>
 <% if (tu.isEnum(cc)) { %>

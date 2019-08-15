@@ -40,8 +40,10 @@ public class FwTest {
 		assertEquals(Car.class, fw.genericType());
 
 		fw = this.getFw(Example.class, "opels");
-		System.out.println("> " + fw.type());
-		System.out.println("> " + fw.genericType());
+		System.out.println("type = " + fw.type());
+		System.out.println("typeName = " + fw.typeName());
+		System.out.println("genericType " + fw.genericType());
+		System.out.println("genericTypeName " + fw.genericTypeName());
 //		assertEquals(List.class, fw.type());
 //		assertEquals(Car.class, fw.genericType());
 
@@ -50,6 +52,7 @@ public class FwTest {
 		assertEquals(FordMax.class, fw.genericType());
 	}
 
+	//--------------------------------------------------
 	private Fw getFw(Class<?> clz, String substr) {
 		List<Fw> fws = tu.getAllFields(clz);
 		for (Fw fw : fws) {
@@ -60,4 +63,6 @@ public class FwTest {
 		System.err.println("No matching field for " + substr + " found");
 		return null;
 	}
+	
+	
 }

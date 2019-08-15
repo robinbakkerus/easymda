@@ -58,8 +58,6 @@ public class BlazeDsProtobuf
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();
      String pck = nu.getCurrentPackage();
-     GetFieldsModus EXC = GetFieldsModus.EXCLUDE; 
-     GetFieldsModus INC = GetFieldsModus.INCLUDE; 
      cc = (Class) element; 
     stringBuffer.append(TEXT_1);
     stringBuffer.append(cc.getSimpleName());

@@ -2,6 +2,9 @@ package flca.mda.api.util;
 
 import java.lang.reflect.Field;
 
+import flca.mda.codegen.helpers.AnnotationsHelper;
+import flca.mda.codegen.helpers.ModelClasses;
+import flca.mda.codegen.helpers.StrUtil;
 import mda.annotation.jpa.Column;
 import mda.annotation.jpa.Id;
 import mda.annotation.jpa.JoinColumn;
@@ -10,12 +13,11 @@ import mda.annotation.jpa.ManyToOne;
 import mda.annotation.jpa.OneToMany;
 import mda.annotation.jpa.OneToOne;
 import mda.type.IEntityType;
-import flca.mda.codegen.helpers.AnnotationsHelper;
-import flca.mda.codegen.helpers.ModelClasses;
-import flca.mda.codegen.helpers.StrUtil;
 
 /**
- * Helper class to wrap a Field, so that also not explicit Id fields can be supported
+ * Helper class to wrap a Field, so that also not explicit Id fields can be
+ * supported
+ * 
  * @author robin
  *
  */
@@ -26,64 +28,72 @@ public class Fw implements TypeConstants {
 	private Field field; // a normal field
 	private SpecialField specialField; // used for example, for the Id if there is no explicit Id field defined
 	private Class<?> ownerClass;
-	
+	private boolean superField;
+
 	/**
 	 * ctor used for normal fields
+	 * 
 	 * @param field
 	 * @param ownerClass
 	 */
-	public Fw(Field field, Class<?> ownerClass) {
+	public Fw(Field field, Class<?> ownerClass, boolean isSuperField) {
 		super();
 		this.field = field;
 		this.ownerClass = ownerClass;
+		this.superField = isSuperField;
 	}
 
 	/**
 	 * ctor used for normal fields
+	 * 
 	 * @param tu
 	 * @param field
 	 */
-	public Fw(TypeUtils tu, Field field, Class<?> ownerClass) {
-		super();
+	public Fw(TypeUtils tu, Field field, Class<?> ownerClass, boolean isSuperField) {
+		this(field, ownerClass, isSuperField);
 		this.tu = tu;
-		this.field = field;
-		this.ownerClass = ownerClass;
 	}
 
 	/**
 	 * ctor used for special fields
+	 * 
 	 * @param tu
 	 * @param specialField
 	 */
 	public Fw(TypeUtils tu, SpecialField specialField, Class<?> ownerClass) {
-		super();
 		this.tu = tu;
 		this.specialField = specialField;
 		this.ownerClass = ownerClass;
+		this.superField = false;
 	}
-
 
 	/**
 	 * return the corresponding property name (as defined in the model class).
+	 * 
 	 * @return
 	 */
 	public String name() {
-		if (field != null) return field.getName();
-		else return specialField.getName();
+		if (field != null)
+			return field.getName();
+		else
+			return specialField.getName();
 	}
 
 	/**
 	 * return the natural type that corresponds with this propery
+	 * 
 	 * @return
 	 */
 	public Class<?> type() {
-		if (field != null) return field.getType();
-		else return specialField.getType();
+		if (field != null)
+			return field.getType();
+		else
+			return specialField.getType();
 	}
 
 	/**
-	 * return the generic type of the given field or null if this is not a
-	 * generic type
+	 * return the generic type of the given field or null if this is not a generic
+	 * type
 	 * 
 	 * @param aField
 	 * @return
@@ -95,28 +105,27 @@ public class Fw implements TypeConstants {
 			return specialField.getType();
 		}
 	}
-	
 
 	/**
-	 * return the name of the actual type or generic type it is a collection
-	 * This may be cartridge dependent
-	 * For example a field like: Set<Address> addresses; 
-	 * JavaTypeUtils -> Set<Address>
-	 * ScalaTypeUtils -> Set[Address]
+	 * return the name of the actual type or generic type it is a collection This
+	 * may be cartridge dependent For example a field like: Set<Address> addresses;
+	 * JavaTypeUtils -> Set<Address> ScalaTypeUtils -> Set[Address]
+	 * 
 	 * @return
 	 */
 	public String typeName() {
 		if (field != null) {
-			return tu.getTypeName(type(), genericType()); 
+			return tu.getTypeName(type(), genericType());
 		} else {
 			return tu.getTypeName(specialField.getType());
 		}
 	}
 
-	/** 
-	 * return the name of the generic type (in case of a collection), or the type if it is not a collection .
-	 * For example a field like: Set<Address> addresses;
+	/**
+	 * return the name of the generic type (in case of a collection), or the type if
+	 * it is not a collection . For example a field like: Set<Address> addresses;
 	 * will return Address
+	 * 
 	 * @see genericType()
 	 * @return
 	 */
@@ -128,12 +137,11 @@ public class Fw implements TypeConstants {
 		}
 	}
 
-	/** 
-	 * return the name of the actual type (in case of a collection), or the type if it is not a collection
-	 * This may be cartridge dependent
-	 * For example a field like: Set<Address> addresses; 
-	 * JavaTypeUtils -> Set
-	 * ScalaTypeUtils -> Set
+	/**
+	 * return the name of the actual type (in case of a collection), or the type if
+	 * it is not a collection This may be cartridge dependent For example a field
+	 * like: Set<Address> addresses; JavaTypeUtils -> Set ScalaTypeUtils -> Set
+	 * 
 	 * @return
 	 */
 	public String actualTypeName() {
@@ -165,38 +173,51 @@ public class Fw implements TypeConstants {
 	public boolean isId() {
 		return AnnotationsHelper.hasAnnotation(this, Id.class);
 	}
-	
+
 	/**
 	 * returns true if this type is a nested Pojo
+	 * 
 	 * @return
 	 */
 	public boolean isBean() {
 		if (field != null) {
-			return !tu.isSimpleField(field.getType()) && !this.isEnum() && !this.isCollection(); 
+			return !tu.isSimpleField(field.getType()) && !this.isEnum() && !this.isCollection();
 		} else {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * return true if is this (generic)type extends IEntityType.
+	 * 
 	 * @return
 	 */
 	public boolean isEntity() {
 		return tu.hasType(genericType(), IEntityType.class);
 	}
-	
+
 	public boolean isEnum() {
-		if (field != null) return field.getType().isEnum();
-		else return false;
+		if (field != null)
+			return field.getType().isEnum();
+		else
+			return false;
 	}
-	
+
+	/**
+	 * Returns true if this property is coming from a superclass.
+	 * @return
+	 */
+	public boolean isSuper() {
+		return this.superField;
+	}
 	
 	public boolean isRequired() {
-		if (field != null) return vu.isRequired(field);
-		else return false;
+		if (field != null)
+			return vu.isRequired(field);
+		else
+			return false;
 	}
-	
+
 	public boolean isManyToOneField() {
 		if (field != null) {
 			return AnnotationsHelper.hasAnnotation(this, ManyToOne.class);
@@ -228,9 +249,10 @@ public class Fw implements TypeConstants {
 			return false;
 		}
 	}
-	
+
 	public boolean isModelClass() {
-		return ModelClasses.getAllClasses().contains(this.type()) || ModelClasses.getAllClasses().contains(this.genericType());
+		return ModelClasses.getAllClasses().contains(this.type())
+				|| ModelClasses.getAllClasses().contains(this.genericType());
 	}
 
 	public boolean isRelation() {
@@ -242,15 +264,19 @@ public class Fw implements TypeConstants {
 	}
 
 	public boolean isSimple() {
-		if (field != null) return tu.isSimpleField(field.getType());
-		else return false;
+		if (field != null)
+			return tu.isSimpleField(field.getType());
+		else
+			return false;
 	}
 
 	public boolean isPrimitive() {
-		if (isSpecial()) return false;
-		else return getField().getType().isPrimitive();
+		if (isSpecial())
+			return false;
+		else
+			return getField().getType().isPrimitive();
 	}
-	
+
 	public boolean isString() {
 		return tu.isStringType(type());
 	}
@@ -266,7 +292,7 @@ public class Fw implements TypeConstants {
 	public boolean isDecimal() {
 		return tu.isDecimalType(type());
 	}
-	
+
 	public boolean isDate() {
 		return tu.isDateType(type());
 	}
@@ -302,11 +328,11 @@ public class Fw implements TypeConstants {
 	public boolean needsOption() {
 		return tu.needsOption(this);
 	}
-	
+
 	/**
-	 * returns the Column name that belong to given Field. If the field is
-	 * annotated with @Column and the name is provided, this will be returned
-	 * else the fieldname is returned
+	 * returns the Column name that belong to given Field. If the field is annotated
+	 * with @Column and the name is provided, this will be returned else the
+	 * fieldname is returned
 	 * 
 	 * @param aClass
 	 * @return
@@ -333,81 +359,52 @@ public class Fw implements TypeConstants {
 		return specialField;
 	}
 
-	public boolean isVal() {
-		if (field != null) {
-			return tu.isValType(this);
-		} else {
-			return false;
-		}
-	}
-	
-	public boolean isVar() {
-		if (field != null) {
-			return !tu.isValType(this);
-		} else {
-			return true;
-		}
-	}
-	
 	public SpecialField getSpecialfield() {
 		return specialField;
 	}
 
 	public boolean isCollection() {
-		return (tu.isCollection(type()));
+		return (tu.isCollection(type())) || this.isArray();
 	}
 
 	public boolean isArray() {
-		return (tu.isCollection(type()));//TODO
+		return this.typeName().endsWith("[]");
 	}
 
 	public String getAnnotations() {
 		return tu.getAnnotations(this);
 	}
-	
-	public String concreteType() {
+
+	public String concreteTypeName() {
 		return tu.getImportedConcreteType(type(), genericType());
 	}
 
 	/**
-	 * rteurn true if this field should be skipped base on the OutputOptions
+	 * rteurn true if this field should be skipped base on given selector
 	 * 
 	 * @param fw
 	 * @param opts
 	 * @return
 	 */
-	public boolean skipField(FwSelectType[] selectOpts) {
-		if (tu.hasSelectOption(ID_FLD, selectOpts)) {
-			if (isId())
-				return true;
+	public boolean skipField(final FwSelect fwSelect) {
+		if (fwSelect.isIncId() && isId()) {
+			return true;
 		}
-		if (tu.hasSelectOption(VAL_FLD, selectOpts)) {
-			if (isVal() || isId())
-				return true;
+		if ((fwSelect.isIncOneToMany() || fwSelect.isIncRelations()) && isOneToManyField()) {
+			return true;
 		}
-		if (tu.hasSelectOption(VAR_FLD, selectOpts)) {
-			if (isVar())
-				return true;
+		if ((fwSelect.isIncOneToOne() || fwSelect.isIncRelations()) && isOneToOneField()) {
+			return true;
 		}
-		if (tu.hasSelectOption(O2M_FLD, selectOpts) || tu.hasSelectOption(REL_FLD, selectOpts)) {
-			if (isOneToManyField())
-				return true;
+		if ((fwSelect.isIncManyToOne() || fwSelect.isIncRelations()) && isManyToOneField()) {
+			return true;
 		}
-		if (tu.hasSelectOption(O2O_FLD, selectOpts) || tu.hasSelectOption(REL_FLD, selectOpts)) {
-			if (isOneToOneField())
-				return true;
-		}
-		if (tu.hasSelectOption(M2O_FLD, selectOpts) || tu.hasSelectOption(REL_FLD, selectOpts)) {
-			if (isManyToOneField())
-				return true;
-		}
-		if (tu.hasSelectOption(M2M_FLD, selectOpts) || tu.hasSelectOption(REL_FLD, selectOpts)) {
-			if (isManyToManyField())
-				return true;
+		if ((fwSelect.isIncManyToMany() || fwSelect.isIncRelations()) && isManyToManyField()) {
+			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * @see AnnotationsHelper.getMappedByFkField
 	 * @param aField
@@ -416,8 +413,6 @@ public class Fw implements TypeConstants {
 	public boolean hasMappedByFkField() {
 		return AnnotationsHelper.hasMappedByFkField(this);
 	}
-
-
 
 	/**
 	 * @see AnnotationsHelper.getMappedByFkField
@@ -439,10 +434,9 @@ public class Fw implements TypeConstants {
 		return (fw == null) ? "??fk??" : fw.name();
 	}
 
-
 	/**
-	 * this the 'owner' field that corresponds with the given field, or null if
-	 * not found
+	 * this the 'owner' field that corresponds with the given field, or null if not
+	 * found
 	 * 
 	 * @param aMappedByClass
 	 * @param aMappedByField
@@ -453,9 +447,8 @@ public class Fw implements TypeConstants {
 		for (Class<?> clz : tu.getAllModelEntities()) {
 			for (Fw fw : tu.getAllFields(clz)) {
 				Fw mappedby = fw.getMappedByFkField();
-				if (mappedby != null && 
-					!mappedby.equals(this) &&
-					mappedby.type().getSimpleName().equals(this.getOwnerClass().getSimpleName())) {
+				if (mappedby != null && !mappedby.equals(this)
+						&& mappedby.type().getSimpleName().equals(this.getOwnerClass().getSimpleName())) {
 					return mappedby;
 				}
 			}
@@ -464,8 +457,8 @@ public class Fw implements TypeConstants {
 	}
 
 	/**
-	 * this returns the 'owner' class that corresponds with the given field, or null if
-	 * not found
+	 * this returns the 'owner' class that corresponds with the given field, or null
+	 * if not found
 	 * 
 	 * @param aMappedByClass
 	 * @param aMappedByField
@@ -489,7 +482,6 @@ public class Fw implements TypeConstants {
 		return tu.getDefaultValue(type());
 	}
 
-
 //	protected void importIfNeeded(Fw aField) {
 //		importIfNeeded(aField.getType(), aField.getGenericType());
 //	}
@@ -509,12 +501,13 @@ public class Fw implements TypeConstants {
 		result = StrUtil.replace(result, FieldFormat.DEFAULT.getValue(), getDefaultValue());
 		if (result.indexOf(FieldFormat.FUNCTION.getValue()) >= 0) {
 			result = FwFormatHelper.fieldFormatFunction(this, result);
-		}		
+		}
 		return result;
 	}
 
 	/**
-	 * Return the getter, ex: "getName" 
+	 * Return the getter, ex: "getName"
+	 * 
 	 * @return
 	 */
 	public String getter() {
@@ -522,29 +515,31 @@ public class Fw implements TypeConstants {
 	}
 
 	/**
-	 * Return the setter, ex: "getName" 
+	 * Return the setter, ex: "getName"
+	 * 
 	 * @return
 	 */
 	public String setter() {
 		return String.format("set%s", nu.capName(this.getField()));
 	}
-	
+
 	/**
-	 * return the random value 
+	 * return the random value
+	 * 
 	 * @return
 	 */
 	public String randomValue() {
-		return "?random?"; //TODO
+		return "?random?"; // TODO
 	}
 
-	
 	public Class<?> getOwnerClass() {
 		return ownerClass;
 	}
 
 	@Override
 	public String toString() {
-		return "FieldWrapper [name=" + name() + " field=" + field + ", specialField=" + specialField + " owner=" + getOwnerClass().getSimpleName() + "]";
+		return "FieldWrapper [name=" + name() + " field=" + field + ", specialField=" + specialField + " owner="
+				+ getOwnerClass().getSimpleName() + "]";
 	}
 
 	@Override
@@ -574,8 +569,6 @@ public class Fw implements TypeConstants {
 		} else if (!specialField.equals(other.specialField))
 			return false;
 		return true;
-	} 
-	
-	
-}
+	}
 
+}

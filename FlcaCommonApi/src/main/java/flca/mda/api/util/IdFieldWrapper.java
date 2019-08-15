@@ -4,7 +4,7 @@ package flca.mda.api.util;
 public class IdFieldWrapper extends Fw {
 
 	public IdFieldWrapper(TypeUtils tu, Class<?> ownerClass) {
-		super(tu, new SpecialField(Long.class, TypeUtils.ID, true, null, FwSelectType.ID), ownerClass);
+		super(tu, new SpecialField(Long.class, TypeUtils.ID, true, null, SpecialField.SpecialType.ID), ownerClass);
 	}
 
 	@Override
@@ -12,11 +12,6 @@ public class IdFieldWrapper extends Fw {
 		return false;
 	}
 
-	@Override 
-	public boolean isVal() {
-		return true;
-	}
-	
 	@Override 
 	public boolean isId() {
 		return true;

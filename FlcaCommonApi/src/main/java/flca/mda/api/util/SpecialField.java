@@ -6,15 +6,15 @@ public class SpecialField {
 	private String name;
 	private boolean isId;
 	private String defaultValue;
-	private FwSelectType specialFieldType;
+	private SpecialType specialType;
 	
-	public SpecialField(Class<?> type, String name, boolean isId, String defValue, FwSelectType fieldType) {
+	public SpecialField(Class<?> type, String name, boolean isId, String defValue, SpecialType specialType) {
 		super();
 		this.type = type;
 		this.name = name;
 		this.isId = isId;
 		this.defaultValue = defValue;
-		this.specialFieldType = fieldType;
+		this.specialType = specialType;
 	}
 	
 	public Class<?> getType() {
@@ -42,12 +42,12 @@ public class SpecialField {
 		this.defaultValue = defaultValue;
 	}
 
-	public FwSelectType getSpecialFieldType() {
-		return specialFieldType;
+	public SpecialType getSpecialFieldType() {
+		return this.specialType;
 	}
 
-	public void setSpecialFieldType(FwSelectType specialFieldType) {
-		this.specialFieldType = specialFieldType;
+	public void setSpecialFieldType(SpecialType specialFieldType) {
+		this.specialType = specialFieldType;
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class SpecialField {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((specialFieldType == null) ? 0 : specialFieldType.hashCode());
+		result = prime * result + ((specialType == null) ? 0 : specialType.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
@@ -74,7 +74,7 @@ public class SpecialField {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (specialFieldType != other.specialFieldType)
+		if (specialType != other.specialType)
 			return false;
 		if (type == null) {
 			if (other.type != null)
@@ -85,5 +85,9 @@ public class SpecialField {
 	}
 	
 	
-	
+	public enum SpecialType {
+		ID,
+		DISCRIMINATOR,
+		OFD;
+	}
 }

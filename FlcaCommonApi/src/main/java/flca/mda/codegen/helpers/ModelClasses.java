@@ -2,6 +2,7 @@ package flca.mda.codegen.helpers;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -13,9 +14,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import flca.mda.api.util.TypeUtils;
+import mda.type.IApplicationType;
 
 public class ModelClasses {
+	
+	public static Logger logger = LoggerFactory.getLogger(ModelClasses.class);
+	private static TypeUtils tu = new TypeUtils();
 	private static Map<Class<?>, List<Class<?>>> sSuperClassesMap;
 	private static Map<Class<?>, List<Class<?>>> sSubClassesMap;
 	private static Set<Class<?>> sAllClasses;
@@ -31,29 +39,106 @@ public class ModelClasses {
 	}
 
 	public static List<Class<?>> getAllSuperClasses(Class<?> aFromClass) {
-		if (sSuperClassesMap == null) {
-			throw new RuntimeException("ModelClasses,initialize(modeldir) should be called first");
-		}
-
+		assertIsInitialized();
 		List<Class<?>> result = sSuperClassesMap.get(aFromClass);
 		return result == null ? new ArrayList<>() : result;
 	}
 
-	public static List<Class<?>> getAllSubClasses(Class<?> aFromClass) {
-		if (sSubClassesMap == null) {
-			throw new RuntimeException("ModelClasses,initialize(modeldir) should be called first");
-		}
 
+	public static List<Class<?>> getAllSubClasses(Class<?> aFromClass) {
+		assertIsInitialized();
 		List<Class<?>> result = sSubClassesMap.get(aFromClass);
 		return result == null ? new ArrayList<>() : result;
 	}
 
 	public static Set<Class<?>> getAllClasses() {
-		if (sAllClasses == null) {
+		assertIsInitialized();
+		return sAllClasses;
+	}
+	
+	/**
+	 * find all (not only the selected ones) classes that contains the given class annotation
+	 * @param annot
+	 * @return
+	 */
+	public static List<Class<?>> findModelClassesWithAnnotation(Annotation annot) {
+		assertIsInitialized();
+		
+		List<Class<?>> result = new ArrayList<Class<?>>();
+		
+		for (Class<?> clazz : sAllClasses) {
+			if (AnnotationsHelper.hasAnnotation(clazz, annot)) {
+				result.add(clazz);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * find all (not only the selected ones) classes that implement the given interface
+	 * @param annot
+	 * @return
+	 */
+	public static List<Class<?>> findModelClassesWithInterface(Class<?> aInterface) {
+		assertIsInitialized();
+		
+		List<Class<?>> result = new ArrayList<Class<?>>();
+		
+		for (Class<?> clazz : sAllClasses) {
+			if (tu.hasType(clazz, aInterface)) {
+				result.add(clazz);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * find all (not only the selected ones) classes that implement the given interface
+	 * @param annot
+	 * @return
+	 */
+	public static IApplicationType findApplicationType() {
+		assertIsInitialized();
+		
+		List<Class<?>>  clazzes = findModelClassesWithInterface(IApplicationType.class);
+		if (clazzes != null && clazzes.size() == 1) {
+			try {
+				return (IApplicationType) clazzes.get(0).newInstance();
+			} catch(Exception ex) {
+				logger.error("error creating ApplicationType class ", ex);
+				return null;
+			}
+		} else {
+			if (clazzes == null || clazzes.size() == 0) {
+				logger.error("Could not find a class that extends ApplicationBaseType in the model project");
+			} else {
+				logger.error("Found more then one class that extends ApplicationBaseType in the model project");
+			}
+			return null;
+		}
+	}
+	
+	/**
+	 * find all (not only the selected ones) enums
+	 * @return
+	 */
+	public static List<Class<?>> findModelEnums() {
+		assertIsInitialized();
+
+		List<Class<?>> result = new ArrayList<Class<?>>();
+		
+		for (Class<?> clazz : sAllClasses) {
+			if (tu.isEnum(clazz)) {
+				result.add(clazz);
+			}
+		}
+		return result;
+	}
+
+	private static void assertIsInitialized() {
+		if (sSuperClassesMap == null) {
 			throw new RuntimeException("ModelClasses,initialize(modeldir) should be called first");
 		}
-
-		return sAllClasses;
 	}
 
 	private static void fillClassMaps(List<File> modelDirs) {

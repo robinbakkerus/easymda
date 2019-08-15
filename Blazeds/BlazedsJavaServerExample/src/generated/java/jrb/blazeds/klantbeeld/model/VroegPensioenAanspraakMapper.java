@@ -2,6 +2,8 @@
 
 package jrb.blazeds.klantbeeld.model;
  
+import java.math.BigDecimal;
+
 import java.util.*;
 
 import java.util.stream.Collectors;
@@ -25,9 +27,6 @@ public class VroegPensioenAanspraakMapper {
 	public static VroegPensioenAanspraak fromPb(final VroegPensioenAanspraakMsg sourceMsg) {
 		final VroegPensioenAanspraak result = new VroegPensioenAanspraak();
 		result.setLooptijd(sourceMsg.getLooptijd());
-		result.setType(PensioenAanspraakTypeMapper.fromPb(sourceMsg.getType()));
-		result.setUitkering(ProtobufMapper.fromPbBigDecimal(sourceMsg.getUitkering()));
-		result.setEinddatum(ProtobufMapper.fromPbDate(sourceMsg.getEinddatum()));
 		return result;
 	}	
 
@@ -37,9 +36,6 @@ public class VroegPensioenAanspraakMapper {
 	public static VroegPensioenAanspraakMsg toPb(final VroegPensioenAanspraak source) {
 		final VroegPensioenAanspraakMsg.Builder builder = VroegPensioenAanspraakMsg.newBuilder();
 		builder.setLooptijd(source.getLooptijd());
-		if (source.getType() != null) builder.setType(PensioenAanspraakTypeMapper.toPb(source.getType()));
-		if (source.getUitkering() != null) builder.setUitkering(ProtobufMapper.toPbBigDecimal(source.getUitkering()));
-		if (source.getEinddatum() != null) builder.setEinddatum(ProtobufMapper.toPbDate(source.getEinddatum()));
 		return builder.build();
 	}
 	

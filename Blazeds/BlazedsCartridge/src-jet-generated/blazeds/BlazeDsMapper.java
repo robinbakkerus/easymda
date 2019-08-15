@@ -53,8 +53,6 @@ public class BlazeDsMapper
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();
      String pck = nu.getCurrentPackage();
-     GetFieldsModus EXC = GetFieldsModus.EXCLUDE; 
-     GetFieldsModus INC = GetFieldsModus.INCLUDE; 
     stringBuffer.append(TEXT_1);
     stringBuffer.append(TEXT_2);
     stringBuffer.append(pck);
@@ -65,7 +63,7 @@ public class BlazeDsMapper
    	impu.addCompilationUnitImports(stringBuffer.toString()); 
  
     stringBuffer.append(TEXT_4);
-     List<Fw> fws = tu.getFields(cc, EXC, FwSelectType.ID); 
+     List<Fw> fws = tu.getFields(cc, FwSelect.newBuilder().build()); 
      String name = cc.getSimpleName(); 
      String toUncapname = nu.uncapName(cc); 
      impu.addImport(cc);

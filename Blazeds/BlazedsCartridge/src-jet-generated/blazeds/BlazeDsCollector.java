@@ -50,8 +50,6 @@ public class BlazeDsCollector
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();
      String pck = nu.getCurrentPackage();
-     GetFieldsModus EXC = GetFieldsModus.EXCLUDE; 
-     GetFieldsModus INC = GetFieldsModus.INCLUDE; 
      Object carttype = arg.getElement(); 
    if (carttype instanceof IBlazeDsService) {
      IBlazeDsService collector = (IBlazeDsService) carttype;  
