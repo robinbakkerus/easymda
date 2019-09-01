@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'data/app_data.dart';
 import 'events/app_events.dart';
-import 'grpc/gprc_client.dart';
+// import 'grpc/gprc_client.dart';
+import 'service/klantbeeld_srv.dart';
 
 void main() => runApp(MyApp());
 
@@ -46,7 +47,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _getKlantbeeld() {
     print("TODO 0");
-    GprcClient().getKlantbeeld([]);
+    //GprcClient().getKlantbeeld([]);
+    IKlantbeeldService().getKlantbeeld(["test"]);
   }
 
   @override

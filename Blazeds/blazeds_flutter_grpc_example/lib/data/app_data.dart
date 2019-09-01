@@ -5,7 +5,6 @@ class AppData {
   factory AppData() => _instance;
   KlantbeeldMsg klantbeeld;
 
-  AppData._internal() {
-  }
+  AppData._internal() ;
   
 }

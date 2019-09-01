@@ -17,7 +17,7 @@ public class GetKlantbeeldGrpcImpl extends GetKlantbeeldGrpc.GetKlantbeeldImplBa
 	@Override
 	public void getKlantbeeld(SelectKlantbeeldMsg request, StreamObserver<KlantbeeldMsg> responseObserver) {
 		System.out.println("getKlantbeeld called ...");
-		final SelectKlantbeeld selectKlantbeeld = SelectKlantbeeldMapper.fromProtobuf(request);
+		final SelectKlantbeeld selectKlantbeeld = SelectKlantbeeldMapper.fromPb(request);
 		final Klantbeeld klantbeeld = this.klantbeeldService.getKlantbeeld(selectKlantbeeld);
 //		final KlantbeeldMsg response = KlantbeeldMapper.toProtobuf(klantbeeld);
 //		responseObserver.onNext(response);

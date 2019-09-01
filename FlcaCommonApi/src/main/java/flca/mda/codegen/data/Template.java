@@ -47,7 +47,20 @@ public class Template implements ITemplate {
 		cartridgeName = aCartridgeName;
 		
 	}
+	
 
+	public static Template.Builder builder() {
+		return new Template.Builder();
+	}
+
+	public static Template.Builder builder(String name, Class<?> generator) {
+		return new Template.Builder(name, generator);
+	}
+
+	public static Template.Builder builder(String name, Class<?> generator, Builder builder) {
+		return new Template.Builder(name, generator, builder);
+	}
+	
 	@Override
 	public String getName() {
 		return name;
@@ -262,6 +275,149 @@ public class Template implements ITemplate {
 		result.setHooks(this.getHooks());
 		return result;
 	}
+	
+	//--------------- Builder 
 
+	public static class Builder {
+		private String name;
+		private String jetPath;
+		private String targetDir;
+		private String pack;
+		private String classname;
+		private String extension;
+		private String generatorFqn;
+		private String insertionTag;
+		private Class<?> applyToClasses[];
+		private TemplateMergeStrategy mergeStrategy;
+		private int rank = 5;
+		private String cartridgeName;
+		private String branchName;
+		private ITemplateHooks hooks;
+		
+		public Builder withName(String value) {
+			this.name = value;
+			return this;
+		}
+
+		public Builder withJetPath(String value) {
+			this.jetPath = value;
+			return this;
+		}
+
+		public Builder withTargetDir(String value) {
+			this.targetDir = value;
+			return this;
+		}
+
+		public Builder withPackage(String value) {
+			this.pack = value;
+			return this;
+		}
+
+		public Builder withClassname(String value) {
+			this.classname = value;
+			return this;
+		}
+
+		public Builder withExtension(String value) {
+			this.extension = value;
+			return this;
+		}
+
+		public Builder withGeneratorFqn(String value) {
+			this.generatorFqn = value;
+			return this;
+		}
+
+		public Builder withGenerator(Class<?> value) {
+			this.generatorFqn = value.getName();
+			return this;
+		}
+		
+		public Builder withInsertionTag(String value) {
+			this.insertionTag = value;
+			return this;
+		}
+
+		public Builder withApplyTo(Class<?>[] value) {
+			this.applyToClasses = value;
+			return this;
+		}
+
+		public Builder withMergeStrategy(TemplateMergeStrategy value) {
+			this.mergeStrategy = value;
+			return this;
+		}
+
+		public Builder withRank(int value) {
+			this.rank = value;
+			return this;
+		}
+
+		public Builder withCartridgeName(String value) {
+			this.cartridgeName = value;
+			return this;
+		}
+
+		public Builder withBranchName(String value) {
+			this.branchName = value;
+			return this;
+		}
+		
+		public Builder() {
+		}
+	
+		public Builder(String name, String generatorFqn) {
+			super();
+			this.name = name;
+			this.generatorFqn = generatorFqn;
+		}
+		
+		public Builder(String name, Class<?> generator) {
+			super();
+			this.name = name;
+			this.generatorFqn = generator.getName();
+		}
+		
+		public Builder(String name, Class<?> generator, Builder builder) {
+			super();
+			this.name = name;
+			this.generatorFqn = generator.getName();
+			this.jetPath = builder.jetPath;
+			this.targetDir = builder.targetDir;
+			this.pack = builder.pack;
+			this.classname = builder.classname;
+			this.extension = builder.extension;
+			this.insertionTag = builder.insertionTag;
+			this.applyToClasses = builder.applyToClasses;
+			this.mergeStrategy = builder.mergeStrategy;
+			this.rank = builder.rank;
+			this.cartridgeName = builder.cartridgeName;
+			this.branchName = builder.branchName;
+			this.hooks = builder.hooks;
+		}
+		
+		public Template build() {
+			Template r = new Template();
+			r.name = this.name;
+			r.jetPath = this.jetPath;
+			r.targetDir = this.targetDir;
+			r.pack = this.pack;
+			r.classname = this.classname;
+			r.extension = this.extension;
+			r.generatorFqn = this.generatorFqn;
+			r.insertionTag = this.insertionTag;
+			r.applyToClasses = this.applyToClasses;
+			r.mergeStrategy = this.mergeStrategy;
+			r.rank = this.rank;
+			r.cartridgeName = this.cartridgeName;
+			r.branchName = this.branchName;
+			r.hooks = this.hooks;
+			return r;
+		}
+		
+	}
 	
 }
+
+

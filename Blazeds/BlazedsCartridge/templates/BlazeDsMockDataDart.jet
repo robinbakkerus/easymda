@@ -1,0 +1,51 @@
+<%@ jet package="cartridge" 
+imports="java.util.* flca.mda.api.util.* flca.blazeds.api.* flca.blazeds.template.* "
+package="blazeds"
+class="BlazeDsMockDataDart" %>
+<%@ include file="./include/java-class-init.jetinc" %>
+<%@ include file="./include/java-class-start.jetinc" %>
+<% MockDataUtil mdu = new MockDataUtil(); %>
+<% List<Fw> fws = tu.getFields(cc, FwSelect.newBuilder().build()); %>
+<% String name = cc.getSimpleName(); %>
+<% String toUncapname = nu.uncapName(cc); %>
+<% impu.addImport(cc);%>
+<% impu.addImport("java.util.*"); %>
+<% impu.addImport("java.util.stream.Collectors"); %>
+<% for (String s : pbu.getGrpcImports(cc)) { 
+		impu.addImport(s);
+	} 
+%>
+<% impu.addImport("protobuf.mapper.*"); %>
+
+public class <%=classname%> {
+	
+<%
+	for (Fw fw : fws) {
+		if (fw.isSimple()) {
+			String upperName = fw.name().toUpperCase();
+%>
+	private static final <%=fw.typeName()%> <%=upperName%> = <%=mdu.randomValue(fw)%>; 
+<%		} %>
+<%	} %>
+		
+	/**
+	* Generate instance with mock data. 
+	*/
+	public static <%=name%> build() {
+		<%=name%> r = new <%=name%>();
+
+<%
+	for (Fw fw : fws) {
+		if (fw.isSimple()) {
+			String setter = "set" + nu.capName(fw.name());
+			String upperName = fw.name().toUpperCase();
+%>
+		r.<%=setter%>(<%=upperName%>); 
+<%		} %>
+<%	} %>
+
+		return r;
+	} 
+}
+
+<% importStringBuffer.insert(importInsertionPoint,  impu.computeSortedImports());%>

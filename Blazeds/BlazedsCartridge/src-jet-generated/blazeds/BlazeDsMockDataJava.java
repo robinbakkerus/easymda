@@ -5,13 +5,13 @@ import flca.mda.api.util.*;
 import flca.blazeds.api.*;
 import flca.blazeds.template.*;
 
-public class BlazeDsMockData
+public class BlazeDsMockDataJava
 {
   protected static String nl;
-  public static synchronized BlazeDsMockData create(String lineSeparator)
+  public static synchronized BlazeDsMockDataJava create(String lineSeparator)
   {
     nl = lineSeparator;
-    BlazeDsMockData result = new BlazeDsMockData();
+    BlazeDsMockDataJava result = new BlazeDsMockDataJava();
     nl = null;
     return result;
   }
