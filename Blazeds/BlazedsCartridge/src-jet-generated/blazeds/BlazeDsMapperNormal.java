@@ -69,6 +69,7 @@ public class BlazeDsMapperNormal
      AppUtils au = new AppUtils(); 
      ProtobufTypeUtils pbu = new ProtobufTypeUtils(); 
      OpenApiTypeUtils oatu = new OpenApiTypeUtils(); 
+     SwaggerTypeUtils swtu = new SwaggerTypeUtils(); 
      Object element = arg.getElement(); 
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();

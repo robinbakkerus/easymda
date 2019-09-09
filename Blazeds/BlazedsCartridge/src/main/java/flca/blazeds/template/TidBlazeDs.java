@@ -10,4 +10,5 @@ public enum TidBlazeDs {
 	MOCKDATA_LOADER,
 	TEST_MAPPER,
 	OPEN_API_YAML,
+	SWAGGER,
 }

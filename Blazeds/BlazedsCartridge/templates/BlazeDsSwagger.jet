@@ -1,0 +1,78 @@
+<%@ jet package="cartridge" 
+imports="java.util.*  java.lang.reflect.* flca.mda.api.util.* flca.blazeds.api.* flca.blazeds.template.* "
+package="blazeds"
+class="BlazeDsSwagger" %>
+<%@ include file="include/java-class-init.jetinc" %>
+<% cc = (Class) element; %>
+
+swagger: '2.0'
+
+info:
+  description: generated api for <%=classname%>
+  version: 1.0.0
+  title: <%=classname%>
+host: todo
+schemes:
+  - http
+  
+paths:
+<% for (Method method : iu.getMethods(cc)) { %>
+<% String operation = nu.capName(method.getName()); %>
+<% if (swtu.isPostMethod(method)) { %>
+  /<%=operation%>:
+    post:
+      summary: TODO
+      description: TODO
+      operationId: <%=operation%>
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/<%=operation%>Response'
+        '500':
+          description: Unknown error encountered
+      requestBody:
+        content:
+            application/json:
+              schema:
+                $ref: '#/definitions/<%=operation%>Request'
+<% } else { %>
+  TODO get 
+<% } // isPost() %>
+<% } //for-loop %>
+
+securityDefinitions:
+  todo_auth:
+    type: oauth2
+    authorizationUrl: 'http://petstore.swagger.io/api/oauth/dialog'
+    flow: implicit
+    scopes:
+      'write:todo': modify pets in your account
+      'read:todo': read your pets
+  api_key:
+    type: apiKey
+    name: api_key
+    in: header
+
+definitions:
+<% for (Method method : iu.getMethods(cc)) { %>
+<% String operation = nu.capName(method.getName()); %>
+<%   if (swtu.isPostMethod(method)) { %>
+    <%=operation%>Request:
+      type: object
+      properties:
+<%=tu.include(BlazeDsOpenApiRequest.class, cc, method)%>      
+<%   } // if post %>
+    <%=operation%>Response:
+      type: object
+      properties:
+<%=tu.include(BlazeDsOpenApiResponse.class, cc, method)%>      
+<% } // for getMethods loop %>
+# All (nested) types  
+<%    for (Class<?> clz : pbu.findAllMethodTypes(cc)) { %>
+<%      String includeCode = tu.include(BlazeDsSwaggerDefinitions.class, clz);%>
+<%=includeCode%>
+<%    } // for findAllMethodTypes loop %>
+

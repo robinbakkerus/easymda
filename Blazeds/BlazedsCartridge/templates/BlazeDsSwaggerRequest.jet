@@ -1,0 +1,10 @@
+<%@ jet package="cartridge" 
+imports="java.util.*  java.lang.reflect.* flca.mda.api.util.* flca.blazeds.api.* flca.blazeds.template.* "
+package="blazeds"
+class="BlazeDsOpenApiRequest" %>
+<%@ include file="include/java-class-init.jetinc" %>
+<% Method m = (Method) args[1]; %>
+<% for (int idx=0; idx < m.getParameterCount(); idx++) { %>
+        <%=swtu.getMethodArgName(m, idx)%>:
+          $ref: <%=swtu.getMethodArgTypeName(m, idx)%>
+<% } %>

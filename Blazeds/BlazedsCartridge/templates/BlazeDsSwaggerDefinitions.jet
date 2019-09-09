@@ -1,0 +1,33 @@
+<%@ jet package="cartridge" 
+imports="java.util.*  java.lang.reflect.* flca.mda.api.util.* flca.blazeds.api.* flca.blazeds.template.* "
+package="blazeds"
+class="BlazeDsSwaggerDefinitions" %>
+<%@ include file="include/java-class-init.jetinc" %>
+<% List<Fw> fwList = tu.getFields(cc, FwSelect.newBuilder().build()); %>
+<% String name = cc.getSimpleName(); %>
+  
+    <%=name%>:
+<% if (tu.isEnum(cc)) { %>
+      type: string
+      enum:
+<%	for (Object enumobj : cc.getEnumConstants()) { %>
+        - <%=enumobj.toString()%>
+<%  } // enumloop %>
+<% } else { // not an enum %>
+      type: object
+      properties:
+<%  for (Fw fw : fwList) { %>
+        <%=fw.name()%>:
+<%	  if (fw.isEnum()) { %>
+          $ref: <%=swtu.getTypeName(fw)%>
+<%	  } else if (fw.isArray() || fw.isCollection()) { %>
+          type: array
+          items:
+            $ref: <%=swtu.getTypeName(fw)%>
+<%	  } else if (fw.isModelClass()) { %>
+          $ref: <%=swtu.getTypeName(fw) %>
+<%	  } else { %>
+          type: <%=swtu.getTypeName(fw)%>
+<%	  } %>
+<%  }  %>
+<% } %>

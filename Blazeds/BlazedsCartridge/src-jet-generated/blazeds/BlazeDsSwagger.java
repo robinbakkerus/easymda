@@ -6,35 +6,34 @@ import flca.mda.api.util.*;
 import flca.blazeds.api.*;
 import flca.blazeds.template.*;
 
-public class BlazeDsOpenApi
+public class BlazeDsSwagger
 {
   protected static String nl;
-  public static synchronized BlazeDsOpenApi create(String lineSeparator)
+  public static synchronized BlazeDsSwagger create(String lineSeparator)
   {
     nl = lineSeparator;
-    BlazeDsOpenApi result = new BlazeDsOpenApi();
+    BlazeDsSwagger result = new BlazeDsSwagger();
     nl = null;
     return result;
   }
 
   public final String NL = nl == null ? (System.getProperties().getProperty("line.separator")) : nl;
-  protected final String TEXT_1 = NL + "openapi: '3.0.0'" + NL + "" + NL + "info:" + NL + "  description: generated api for ";
+  protected final String TEXT_1 = NL + "swagger: '2.0'" + NL + "" + NL + "info:" + NL + "  description: generated api for ";
   protected final String TEXT_2 = NL + "  version: 1.0.0" + NL + "  title: ";
-  protected final String TEXT_3 = NL + NL + "security:" + NL + "  - bearerAuth: []    " + NL + "" + NL + "paths:";
+  protected final String TEXT_3 = NL + "host: todo" + NL + "schemes:" + NL + "  - http" + NL + "  " + NL + "paths:";
   protected final String TEXT_4 = NL + "  /";
   protected final String TEXT_5 = ":" + NL + "    post:" + NL + "      summary: TODO" + NL + "      description: TODO" + NL + "      operationId: ";
-  protected final String TEXT_6 = NL + "      responses:" + NL + "        '200':" + NL + "          description: OK" + NL + "          content:" + NL + "            application/json:" + NL + "              schema:" + NL + "                $ref: '#/components/schemas/";
-  protected final String TEXT_7 = "Response'" + NL + "        '500':" + NL + "          description: Unknown error encountered" + NL + "      requestBody:" + NL + "        content:" + NL + "            application/json:" + NL + "              schema:" + NL + "                $ref: '#/components/schemas/";
+  protected final String TEXT_6 = NL + "      responses:" + NL + "        '200':" + NL + "          description: OK" + NL + "          content:" + NL + "            application/json:" + NL + "              schema:" + NL + "                $ref: '#/definitions/";
+  protected final String TEXT_7 = "Response'" + NL + "        '500':" + NL + "          description: Unknown error encountered" + NL + "      requestBody:" + NL + "        content:" + NL + "            application/json:" + NL + "              schema:" + NL + "                $ref: '#/definitions/";
   protected final String TEXT_8 = "Request'";
   protected final String TEXT_9 = NL + "  TODO get ";
-  protected final String TEXT_10 = NL + NL + "components:" + NL + "  securitySchemes:" + NL + "    bearerAuth:" + NL + "      type: http" + NL + "      scheme: bearer" + NL + "      bearerFormat: JWT" + NL + "  schemas:" + NL;
+  protected final String TEXT_10 = NL + NL + "securityDefinitions:" + NL + "  todo_auth:" + NL + "    type: oauth2" + NL + "    authorizationUrl: 'http://petstore.swagger.io/api/oauth/dialog'" + NL + "    flow: implicit" + NL + "    scopes:" + NL + "      'write:todo': modify pets in your account" + NL + "      'read:todo': read your pets" + NL + "  api_key:" + NL + "    type: apiKey" + NL + "    name: api_key" + NL + "    in: header" + NL + "" + NL + "definitions:";
   protected final String TEXT_11 = NL + "    ";
   protected final String TEXT_12 = "Request:" + NL + "      type: object" + NL + "      properties:";
   protected final String TEXT_13 = NL;
   protected final String TEXT_14 = "      ";
   protected final String TEXT_15 = "Response:" + NL + "      type: object" + NL + "      properties:";
   protected final String TEXT_16 = NL + "# All (nested) types  ";
-  protected final String TEXT_17 = NL + NL + "servers:" + NL + "  - description: TODO." + NL + "    url: TODO";
 
   public String generate(Object argument)
   {
@@ -76,7 +75,7 @@ public class BlazeDsOpenApi
     stringBuffer.append(TEXT_3);
      for (Method method : iu.getMethods(cc)) { 
      String operation = nu.capName(method.getName()); 
-     if (oatu.isPostMethod(method)) { 
+     if (swtu.isPostMethod(method)) { 
     stringBuffer.append(TEXT_4);
     stringBuffer.append(operation);
     stringBuffer.append(TEXT_5);
@@ -93,7 +92,7 @@ public class BlazeDsOpenApi
     stringBuffer.append(TEXT_10);
      for (Method method : iu.getMethods(cc)) { 
      String operation = nu.capName(method.getName()); 
-       if (oatu.isPostMethod(method)) { 
+       if (swtu.isPostMethod(method)) { 
     stringBuffer.append(TEXT_11);
     stringBuffer.append(operation);
     stringBuffer.append(TEXT_12);
@@ -110,11 +109,12 @@ public class BlazeDsOpenApi
      } // for getMethods loop 
     stringBuffer.append(TEXT_16);
         for (Class<?> clz : pbu.findAllMethodTypes(cc)) { 
-          String includeCode = tu.include(BlazeDsOpenApiComp.class, clz);
+          String includeCode = tu.include(BlazeDsSwaggerDefinitions.class, clz);
     stringBuffer.append(TEXT_13);
     stringBuffer.append(includeCode);
         } // for findAllMethodTypes loop 
-    stringBuffer.append(TEXT_17);
+    stringBuffer.append(TEXT_13);
+    stringBuffer.append(TEXT_13);
     return stringBuffer.toString();
   }
 }

@@ -46,6 +46,7 @@ public class BlazeDsTemplates {
 		result.add(this.makeMockDataJavaTemplate());
 		result.add(this.makeMockDataDartTemplate());
 		result.add(this.makeTestMapperTemplate());
+		result.add(this.makeOpenApiTemplate());
 		result.add(this.makeSwaggerTemplate());
 
 		return result;
@@ -99,9 +100,15 @@ public class BlazeDsTemplates {
 				.withTargetDir(TSTGEN).build();
 	}
 
-	private ITemplate makeSwaggerTemplate() {
+	private ITemplate makeOpenApiTemplate() {
 		return this.tb().withName(TidBlazeDs.OPEN_API_YAML.name())
 				.withGeneratorFqn("blazeds.BlazeDsOpenApi").withExtension(".yaml")
+				.withJetPath("/BlazeDsOpenApi.jet").build();
+	}
+
+	private ITemplate makeSwaggerTemplate() {
+		return this.tb().withName(TidBlazeDs.SWAGGER.name())
+				.withGeneratorFqn("blazeds.BlazeDsSwagger").withExtension(".yaml")
 				.withJetPath("/BlazeDsOpenApi.jet").build();
 	}
 

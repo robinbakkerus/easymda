@@ -6,27 +6,28 @@ import flca.mda.api.util.*;
 import flca.blazeds.api.*;
 import flca.blazeds.template.*;
 
-public class BlazeDsProtobuf
+public class BlazeDsSwaggerDefinitions
 {
   protected static String nl;
-  public static synchronized BlazeDsProtobuf create(String lineSeparator)
+  public static synchronized BlazeDsSwaggerDefinitions create(String lineSeparator)
   {
     nl = lineSeparator;
-    BlazeDsProtobuf result = new BlazeDsProtobuf();
+    BlazeDsSwaggerDefinitions result = new BlazeDsSwaggerDefinitions();
     nl = null;
     return result;
   }
 
   public final String NL = nl == null ? (System.getProperties().getProperty("line.separator")) : nl;
-  protected final String TEXT_1 = "syntax = \"proto3\";" + NL + "" + NL + "option java_multiple_files = true;" + NL + "option java_package = \"jrb.grpc.blazeds\";" + NL + "option java_outer_classname = \"";
-  protected final String TEXT_2 = "Proto\";" + NL + "option objc_class_prefix = \"HLW\";" + NL + "" + NL + "package jrb.grpc;" + NL + "" + NL + "service ";
-  protected final String TEXT_3 = " {";
-  protected final String TEXT_4 = NL + "\trpc ";
-  protected final String TEXT_5 = "(";
-  protected final String TEXT_6 = ") returns (";
-  protected final String TEXT_7 = ");";
-  protected final String TEXT_8 = NL + "}\t";
-  protected final String TEXT_9 = NL;
+  protected final String TEXT_1 = "  ";
+  protected final String TEXT_2 = NL + "    ";
+  protected final String TEXT_3 = ":";
+  protected final String TEXT_4 = NL + "      type: string" + NL + "      enum:";
+  protected final String TEXT_5 = NL + "        - ";
+  protected final String TEXT_6 = NL + "      type: object" + NL + "      properties:";
+  protected final String TEXT_7 = NL + "        ";
+  protected final String TEXT_8 = NL + "          $ref: ";
+  protected final String TEXT_9 = NL + "          type: array" + NL + "          items:" + NL + "            $ref: ";
+  protected final String TEXT_10 = NL + "          type: ";
 
   public String generate(Object argument)
   {
@@ -60,30 +61,39 @@ public class BlazeDsProtobuf
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();
      String pck = nu.getCurrentPackage();
-     cc = (Class) element; 
+     List<Fw> fwList = tu.getFields(cc, FwSelect.newBuilder().build()); 
+     String name = cc.getSimpleName(); 
     stringBuffer.append(TEXT_1);
-    stringBuffer.append(cc.getSimpleName());
     stringBuffer.append(TEXT_2);
-    stringBuffer.append(cc.getSimpleName());
+    stringBuffer.append(name);
     stringBuffer.append(TEXT_3);
-     for (Method method : iu.getMethods(cc)) { 
-     String srvname = method.getName(); String respname = pbu.protoMessageName(iu.getReturn(method)); 
-     Class arg0type = iu.getParameterType(method, 0); String arg0name = pbu.protoMessageName(arg0type); //todo support meerdere args 
+     if (tu.isEnum(cc)) { 
     stringBuffer.append(TEXT_4);
-    stringBuffer.append(srvname);
+    	for (Object enumobj : cc.getEnumConstants()) { 
     stringBuffer.append(TEXT_5);
-    stringBuffer.append(arg0name);
+    stringBuffer.append(enumobj.toString());
+      } // enumloop 
+     } else { // not an enum 
     stringBuffer.append(TEXT_6);
-    stringBuffer.append(respname);
+      for (Fw fw : fwList) { 
     stringBuffer.append(TEXT_7);
-     } //for-loop 
+    stringBuffer.append(fw.name());
+    stringBuffer.append(TEXT_3);
+    	  if (fw.isEnum()) { 
     stringBuffer.append(TEXT_8);
-     for (Class<?> clz : pbu.findAllMethodTypes(cc)) { 
-     String includeCode = tu.include(BlazeDsProtobufMsg.class, clz);
+    stringBuffer.append(swtu.getTypeName(fw));
+    	  } else if (fw.isArray() || fw.isCollection()) { 
     stringBuffer.append(TEXT_9);
-    stringBuffer.append(includeCode);
-     } //for-loop 
-    stringBuffer.append(TEXT_9);
+    stringBuffer.append(swtu.getTypeName(fw));
+    	  } else if (fw.isModelClass()) { 
+    stringBuffer.append(TEXT_8);
+    stringBuffer.append(swtu.getTypeName(fw) );
+    	  } else { 
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(swtu.getTypeName(fw));
+    	  } 
+      }  
+     } 
     return stringBuffer.toString();
   }
 }

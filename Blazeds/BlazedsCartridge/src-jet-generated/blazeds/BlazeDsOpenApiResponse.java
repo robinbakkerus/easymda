@@ -48,6 +48,7 @@ public class BlazeDsOpenApiResponse
      AppUtils au = new AppUtils(); 
      ProtobufTypeUtils pbu = new ProtobufTypeUtils(); 
      OpenApiTypeUtils oatu = new OpenApiTypeUtils(); 
+     SwaggerTypeUtils swtu = new SwaggerTypeUtils(); 
      Object element = arg.getElement(); 
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();
@@ -55,9 +56,9 @@ public class BlazeDsOpenApiResponse
      Method m = (Method) args[1]; 
      for (int idx=0; idx < m.getParameterCount(); idx++) { 
     stringBuffer.append(TEXT_1);
-    stringBuffer.append(oatu.getMethodArgName(m, idx));
+    stringBuffer.append(swtu.getMethodArgName(m, idx));
     stringBuffer.append(TEXT_2);
-    stringBuffer.append(oatu.getMethodArgTypeName(m, idx));
+    stringBuffer.append(swtu.getMethodArgTypeName(m, idx));
      } 
     return stringBuffer.toString();
   }
