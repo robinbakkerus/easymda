@@ -54,6 +54,7 @@ public class BlazeDsProtobufMsg
      InterfaceUtils iu = new InterfaceUtils(); 
      AppUtils au = new AppUtils(); 
      ProtobufTypeUtils pbu = new ProtobufTypeUtils(); 
+     OpenApiTypeUtils oatu = new OpenApiTypeUtils(); 
      Object element = arg.getElement(); 
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();

@@ -5,15 +5,16 @@ import java.util.Date;
 
 public abstract class PensioenAanspraak {
 
-	private PensioenAanspraakType type;
+	private PensioenAanspraakType aanspraakType;
 	private BigDecimal uitkering;
 	private Date einddatum;
 	
-	public PensioenAanspraakType getType() {
-		return type;
+
+	public PensioenAanspraakType getAanspraakType() {
+		return aanspraakType;
 	}
-	public void setType(PensioenAanspraakType type) {
-		this.type = type;
+	public void setAanspraakType(PensioenAanspraakType aanspraakType) {
+		this.aanspraakType = aanspraakType;
 	}
 	public BigDecimal getUitkering() {
 		return uitkering;

@@ -1,24 +1,25 @@
 package blazeds;
 
 import java.util.*;
+import java.lang.reflect.*;
 import flca.mda.api.util.*;
 import flca.blazeds.api.*;
 import flca.blazeds.template.*;
 
-public class BlazeDsCollector
+public class BlazeDsOpenApiResponse
 {
   protected static String nl;
-  public static synchronized BlazeDsCollector create(String lineSeparator)
+  public static synchronized BlazeDsOpenApiResponse create(String lineSeparator)
   {
     nl = lineSeparator;
-    BlazeDsCollector result = new BlazeDsCollector();
+    BlazeDsOpenApiResponse result = new BlazeDsOpenApiResponse();
     nl = null;
     return result;
   }
 
   public final String NL = nl == null ? (System.getProperties().getProperty("line.separator")) : nl;
-  protected final String TEXT_1 = " ";
-  protected final String TEXT_2 = NL;
+  protected final String TEXT_1 = "        ";
+  protected final String TEXT_2 = ":" + NL + "          $ref: ";
 
   public String generate(Object argument)
   {
@@ -51,15 +52,13 @@ public class BlazeDsCollector
      Class cc = (element instanceof Class<?>) ? (Class) element : element.getClass(); 
      String classname = nu.getCurrentClassname();
      String pck = nu.getCurrentPackage();
-     Object carttype = arg.getElement(); 
-   if (carttype instanceof IBlazeDsService) {
-     IBlazeDsService collector = (IBlazeDsService) carttype;  
-     Class blazeService = collector.getBlazeDsService(); 
-     tu.generateAllFiles(blazeService);
-   }
-
+     Method m = (Method) args[1]; 
+     for (int idx=0; idx < m.getParameterCount(); idx++) { 
     stringBuffer.append(TEXT_1);
+    stringBuffer.append(oatu.getMethodArgName(m, idx));
     stringBuffer.append(TEXT_2);
+    stringBuffer.append(oatu.getMethodArgTypeName(m, idx));
+     } 
     return stringBuffer.toString();
   }
 }

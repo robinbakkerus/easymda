@@ -8,6 +8,6 @@ public enum TidBlazeDs {
 	PROTOBUF_MSG,
 	MAPPER ,
 	MOCKDATA_LOADER,
-	TEST_MAPPER ,
-
+	TEST_MAPPER,
+	OPEN_API_YAML,
 }

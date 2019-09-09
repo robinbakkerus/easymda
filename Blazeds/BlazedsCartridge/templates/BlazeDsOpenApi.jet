@@ -1,0 +1,75 @@
+<%@ jet package="cartridge" 
+imports="java.util.*  java.lang.reflect.* flca.mda.api.util.* flca.blazeds.api.* flca.blazeds.template.* "
+package="blazeds"
+class="BlazeDsOpenApi" %>
+<%@ include file="include/java-class-init.jetinc" %>
+<% cc = (Class) element; %>
+
+openapi: '3.0.0'
+
+info:
+  description: generated api for <%=classname%>
+  version: 1.0.0
+  title: <%=classname%>
+
+security:
+  - bearerAuth: []    
+
+paths:
+<% for (Method method : iu.getMethods(cc)) { %>
+<% String operation = nu.capName(method.getName()); %>
+<% if (oatu.isPostMethod(method)) { %>
+  /<%=operation%>:
+    post:
+      summary: TODO
+      description: TODO
+      operationId: <%=operation%>
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/<%=operation%>Response'
+        '500':
+          description: Unknown error encountered
+      requestBody:
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/<%=operation%>Request'
+<% } else { %>
+  TODO get 
+<% } // isPost() %>
+<% } //for-loop %>
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+
+<% for (Method method : iu.getMethods(cc)) { %>
+<% String operation = nu.capName(method.getName()); %>
+<%   if (oatu.isPostMethod(method)) { %>
+    <%=operation%>Request:
+      type: object
+      properties:
+<%=tu.include(BlazeDsOpenApiRequest.class, cc, method)%>      
+<%   } // if post %>
+    <%=operation%>Response:
+      type: object
+      properties:
+<%=tu.include(BlazeDsOpenApiResponse.class, cc, method)%>      
+<% } // for getMethods loop %>
+# All (nested) types  
+<%    for (Class<?> clz : pbu.findAllMethodTypes(cc)) { %>
+<%      String includeCode = tu.include(BlazeDsOpenApiComp.class, clz);%>
+<%=includeCode%>
+<%    } // for findAllMethodTypes loop %>
+
+servers:
+  - description: TODO.
+    url: TODO

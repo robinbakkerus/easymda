@@ -29,14 +29,14 @@ public class Template implements ITemplate {
 	public Template() {
 	}
 
-	public Template(String aName, String aJetPath, String aGeneratorFqn, String aFileprefix, String aPackage,
+	public Template(String aName, String aJetPath, String aGeneratorFqn, String aTargetDir, String aPackage,
 			String aClassName, String aFileExt, String aInsertionTag, Class<?> aApplyToClasses[],
 			TemplateMergeStrategy aMergeStrategy, int aRank, String aCartridgeName) {
 	
 		name = aName;
 		jetPath = aJetPath;
 		generatorFqn = aGeneratorFqn;
-		targetDir = aFileprefix;
+		targetDir = aTargetDir;
 		pack = aPackage;
 		classname = aClassName;
 		extension = aFileExt;

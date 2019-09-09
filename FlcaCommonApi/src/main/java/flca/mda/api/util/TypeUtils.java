@@ -281,7 +281,7 @@ public class TypeUtils implements TypeConstants {
 	}
 
 	/**
-	 * given the source class, return all the non-simplme classes that are being
+	 * given the source class, return all the non-simple classes that are being
 	 * used by this class.
 	 * 
 	 * @param aSourceClass
@@ -431,6 +431,16 @@ public class TypeUtils implements TypeConstants {
 	 */
 	public boolean isCollection(Class<?> aClass) {
 		return (this.getCollectionTypes().contains(aClass.getName()));
+	}
+	
+	/**
+	 * return true if the given class is a collection (ie Set, List, etc)
+	 * 
+	 * @param aClass
+	 * @return
+	 */
+	public boolean isArray(Class<?> aClass) {
+		return aClass.getTypeName().endsWith("[]");
 	}
 
 	/**
@@ -1364,10 +1374,15 @@ public class TypeUtils implements TypeConstants {
 		}
 	}
 
+	/**
+	 * return true if the given class is a primitive, a java class (eq Date, BigDecimal) or an enm.
+	 * @param aClass
+	 * @return
+	 */
 	public boolean isSimpleField(Class<?> aClass) {
 		if (aClass == null) {
 			return true;
-		} else if (this.isCollection(aClass)) {
+		} else if (this.isCollection(aClass) || this.isArray(aClass))  {
 			return false;
 		} else {
 			return aClass.isPrimitive() || aClass.getName().startsWith("java") || aClass.isEnum();

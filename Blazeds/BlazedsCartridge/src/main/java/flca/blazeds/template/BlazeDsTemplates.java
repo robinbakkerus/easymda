@@ -25,10 +25,6 @@ public class BlazeDsTemplates {
 
 	private static List<ITemplate> allTemplates;
 
-	private static final Template.Builder TB = Template.builder().withBranchName(BLAZEDS_BRANCH_NAME)
-			.withCartridgeName(BLAZEDS_CARTRIDGE_NAME).withMergeStrategy(TemplateMergeStrategy.SKIP)
-			.withTargetDir(SRCGEN).withPackage("<%=PACKAGE%>").withClassname("<%=CLASSNAME%>");
-
 	public BlazeDsTemplates() {
 		super();
 		if (allTemplates == null) {
@@ -50,49 +46,63 @@ public class BlazeDsTemplates {
 		result.add(this.makeMockDataJavaTemplate());
 		result.add(this.makeMockDataDartTemplate());
 		result.add(this.makeTestMapperTemplate());
+		result.add(this.makeSwaggerTemplate());
 
 		return result;
 	}
 
+	// the default template builder.
+	private Template.Builder tb() {
+		return Template.builder().withBranchName(BLAZEDS_BRANCH_NAME).withCartridgeName(BLAZEDS_CARTRIDGE_NAME)
+				.withMergeStrategy(TemplateMergeStrategy.OVERWRITE).withTargetDir(SRCGEN).withPackage("<%=PACKAGE%>")
+				.withClassname("<%=CLASSNAME%>").withExtension(".java").withApplyTo(new Class[] {});
+	}
+
 	/*
-	 * this is only template that is visible, it will use all the templates below.
+	 * this is the only template that is visible, it will use all the templates
+	 * below.
 	 */
 	private ITemplate makeCollectorTemplate() {
-		return TB.withName(TidBlazeDs.ALL_FILES.name()).withGenerator(BlazeDsCollector.class)
+		return this.tb().withName(TidBlazeDs.ALL_FILES.name()).withGenerator(BlazeDsCollector.class)
 				.withApplyTo(new Class<?>[] { IBlazeDsService.class }).withJetPath("/BlazeDsCollector.jet").build();
 	}
 
 	private ITemplate makeProtobufTemplate() {
-		return TB.withName(TidBlazeDs.PROTOBUF.name()).withGenerator(BlazeDsProtobuf.class)
-				.withApplyTo(new Class<?>[] { IBlazeDsService.class }).withJetPath("/BlazeDsProtobuf.jet").build();
+		return this.tb().withName(TidBlazeDs.PROTOBUF.name()).withGenerator(BlazeDsProtobuf.class)
+				.withExtension(".proto").withJetPath("/BlazeDsProtobuf.jet").build();
 	}
 
 	private ITemplate makeProtobufMsgTemplate() {
-		return TB.withName(TidBlazeDs.PROTOBUF_MSG.name()).withGenerator(BlazeDsProtobufMsg.class)
-				.withApplyTo(new Class<?>[] { IBlazeDsService.class }).withJetPath("/BlazeDsProtobufMsg.jet").build();
+		return this.tb().withName(TidBlazeDs.PROTOBUF_MSG.name()).withGenerator(BlazeDsProtobufMsg.class)
+				.withJetPath("/BlazeDsProtobufMsg.jet").build();
 	}
 
 	private ITemplate makeMapperTemplate() {
-		return TB.withName(TidBlazeDs.MAPPER.name()).withGenerator(BlazeDsMapper.class)
-				.withApplyTo(new Class<?>[] { IBlazeDsService.class }).withJetPath("/BlazeDsMapper.jet").build();
+		return this.tb().withName(TidBlazeDs.MAPPER.name()).withGenerator(BlazeDsMapper.class)
+				.withClassname("<%=CLASSNAME%>" + "Mapper").withJetPath("/BlazeDsMapper.jet").build();
 	}
 
 	private ITemplate makeMockDataJavaTemplate() {
-		return TB.withName(TidBlazeDs.MOCKDATA_LOADER.name()).withGenerator(BlazeDsMockDataJava.class)
-				.withApplyTo(new Class<?>[] { IBlazeDsService.class }).withJetPath("/BlazeDsMockDataJava.jet")
-				.withPackage(TSTGEN).build();
+		return this.tb().withName(TidBlazeDs.MOCKDATA_LOADER.name()).withGenerator(BlazeDsMockDataJava.class)
+				.withClassname("<%=CLASSNAME%>" + "Mock").withJetPath("/BlazeDsMockDataJava.jet").withTargetDir(TSTGEN)
+				.build();
 	}
 
 	private ITemplate makeMockDataDartTemplate() {
-		return TB.withName(TidBlazeDs.MOCKDATA_LOADER.name()).withGenerator(BlazeDsMockDataDart.class)
-				.withApplyTo(new Class<?>[] { IBlazeDsService.class }).withJetPath("/BlazeDsMockDataDart.jet")
-				.withPackage(TSTGEN).build();
+		return this.tb().withName(TidBlazeDs.MOCKDATA_LOADER.name()).withGenerator(BlazeDsMockDataDart.class)
+				.withExtension(".dart").withJetPath("/BlazeDsMockDataDart.jet").build();
 	}
-	
+
 	private ITemplate makeTestMapperTemplate() {
-		return TB.withName(TidBlazeDs.TEST_MAPPER.name()).withGenerator(BlazeDsMapperTest.class)
-				.withApplyTo(new Class<?>[] { IBlazeDsService.class }).withJetPath("/BlazeDsTestMapper.jet")
-				.withPackage(TSTGEN).build();
+		return this.tb().withName(TidBlazeDs.TEST_MAPPER.name()).withGenerator(BlazeDsMapperTest.class)
+				.withClassname("<%=CLASSNAME%>" + "MapperTest").withJetPath("/BlazeDsTestMapper.jet")
+				.withTargetDir(TSTGEN).build();
+	}
+
+	private ITemplate makeSwaggerTemplate() {
+		return this.tb().withName(TidBlazeDs.OPEN_API_YAML.name())
+				.withGeneratorFqn("blazeds.BlazeDsOpenApi").withExtension(".yaml")
+				.withJetPath("/BlazeDsOpenApi.jet").build();
 	}
 
 	public static ITemplate getTemplate(TidBlazeDs aTid) {
