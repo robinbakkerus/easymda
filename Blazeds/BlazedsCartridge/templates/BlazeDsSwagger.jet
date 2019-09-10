@@ -24,20 +24,18 @@ paths:
       summary: TODO
       description: TODO
       operationId: <%=operation%>
+      parameters:
+        - in: body            
+          name: body
+          schema:
+            $ref: '#/definitions/<%=operation%>Request'
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/definitions/<%=operation%>Response'
+          schema:
+            $ref: '#/definitions/<%=operation%>Response'
         '500':
           description: Unknown error encountered
-      requestBody:
-        content:
-            application/json:
-              schema:
-                $ref: '#/definitions/<%=operation%>Request'
 <% } else { %>
   TODO get 
 <% } // isPost() %>
@@ -70,6 +68,7 @@ definitions:
       properties:
 <%=tu.include(BlazeDsOpenApiResponse.class, cc, method)%>      
 <% } // for getMethods loop %>
+
 # All (nested) types  
 <%    for (Class<?> clz : pbu.findAllMethodTypes(cc)) { %>
 <%      String includeCode = tu.include(BlazeDsSwaggerDefinitions.class, clz);%>

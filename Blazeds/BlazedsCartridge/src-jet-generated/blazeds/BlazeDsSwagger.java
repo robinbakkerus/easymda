@@ -23,9 +23,9 @@ public class BlazeDsSwagger
   protected final String TEXT_3 = NL + "host: todo" + NL + "schemes:" + NL + "  - http" + NL + "  " + NL + "paths:";
   protected final String TEXT_4 = NL + "  /";
   protected final String TEXT_5 = ":" + NL + "    post:" + NL + "      summary: TODO" + NL + "      description: TODO" + NL + "      operationId: ";
-  protected final String TEXT_6 = NL + "      responses:" + NL + "        '200':" + NL + "          description: OK" + NL + "          content:" + NL + "            application/json:" + NL + "              schema:" + NL + "                $ref: '#/definitions/";
-  protected final String TEXT_7 = "Response'" + NL + "        '500':" + NL + "          description: Unknown error encountered" + NL + "      requestBody:" + NL + "        content:" + NL + "            application/json:" + NL + "              schema:" + NL + "                $ref: '#/definitions/";
-  protected final String TEXT_8 = "Request'";
+  protected final String TEXT_6 = NL + "      parameters:" + NL + "        - in: body            " + NL + "          name: body" + NL + "          schema:" + NL + "            $ref: '#/definitions/";
+  protected final String TEXT_7 = "Request'" + NL + "      responses:" + NL + "        '200':" + NL + "          description: OK" + NL + "          schema:" + NL + "            $ref: '#/definitions/";
+  protected final String TEXT_8 = "Response'" + NL + "        '500':" + NL + "          description: Unknown error encountered";
   protected final String TEXT_9 = NL + "  TODO get ";
   protected final String TEXT_10 = NL + NL + "securityDefinitions:" + NL + "  todo_auth:" + NL + "    type: oauth2" + NL + "    authorizationUrl: 'http://petstore.swagger.io/api/oauth/dialog'" + NL + "    flow: implicit" + NL + "    scopes:" + NL + "      'write:todo': modify pets in your account" + NL + "      'read:todo': read your pets" + NL + "  api_key:" + NL + "    type: apiKey" + NL + "    name: api_key" + NL + "    in: header" + NL + "" + NL + "definitions:";
   protected final String TEXT_11 = NL + "    ";
@@ -33,7 +33,7 @@ public class BlazeDsSwagger
   protected final String TEXT_13 = NL;
   protected final String TEXT_14 = "      ";
   protected final String TEXT_15 = "Response:" + NL + "      type: object" + NL + "      properties:";
-  protected final String TEXT_16 = NL + "# All (nested) types  ";
+  protected final String TEXT_16 = NL + NL + "# All (nested) types  ";
 
   public String generate(Object argument)
   {

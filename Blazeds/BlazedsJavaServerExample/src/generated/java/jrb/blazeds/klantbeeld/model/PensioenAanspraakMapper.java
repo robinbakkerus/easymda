@@ -33,7 +33,7 @@ public class PensioenAanspraakMapper {
 			result = WeduwePensioenAanspraakMapper.fromPb(sourceMsg.getWeduwePensioenAanspraak());
 		}
 
-		result.setType(PensioenAanspraakTypeMapper.fromPb(sourceMsg.getType()));
+		result.setAanspraakType(PensioenAanspraakTypeMapper.fromPb(sourceMsg.getType()));
 		result.setUitkering(ProtobufMapper.fromPbBigDecimal(sourceMsg.getUitkering()));
 		result.setEinddatum(ProtobufMapper.fromPbDate(sourceMsg.getEinddatum()));
 		return result;
@@ -44,7 +44,7 @@ public class PensioenAanspraakMapper {
 	*/
 	public static PensioenAanspraakMsg toPb(final PensioenAanspraak source) {
 		final PensioenAanspraakMsg.Builder builder = PensioenAanspraakMsg.newBuilder();
-		if (source.getType() != null) builder.setType(PensioenAanspraakTypeMapper.toPb(source.getType()));
+		if (source.getAanspraakType() != null) builder.setType(PensioenAanspraakTypeMapper.toPb(source.getAanspraakType()));
 		if (source.getUitkering() != null) builder.setUitkering(ProtobufMapper.toPbBigDecimal(source.getUitkering()));
 		if (source.getEinddatum() != null) builder.setEinddatum(ProtobufMapper.toPbDate(source.getEinddatum()));
 		return builder.build();
