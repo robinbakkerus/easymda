@@ -34,7 +34,7 @@ public class ProtobufTypeUtilsTest {
 		Assert.assertEquals(6, r.size());
 	}
 	 
-	@Test
+	@Test 
 	public void testGetProtobufTypename() {
 		Fw fw = this.getFw(Klantbeeld.class, "geslacht");
 		assertEquals("???", pbu.getProtobufTypename(fw));

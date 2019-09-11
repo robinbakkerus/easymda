@@ -5,7 +5,6 @@ class="BlazeDsMockDataJava" %>
 <%@ include file="./include/java-class-init.jetinc" %>
 <%@ include file="./include/java-class-start.jetinc" %>
 <% MockDataUtil mdu = new MockDataUtil(); %>
-<% List<Fw> fws = tu.getFields(cc, FwSelect.newBuilder().build()); %>
 <% String name = cc.getSimpleName(); %>
 <% String toUncapname = nu.uncapName(cc); %>
 <% impu.addImport(cc);%>
@@ -16,15 +15,20 @@ class="BlazeDsMockDataJava" %>
 	} 
 %>
 <% impu.addImport("protobuf.mapper.*"); %>
+<% List<Fw> fws = tu.hasSubClasses(cc) ? tu.getFields(mdu.randomSubClass(cc), FwSelect.newBuilder().build()) : tu.getFields(cc, FwSelect.newBuilder().build()); %>
+<% String subClassName = cc.getSimpleName(); %>
+<% if (tu.hasSubClasses(cc)) { 
+	subClassName = mdu.randomSubClass(cc).getSimpleName();
+ } %>
 
 public class <%=classname%> {
 	
 <%
 	for (Fw fw : fws) {
 		if (fw.isSimple()) {
-			String upperName = fw.name().toUpperCase();
+			String constName = fw.name().toUpperCase();
 %>
-	private static final <%=fw.typeName()%> <%=upperName%> = <%=mdu.randomValue(fw)%>; 
+	private static final <%=fw.typeName()%>[] <%=constName%> = <%=mdu.randomValues(fw,3) %>; 
 <%		} %>
 <%	} %>
 		
@@ -32,15 +36,40 @@ public class <%=classname%> {
 	* Generate instance with mock data. 
 	*/
 	public static <%=name%> build() {
+		return build(0);
+	} 
+	
+	/**
+	* Generate List of instances with mock data. 
+	*/
+	public static List<<%=name%>> buildList() {
+		List<<%=name%>> result = new ArrayList<>();
+		for (int i=0; i<3; i++) {
+			result.add(build());
+		}
+		return result;
+	}
+	
+	private static <%=name%> build(int nr) {
+<% if (tu.hasSubClasses(cc)) { %>
+		<%=subClassName%> r = new <%=subClassName%>();
+<% } else { %>
 		<%=name%> r = new <%=name%>();
-
+<% } // hasSubclasses %>
 <%
 	for (Fw fw : fws) {
-		if (fw.isSimple()) {
-			String setter = "set" + nu.capName(fw.name());
-			String upperName = fw.name().toUpperCase();
+		String setter = "set" + nu.capName(fw.name());
+		String constName = fw.name().toUpperCase();
+		String mocker = fw.genericTypeName() + "Mock";
+		if (fw.isEnum()) { 
 %>
-		r.<%=setter%>(<%=upperName%>); 
+		r.<%=setter%>(<%=constName%>[nr]); 
+<%		} else if (fw.isCollection() || fw.isArray()) { %>
+		r.<%=setter%>(<%=mocker%>.buildList()); 
+<%		} else if (fw.isModelClass()) { %>
+		r.<%=setter%>(<%=mocker%>.build()); 
+<%		} else { %>
+		r.<%=setter%>(<%=constName%>[nr]); 
 <%		} %>
 <%	} %>
 

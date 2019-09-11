@@ -1,6 +1,7 @@
 package flca.mda.api.util;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import flca.mda.codegen.helpers.AnnotationsHelper;
 import flca.mda.codegen.helpers.ModelClasses;
@@ -571,4 +572,24 @@ public class Fw implements TypeConstants {
 		return true;
 	}
 
+	// static helper to make a Fw instance
+	
+	private final static TypeUtils TU = new TypeUtils();
+	
+	/**
+	 * Make a Fw instance given a class and the name of a class property
+	 * @param clz
+	 * @param propertyName
+	 * @return
+	 */
+	public static Fw makeFw(Class<?> clz, String propertyName) {
+		List<Fw> fws = TU.getAllFields(clz);
+		for (Fw fw : fws) {
+			if (fw.name().equals(propertyName)) {
+				return fw;
+			}
+		}
+		System.err.println("No matching field for " + propertyName + " found");
+		return null;
+	}
 }

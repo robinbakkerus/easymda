@@ -7,7 +7,7 @@ import blazeds.BlazeDsCollector;
 import blazeds.BlazeDsMapper;
 import blazeds.BlazeDsMapperTest;
 import blazeds.BlazeDsMockDataDart;
-import blazeds.BlazeDsMockDataJava;
+import blazeds.BlazeDsMockDataJavaGrpc;
 import blazeds.BlazeDsProtobuf;
 import blazeds.BlazeDsProtobufMsg;
 import flca.mda.codegen.data.ITemplate;
@@ -44,6 +44,7 @@ public class BlazeDsTemplates {
 		result.add(this.makeProtobufMsgTemplate());
 		result.add(this.makeMapperTemplate());
 		result.add(this.makeMockDataJavaTemplate());
+		result.add(this.makeMockDataJavaGrpcTemplate());
 		result.add(this.makeMockDataDartTemplate());
 		result.add(this.makeTestMapperTemplate());
 		result.add(this.makeOpenApiTemplate());
@@ -83,14 +84,20 @@ public class BlazeDsTemplates {
 				.withClassname("<%=CLASSNAME%>" + "Mapper").withJetPath("/BlazeDsMapper.jet").build();
 	}
 
-	private ITemplate makeMockDataJavaTemplate() {
-		return this.tb().withName(TidBlazeDs.MOCKDATA_LOADER.name()).withGenerator(BlazeDsMockDataJava.class)
-				.withClassname("<%=CLASSNAME%>" + "Mock").withJetPath("/BlazeDsMockDataJava.jet").withTargetDir(TSTGEN)
+	private ITemplate makeMockDataJavaGrpcTemplate() {
+		return this.tb().withName(TidBlazeDs.MOCK_JAVA_GRPC.name()).withGenerator(BlazeDsMockDataJavaGrpc.class)
+				.withClassname("<%=CLASSNAME%>" + "Mock").withJetPath("/BlazeDsMockDataJavaGrpc.jet").withTargetDir(TSTGEN)
 				.build();
 	}
 
+	private ITemplate makeMockDataJavaTemplate() {
+		return this.tb().withName(TidBlazeDs.MOCK_JAVA.name()).withGeneratorFqn("blazeds.BlazeDsMockDataJava")
+				.withClassname("<%=CLASSNAME%>" + "Mock").withJetPath("/BlazeDsMockDataJava.jet").withTargetDir(TSTGEN)
+				.withPackage("<%=PACKAGE%>.mock").build();
+	}
+
 	private ITemplate makeMockDataDartTemplate() {
-		return this.tb().withName(TidBlazeDs.MOCKDATA_LOADER.name()).withGenerator(BlazeDsMockDataDart.class)
+		return this.tb().withName(TidBlazeDs.MOCK_DART.name()).withGenerator(BlazeDsMockDataDart.class)
 				.withExtension(".dart").withJetPath("/BlazeDsMockDataDart.jet").build();
 	}
 

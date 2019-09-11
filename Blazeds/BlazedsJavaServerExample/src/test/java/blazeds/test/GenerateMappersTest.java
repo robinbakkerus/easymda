@@ -14,12 +14,4 @@ public class GenerateMappersTest extends GenerateBaseTest {
 			System.out.println(s);
 		}
 	}
-	
-	@Test
-	public void testGenerateMocks() {
-		for (Class<?> clz : MSG_CLASSES) {
-			String s = this.generate(clz, BlazeDsTemplates.getTemplate(TidBlazeDs.MOCKDATA_LOADER));
-			System.out.println(s);
-		}
-	}
 }

@@ -94,7 +94,8 @@ public class BlazeDsTypeUtils extends TypeUtils {
 		logger.info("generating all files for " + blazedsService.getSimpleName());
 		GenerateQueue.append(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.PROTOBUF));
 		GenerateQueue.append(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.MAPPER));
-		GenerateQueue.append(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.MOCKDATA_LOADER));
+		GenerateQueue.append(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.MOCK_DART));
+		GenerateQueue.append(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.MOCK_JAVA_GRPC));
 		GenerateQueue.append(blazedsService, BlazeDsTemplates.getTemplate(TidBlazeDs.TEST_MAPPER));
 	}
 

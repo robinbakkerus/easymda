@@ -13,6 +13,6 @@ public interface TypeConstants {
 	String NUMERIC_FIELDS = "int integer short long double float bigdecimal ";
 	String INT_FIELDS = "int integer short long";
 	String DEC_FIELDS = "double float bigdecimal ";
-	String DATE_FIELDS = "java.util.Date java.sql.Timestamp ";
+	String DATE_FIELDS = "java.util.Date java.sql.Date ";
 	
 }

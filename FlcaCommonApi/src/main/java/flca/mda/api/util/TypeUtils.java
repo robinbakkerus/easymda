@@ -1198,6 +1198,11 @@ public class TypeUtils implements TypeConstants {
 		return r;
 	}
 
+	/**
+	 * return list of Fw instance of all properties in the given class, including properties from it base class(es)
+	 * @param aClass
+	 * @return
+	 */
 	public List<Fw> getAllFields(final Class<?> aClass) {
 		List<Fw> result = new ArrayList<>();
 		result.addAll(this.getSpecialFields(aClass));

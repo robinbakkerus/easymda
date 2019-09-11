@@ -63,6 +63,8 @@ dependencies {
 	implementation 'io.grpc:grpc-stub:1.21.0'
 	
 	compile "io.grpc:grpc-netty-shaded:${grpcVersion}"
+	compile "com.sparkjava:spark-core:2.8.0"
+	compile "com.google.code.gson:gson:2.3.1"
 	
 	compile "commons-lang:commons-lang:2.6",
 		"easymda:flca.mda.common.api:5.0",

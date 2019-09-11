@@ -1,6 +1,7 @@
 package jrb.blazeds.klantbeeld.service;
 
 import jrb.blazeds.klantbeeld.model.Klantbeeld;
+import jrb.blazeds.klantbeeld.model.mock.KlantbeeldMock;
 
 public class GetKlantbeeldImpl implements GetKlantbeeld {
 
@@ -9,11 +10,8 @@ public class GetKlantbeeldImpl implements GetKlantbeeld {
 		return this.makeKlantbeeld();
 	}
 
-	Klantbeeld makeKlantbeeld() {
-		Klantbeeld r = new Klantbeeld();
-		
-		r.setAchternaam("Bakkerus");
-		
+	Klantbeeld makeKlantbeeld() { 
+		Klantbeeld r = KlantbeeldMock.build();
 		return r;
 	}
 }

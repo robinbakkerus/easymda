@@ -6,14 +6,22 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+
+import flca.mda.common.api.helpers.ImportHelper;
 
 public class MockDataUtil {
 
 	private static final Random RANDOM = ThreadLocalRandom.current();
 	private static final TypeUtils tu = new TypeUtils();
 
+	/**
+	 * return the string representation a random value that corresponds with the type of the given Fw
+	 * @param fw
+	 * @return
+	 */
 	public String randomValue(final Fw fw) {
 		if (tu.isStringType(fw.type())) {
 			return "\"" + this.randomString() + "\"";
@@ -25,10 +33,24 @@ public class MockDataUtil {
 			return "" + this.randomdouble();
 		} else if (tu.isDateType(fw.type())) {
 			return "new Date()";
+		} else if (tu.isTimestampType(fw.type())) {
+			return "new Timestamp(new Date().getTime())";
 		} else if (tu.isEnum(fw.type())) {
 			return String.format("%s.%s", fw.typeName(), this.randomEnum(fw.type()));
-		}
+		} 
 		return "??";
+	}
+	
+	public String randomValues(final Fw fw, int size) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(String.format("new %s[] {", fw.genericTypeName()));
+		for (int i=0; i<size; i++) {
+			sb.append(randomValue(fw));
+			sb.append(",");
+		}
+		sb.append("}");
+		
+		return sb.toString();
 	}
 
 	public String randomString() {
@@ -136,4 +158,19 @@ public class MockDataUtil {
 		}
 	}
 
+	/**
+	 * return the first subclasses (if any) from the given class.
+	 * @param aClass
+	 * @return
+	 */
+	public Class<?> randomSubClass(Class<?> aClass) {
+		List<Class<?>> subclasses = tu.getSubClasses(aClass);
+		if (subclasses != null && subclasses.size() > 0) {
+			Class<?> r = subclasses.get(0);
+			ImportHelper.addImport(r);
+			return r;
+		} else {
+			return ClassNotFoundException.class;
+		}
+	}
 }

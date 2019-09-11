@@ -6,6 +6,4 @@ public class SwaggerTypeUtils extends AbstractSwaggerTypeUtils {
 	protected String schemePrefix() {
 		return "definitions";
 	}
-
-	
 }
